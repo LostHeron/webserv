@@ -22,8 +22,9 @@ class	AResponse: public AMessage
 
 		AResponse		&operator=(const AResponse &assign);
 
-		const uint16_t	&getStatus(void) const = 0;
-		void			send(void) const = 0;
+		virtual void	send(void) const = 0;
+
+		const uint16_t	&getStatus(void) const;
 
 	protected:
 		uint16_t		_status;

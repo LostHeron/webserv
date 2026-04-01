@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 19:58:09 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/01 20:10:36 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,15 @@ class	ARequest: public AMessage
 		ARequest(const ARequest &cpy);
 		~ARequest(void);
 
-		ARequest					&operator=(const ARequest &assign);
+		ARequest			&operator=(const ARequest &assign);
 
-		virtual const uint8_t		&getType(void) const = 0;
-		virtual const std::string	&getHeader(void) const = 0;
-		virtual const std::string	&getBody(void) const = 0;
+		virtual const void	execute(void) = 0;
 
-		enum						e_reqType
+		const uint8_t		&getType(void) const;
+		const std::string	&getHeader(void) const;
+		const std::string	&getBody(void) const;
+
+		enum				e_reqType
 		{
 			GET,
 			POST,

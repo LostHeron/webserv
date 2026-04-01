@@ -15,18 +15,16 @@
 
 # include "ARequest.hpp"
 
-class	GETReq: public ARequest
+class	GETReq: public ARequest // only GET ?
 {
 	public:
 		GETReq(void);
 		GETReq(const GETReq &cpy);
 		~GETReq(void);
 
-		GETReq					&operator=(const GETReq &assign);
+		GETReq		&operator=(const GETReq &assign);
 
-		const uint8_t			&getType(void) const;
-		const std::string		&getHeader(void) const;
-		const std::string		&getBody(void) const;
+		void		execute(void);
 }
 
 #endif
