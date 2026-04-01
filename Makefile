@@ -16,7 +16,7 @@ CXXFLAGS := -Wall -Wextra -Werror -std="c++98"
 
 
 
-SRCS_DIR := srcs/
+SRCS_DIR := sources/
 SRCS_FILES := $(addprefix $(SRCS_DIR), webserv.cpp) \
 
 OBJ_DIR := .obj/
