@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 20:10:36 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/01 21:19:10 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 class	ARequest: public AMessage
 {
 	public:
-		ARequest(void);
+		ARequest(const uint8_t &type, const std::string &header, const std::string &body);
 		ARequest(const ARequest &cpy);
 		~ARequest(void);
 
@@ -40,9 +40,9 @@ class	ARequest: public AMessage
 		};
 
 	protected:
-		static const uint8_t	_type;
-		const std::string		_header;
-		const std::string		_body;
+		const uint8_t		_type;
+		const std::string	_header;
+		const std::string	_body;
 };
 
 #endif

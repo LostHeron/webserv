@@ -1,31 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   AMessage.hpp                                       :+:      :+:    :+:   */
+/*   AMessage.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 19:18:28 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 19:41:26 by abetemps         ###   ########.fr       */
+/*   Created: 2026/04/01 21:06:47 by abetemps          #+#    #+#             */
+/*   Updated: 2026/04/01 21:19:44 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		__AMESSAGE_IPP__
-# define	__AMESSAGE_IPP__
+#include "AMessage.hpp"
 
-# include <IMessage.ipp>
-
-class	AMessage: public IMessage
-{
-	public:
-		const std::string		&getMessage(void) const;
-		const std::string		&getSender(void) const;
-		const std::string		&getTarget(void) const;
-
-	protected:
-		const std::string		_message;
-		const std::string		_sender;
-		const std::string		_target;
-};
-
-#endif
+// Getters =====================================================================
+const std::string	&AMessage::getMessage(void) const	{ return(this->_message); }
+const std::string	&AMessage::getSender(void) const	{ return(this->_sender); }
+const std::string	&AMessage::getTarget(void) const	{ return (this->_target); }
