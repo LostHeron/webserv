@@ -6,12 +6,17 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:54:35 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 22:16:49 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/01 22:33:18 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef		__AFACTORY_TPP__
 # define	__AFACTORY_TPP__
 
+template	<class	ABase, class CDerived>
+const ABase *AFactory::newElement(void)
+{
+	return (new CDerived());
+}
 
 #endif
