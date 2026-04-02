@@ -6,9 +6,12 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/02 17:38:44 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/02 17:43:52 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef __VIRTUALHOST_HPP__
+# define __VIRTUALHOST_HPP__
 
 #include <string>
 #include <fstream>
@@ -76,3 +79,5 @@ class VirtualHost
 	
 		std::map<std::string, Location>	_locations;
 };
+
+#endif
