@@ -20,7 +20,7 @@ class	ARequest: public AMessage
 	public:
 		ARequest(const uint8_t &type, const std::string &header, const std::string &body);
 		ARequest(const ARequest &cpy);
-		~ARequest(void);
+		virtual ~ARequest(void);
 
 		ARequest			&operator=(const ARequest &assign);
 
@@ -35,8 +35,8 @@ class	ARequest: public AMessage
 			GET,
 			POST,
 			DELETE,
+			TYPE_QTY,
 			UNKNOWN,
-			TYPE_QTY
 		};
 
 	protected:

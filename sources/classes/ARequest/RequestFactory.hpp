@@ -22,17 +22,20 @@
 class	RequestFactory: public AFactory<ARequest>
 {
 	public:
+		RequestFactory(void);
+		RequestFactory(const RequestFactory &cpy);
+		~RequestFactory(void);
 
+		RequestFactory	&operator=(const RequestFactory &assign);
 
 	private:
 		uint8_t			_type;
 		std::string		_header;
 		std::string		_body;
 		
-		
-
-		bool			_checkHeader(const std::string &header) const;
-		bool			_checkBody(const std::string &body) const;
+		uint8_t			_checkType(void) const;
+		uint8_t			_checkHeader(void) const;
+		uint8_t			_checkBody(void) const;
 	
 };
 

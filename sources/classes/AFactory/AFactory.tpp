@@ -13,10 +13,5 @@
 #ifndef		__AFACTORY_TPP__
 # define	__AFACTORY_TPP__
 
-template	<class	ABase, class CDerived>
-const ABase *AFactory::newElement(void)
-{
-	return (new CDerived());
-}
 
 #endif
