@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:10:23 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/07 19:34:13 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/07 19:56:31 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ class JsonLexer
 			std::string	value;	
 		};
 
-		JsonLexer(void);
-
 		std::queue<struct s_token>	_tokenQueue;
+
+		JsonLexer(void);
 };
 
 #endif
