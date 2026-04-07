@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:25:08 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/07 19:34:04 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/07 20:06:40 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ JsonLexer::JsonLexer(std::string const& input)
 					++i;
 				}
 				if (i >= input.size())
-					throw std::invalid_argument("Invalid argument : Missing closing quotes at \"" + input.substr(input.rfind('"', i), 10) + "...\"");
+					throw std::invalid_argument("Invalid argument : missing closing quotes at \"" + input.substr(input.rfind('"', i), 10) + "...\"");
 				++i;
 				break ;
 			}
@@ -92,7 +92,7 @@ JsonLexer::JsonLexer(std::string const& input)
 					++i;
 				}
 				if (new_token.value.empty())
-					throw std::invalid_argument("Invalid argument : Unrecognized sequence of characters at \"" + input.substr(i, 10) + "...\"");
+					throw std::invalid_argument("Invalid argument : unrecognized sequence of characters at \"" + input.substr(i, 10) + "...\"");
 			}
 		}
 		this->_tokenQueue.push(new_token);
@@ -115,13 +115,23 @@ JsonLexer&	JsonLexer::operator=(JsonLexer const& other)
 	return (*this);
 }
 
+bool	JsonLexer::empty(void) const
+{
+	return (this->_tokenQueue.empty());	
+}
+
 JsonLexer::e_tokenType	JsonLexer::peekType(void) const
 {
+	if (this->_tokenQueue.empty())
+		throw std::range_error("Lexer is empty : trying to access non-existant element");
 	return (this->_tokenQueue.front().type);
 }
 
 std::string	JsonLexer::popToken(void)
 {
+	if (this->_tokenQueue.empty())
+		throw std::range_error("Lexer is empty : trying to access non-existant element");
+	
 	std::string	token_value(this->_tokenQueue.front().value);
 
 	this->_tokenQueue.pop();
