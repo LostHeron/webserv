@@ -14,7 +14,6 @@
 # define	__IMESSAGE_IPP__
 
 # include <string>
-# include <cstdint>
 
 class	IMessage
 {
