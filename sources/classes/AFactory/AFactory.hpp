@@ -18,18 +18,23 @@ class		AFactory
 {
 	public:
 		virtual ~AFactory(void);
-		virtual ABase						*createElement(void) const = 0;
-		virtual uint8_t						determineElement(void) const = 0;
+
+		ABase								*createElement(void) const;
 	                            		
 	protected:                  		
 		typedef ABase						*(*_constructor)(void);
 		typedef uint8_t						(*_test)(void);
+
+		virtual uint8_t						_determineElement(void) const = 0;
+		void								_runTests(void);
                                 		
 		template							<class CDerived>
 		virtual ABase						*_newElement(void) = 0;
 
 		virtual static const _constructor	_constructorsArray[];
 		virtual static const _test			_testsArray[];
+		virtual const unsigned int			_testsQty;
+		uint16_t							_testsStatus;
 
 
 }

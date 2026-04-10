@@ -6,13 +6,18 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 21:19:08 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/10 17:37:33 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "ARequest.hpp"
 
 // Construction/Destruction ====================================================
+ARequest::ARequest(void):
+	_type(0),
+	_header(0),
+	_body(0) {}
+
 ARequest::ARequest(const uint8_t &type, const std::string &header, const std::string &body):
 	_type(type),
 	_header(header),

@@ -19,7 +19,9 @@
 # include "POSTReq.hpp"
 # include "DELETEReq.hpp"
 
-class	RequestFactory: public AFactory<ARequest>
+class	RequestFactory:
+	public ARequest,
+	public AFactory<ARequest>
 {
 	public:
 		RequestFactory(void);
@@ -29,11 +31,17 @@ class	RequestFactory: public AFactory<ARequest>
 		RequestFactory	&operator=(const RequestFactory &assign);
 
 	private:
-		uint8_t			_type;
-		std::string		_header;
-		std::string		_body;
-		
-		uint8_t			_checkType(void) const;
+		enum			e_Tests
+		{
+			ISGET,
+			ISPOST,
+			ISDELETE,
+			CHECKHEADER,
+			CHECKBODY,
+		};
+		uint8_t			_isGet(void) const;
+		uint8_t			_isPost(void) const;
+		uint8_t			_isDelete(void) const;
 		uint8_t			_checkHeader(void) const;
 		uint8_t			_checkBody(void) const;
 	

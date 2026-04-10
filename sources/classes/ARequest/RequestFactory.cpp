@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 21:45:15 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/10 18:01:23 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,11 @@ const	AFactory<ARequest>::_constructorsArray[TYPES_QTY] =
 
 const	AFactory<ARequest>::_testsArray[] =
 {
-	// &_checkType,
+	&_isGet,
+	&_isPost,
+	&_isDelete,
 	&_checkHeader,
-	&_checkBody
+	&_checkBody,
 };
 
 
@@ -32,12 +34,14 @@ const	AFactory<ARequest>::_testsArray[] =
 RequestFactory::RequestFactory(void):
 	_type(UNKNOWN),
 	_header(0),
-	_body(0) {}
+	_body(0),
+	_testsStatus(0) {}
 
 RequestFactory::RequestFactory(const RequestFactory &cpy):
 	_type(cpy._type),
 	_header(cpy._header),
-	_body(cpy._body) {}
+	_body(cpy._body),
+	_testsStatus(cpy._testsStatus) {}
 
 RequestFactory::~RequestFactory(void) {}
 
@@ -47,46 +51,69 @@ RequestFactory	&RequestFactory::operator=(const RequestFactory &assign) { (void)
 
 
 // Member functions =============================================================
-ARequest		*RequestFactory::_newElement();
-
-ARequest		*RequestFactory::createElement(void) const
+template		<class T>
+ARequest		*RequestFactory::_newElement(void)
 {
-	return (AFactory<ARequest>::_constructorsArray[determineElement()]());
-}
+	return (new T(this->_type, this->_header, this->_body));
+};
 
 uint8_t			RequestFactory::determineElement(void) const
 {
-	uint8_t	type;
 
-	type = UNKNOWN;
-	for (int i = 0; i < 2; ++i)
+	if (!this->_testsStatus & (1 << CHECKHEADER))
+		return (UNKNOWN);
+
+	int	i;
+
+	for (i = 0; i < TYPE_QTY; ++i)
 	{
-		if (type = AFactory<ARequest>::_testsArray() == UNKNOWN)
-			break;
+		if (this->_testsStatus & (1 << i))
+		{
+			if (i == ISPOST && this->_testsStatus & (1 << CHECKBODY))
+				break;
+			else
+				return (UNKNOWN);
+		}
+		else if (i == TYPES_QTY - 1  && !this->_testsStatus & (1 << i))
+			return (UNKNOWN);
 	}
-	return (type);
+	return (i);
 }
 
 
 // Tests =======================================================================
-uint8_t		RequestFactory::_checkType(void) const
+uint8_t		RequestFactory::_isGet(void) const
 {
 	if (this->_type == "GET")
-		return (GET);
-	else if (this->_type == "POST")
-		return (POST);
-	else if (this->_type == "DELETE")
-		return (DELETE);
+		return (1);
 	else
-		return (UNKNOWN);
+		return (0);
+}
+
+uint8_t		RequestFactory::_isPost(void) const
+{
+	if (this->_type == "POST")
+		return (1);
+	else
+		return (0);
+}
+
+uint8_t		RequestFactory::_isDelete(void) const
+{
+	if (this->_type == "DELETE")
+		return (1);
+	else
+		return (0);
 }
 
 uint8_t		RequestFactory::_checkHeader(void) const
 {
-	return (1);
+	// check if parsed header "looks like" a valid header
+	return (1); // OK
 }
 
 uint8_t		RequestFactory::_checkBody(void) const
 {
-	return (1);
+	// if requested, check if parsed body "looks like" a valid body
+	return (0); // KO
 }
