@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/01 16:54:22 by jweber            #+#    #+#              #
-#    Updated: 2026/04/09 13:58:34 by jweber           ###   ########.fr        #
+#    Updated: 2026/04/10 16:56:48 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,12 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SERVER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFD_DIR) \
 
+AFD_DIR := AFd/
+AFD_FILES := AFd.cpp \
+			ListenFd.cpp \
+			IOFd.cpp \
 
 LISTEN_DIR := Listen/
 LISTEN_FILES := Listen.cpp \
@@ -33,6 +38,7 @@ CLASSES_DIR := classes/
 CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
 				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
+				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
 
 
 SRCS_DIR := sources/
@@ -48,7 +54,7 @@ D_FILES := $(OBJECTS:.o=.d)
 .DEFAULT_GOAL = all
 
 echo:
-	@echo $(D_FILES)
+	@echo $(CLASSES_FILES)
 
 
 all: $(NAME)

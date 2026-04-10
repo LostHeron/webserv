@@ -22,7 +22,7 @@
 EpollStruct::EpollStruct()
 {
 	this->status = SUCCESS;
-	this->fd = epoll_create(1);
+	this->fd = epoll_create(42);
 	if (this->fd < 0)
 	{
 		std::string error_msg(strerror(errno));
