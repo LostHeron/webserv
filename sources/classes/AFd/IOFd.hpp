@@ -1,37 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   IOFd.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/09 13:51:48 by jweber           ###   ########.fr       */
+/*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
+/*   Updated: 2026/04/10 16:53:32 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef IOFD_HPP
+# define IOFD_HPP
+
+#include "AFd.hpp"
 #include "Server.hpp"
-#include <iostream>
 
-int	main(void)
+class IOFd: public AFd
 {
-	// some function to read info from config file
-	// that would return a structure containing necessary information
-	
-	Server server;
-	server.activate();
-	if (server.fail())
-	{
-		std::cerr << "could not launch server\n";
-		return (1);
-	}
-	else
-	{
-		std::cout << "server successfully launched\n";
-		int	a;
-		std::cin >> a;
-	}
-	return (0);
-}
+	public:
+		IOFd(int fd, Server& server);
+		~IOFd();
 
+		void process();
+		
+	protected:
 
+	private:
+		IOFd(const IOFd& other);
+		IOFd& operator=(const IOFd& other);
+};
+
+#endif

@@ -1,37 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   IOFd.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/09 13:51:48 by jweber           ###   ########.fr       */
+/*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
+/*   Updated: 2026/04/10 17:02:29 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include <iostream>
+#include "IOFd.hpp"
+#include "AFd.hpp"
+#include <unistd.h>
 
-int	main(void)
+IOFd::IOFd(int fd, Server& server):
+	AFd(server)
 {
-	// some function to read info from config file
-	// that would return a structure containing necessary information
-	
-	Server server;
-	server.activate();
-	if (server.fail())
-	{
-		std::cerr << "could not launch server\n";
-		return (1);
-	}
-	else
-	{
-		std::cout << "server successfully launched\n";
-		int	a;
-		std::cin >> a;
-	}
-	return (0);
+	this->fd = fd;
 }
 
+IOFd::~IOFd()
+{
+}
 
+void IOFd::process()
+{
+	// ok and here should do stuff with the fd,
+	// and read data and start parsing request
+}
