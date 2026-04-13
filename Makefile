@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/01 16:54:22 by jweber            #+#    #+#              #
-#    Updated: 2026/04/10 16:56:48 by jweber           ###   ########.fr        #
+#    Updated: 2026/04/13 13:39:59 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,9 +25,6 @@ AFD_FILES := AFd.cpp \
 			ListenFd.cpp \
 			IOFd.cpp \
 
-LISTEN_DIR := Listen/
-LISTEN_FILES := Listen.cpp \
-
 EPOLLSTRUCT_DIR := EpollStruct/
 EPOLLSTRUCT_FILES := EpollStruct.cpp \
 
@@ -41,9 +38,16 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
 
 
+SOCKETS_DIR := sockets/
+SOCKETS_FILES := CreateFd.cpp \
+
+
 SRCS_DIR := sources/
-SRCS_FILES := $(addprefix $(SRCS_DIR), webserv.cpp) \
-			  $(addprefix $(SRCS_DIR), $(addprefix $(CLASSES_DIR), $(CLASSES_FILES))) \
+SRCS_FILES := webserv.cpp \
+			  $(addprefix $(SOCKETS_DIR), $(SOCKETS_FILES)) \
+			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES)) \
+
+SRCS_FILES := $(addprefix $(SRCS_DIR), $(SRCS_FILES))
 
 OBJ_DIR := .obj/
 OBJECTS := $(addprefix $(OBJ_DIR), $(SRCS_FILES:.cpp=.o))

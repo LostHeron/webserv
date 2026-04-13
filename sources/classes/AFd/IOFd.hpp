@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/10 16:53:32 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/13 13:46:19 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,16 @@ class IOFd: public AFd
 		IOFd(int fd, Server& server);
 		~IOFd();
 
-		void process();
+		void	process();
+		bool	fail();
 		
 	protected:
 
 	private:
 		IOFd(const IOFd& other);
 		IOFd& operator=(const IOFd& other);
+
+		int	status;
 };
 
 #endif

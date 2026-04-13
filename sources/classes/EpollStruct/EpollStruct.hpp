@@ -13,6 +13,8 @@
 #ifndef EPOLLSTRUCT_HPP
 # define EPOLLSTRUCT_HPP
 
+class AFd;
+
 class EpollStruct
 {
 	public:
@@ -20,6 +22,7 @@ class EpollStruct
 		~EpollStruct();
 
 		bool	fail();
+		void	add(AFd *fd);
 
 	protected:
 

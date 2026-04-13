@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "AFd.hpp"
 #include "EpollStruct.hpp"
 #include <cstring>
 #include <sys/epoll.h>
@@ -42,4 +43,16 @@ bool	EpollStruct::fail()
 		return (false);
 	else
 		return (true);
+}
+
+void	EpollStruct::add(AFd *fd)
+{
+	struct epoll_event	event;
+	int					ret;
+
+	event.data.ptr = fd;
+	event.events = EPOLLIN;
+	ret = epoll_ctl(this->fd, EPOLL_CTL_ADD, fd->getFd(), &event);
+	if (ret < 0)
+		this->status = FAILURE;
 }

@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/09 13:51:48 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/13 13:44:02 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ int	main(void)
 	// that would return a structure containing necessary information
 	
 	Server server;
-	server.activate();
 	if (server.fail())
 	{
 		std::cerr << "could not launch server\n";
@@ -33,5 +32,3 @@ int	main(void)
 	}
 	return (0);
 }
-
-
