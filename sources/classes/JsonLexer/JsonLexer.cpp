@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:25:08 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/07 20:06:40 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/13 16:32:39 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,10 @@ JsonLexer::JsonLexer(std::string const& input)
 				new_token.type = STRING;
 				while (i < input.size() && input[i] != '"')
 				{
-					new_token.value.push_back(input[i]);
+					if (input[i] != '\\')
+						++i;
+					if (i < input.size())
+						new_token.value.push_back(input[i]);
 					++i;
 				}
 				if (i >= input.size())
