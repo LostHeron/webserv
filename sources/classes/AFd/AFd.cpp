@@ -1,31 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   AFd.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 15:19:43 by jweber           ###   ########.fr       */
+/*   Created: 2026/04/10 17:01:33 by jweber            #+#    #+#             */
+/*   Updated: 2026/04/13 13:49:27 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "AFd.hpp"
 #include "Server.hpp"
-#include "sockets.hpp"
-#include <iostream>
-#include "unistd.h"
 
-int	main(void)
+AFd::AFd(Server& server):
+	server(server)
 {
-	// some function to read info from config file
-	// that would return a structure containing necessary information
-	
-	Server server;
-	if (server.fail())
-	{
-		std::cerr << "could not launch server\n";
-		return (1);
-	}
-	start(server);
-	return (0);
+}
+
+AFd::~AFd()
+{
+}
+
+int	AFd::getFd()
+{
+	return (this->fd);
 }

@@ -1,31 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   EpollStruct.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 15:19:43 by jweber           ###   ########.fr       */
+/*   Created: 2026/04/09 11:30:39 by jweber            #+#    #+#             */
+/*   Updated: 2026/04/13 15:23:14 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "sockets.hpp"
-#include <iostream>
-#include "unistd.h"
+#ifndef EPOLLSTRUCT_HPP
+# define EPOLLSTRUCT_HPP
 
-int	main(void)
+class AFd;
+
+class EpollStruct
 {
-	// some function to read info from config file
-	// that would return a structure containing necessary information
-	
-	Server server;
-	if (server.fail())
-	{
-		std::cerr << "could not launch server\n";
-		return (1);
-	}
-	start(server);
-	return (0);
-}
+	public:
+		EpollStruct();
+		~EpollStruct();
+
+		bool	fail();
+		void	add(AFd *fd);
+		int		getFd();
+
+	protected:
+
+	private:
+		int	fd;
+		int	status;
+		EpollStruct(const EpollStruct& other);
+		EpollStruct& operator=(const EpollStruct& other);
+};
+
+#endif // !EPOLLSTRUCT_HPP

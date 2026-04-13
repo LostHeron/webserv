@@ -1,31 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   webserv.cpp                                        :+:      :+:    :+:   */
+/*   IOFd.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 15:19:43 by jweber           ###   ########.fr       */
+/*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
+/*   Updated: 2026/04/13 13:46:19 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
-#include "sockets.hpp"
-#include <iostream>
-#include "unistd.h"
+#ifndef IOFD_HPP
+# define IOFD_HPP
 
-int	main(void)
+#include "AFd.hpp"
+#include "Server.hpp"
+
+class IOFd: public AFd
 {
-	// some function to read info from config file
-	// that would return a structure containing necessary information
-	
-	Server server;
-	if (server.fail())
-	{
-		std::cerr << "could not launch server\n";
-		return (1);
-	}
-	start(server);
-	return (0);
-}
+	public:
+		IOFd(int fd, Server& server);
+		~IOFd();
+
+		void	process();
+		bool	fail();
+		
+	protected:
+
+	private:
+		IOFd(const IOFd& other);
+		IOFd& operator=(const IOFd& other);
+
+		int	status;
+};
+
+#endif
