@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:18:42 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 17:08:04 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/13 19:25:00 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <ostream>
 #include "JsonLexer.hpp"
 #include "JsonObj.hpp"
 
@@ -62,6 +63,8 @@ JsonObj::JsonObj(JsonLexer& jsonLexer)
 
 				this->_typeArray.push_back(val);
 			}
+			this->_type = JsonObj::ARRAY;
+			jsonLexer.popToken();
 			break ;
 		}
 		case JsonLexer::OBJ_OPEN:
@@ -83,9 +86,11 @@ JsonObj::JsonObj(JsonLexer& jsonLexer)
 
 				JsonObj	val(jsonLexer);
 
-				if (!this->_typeSubObj.insert({key, val}).second)
+				if (!this->_typeSubObj.insert(std::pair<std::string, JsonObj>(key, val)).second)
 					throw std::runtime_error("Insertion failed");
 			}
+			this->_type = JsonObj::SUBOBJ;
+			jsonLexer.popToken();
 			break ;
 		}
 		default:
@@ -217,6 +222,55 @@ T const&	JsonObj::getValue(void) const
 		default:
 		{
 			throw std::runtime_error("JsonObj has unknown or invalid type : Cannot get value");
+		}
+	}
+}
+
+void	JsonObj::print(std::ostream& out) const
+{
+	switch (this->_type)
+	{
+		case INT:
+		{
+			out << this->_typeInt;
+			break ;
+		}
+		case BOOL:
+		{
+			out << this->_typeBool;
+			break ;
+		}
+		case STRING:
+		{
+			out << this->_typeString;
+			break ;
+		}
+		case ARRAY:
+		{
+			out << "[";
+			for (std::vector<JsonObj>::const_iterator it = this->_typeArray.begin(); it != this->_typeArray.end(); ++it)
+			{
+				it->print(out);
+				out << ",";
+			}
+			out << "]";
+			break ;
+		}
+		case SUBOBJ:
+		{
+			out << "{";
+			for (std::map<std::string, JsonObj>::const_iterator it = this->_typeSubObj.begin(); it != this->_typeSubObj.end(); ++it)
+			{
+				out << std::endl;
+				out << it->first << " : ";
+				it->second.print(out);
+			}
+			out << "}";
+			break ;
+		}
+		default:
+		{
+			out << "Unknown JsonObj type";
 		}
 	}
 }

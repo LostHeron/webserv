@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
+#    By: cviel <cviel@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/01 16:54:22 by jweber            #+#    #+#              #
-#    Updated: 2026/04/13 15:27:54 by jweber           ###   ########.fr        #
+#    Updated: 2026/04/13 18:21:52 by cviel            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,9 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFD_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONLEXER_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONOBJ_DIR) \
+
 
 AFD_DIR := AFd/
 AFD_FILES := AFd.cpp \
@@ -31,21 +34,31 @@ EPOLLSTRUCT_FILES := EpollStruct.cpp \
 SERVER_DIR := Server/
 SERVER_FILES := Server.cpp \
 
+JSONLEXER_DIR := JsonLexer/
+JSONLEXER_FILES := JsonLexer.cpp
+
+JSONOBJ_DIR := JsonObj/
+JSONOBJ_FILES := JsonObj.cpp
+
 CLASSES_DIR := classes/
 CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
 				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
 				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
-
+				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
+				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
 
 SOCKETS_DIR := sockets/
 SOCKETS_FILES := CreateFd.cpp \
 				 start.cpp \
 
+CONFIGFILE_DIR := config_file/
+CONFIGFILE_FILES := setup.cpp \
 
 SRCS_DIR := sources/
 SRCS_FILES := webserv.cpp \
 			  $(addprefix $(SOCKETS_DIR), $(SOCKETS_FILES)) \
+			  $(addprefix $(CONFIGFILE_DIR), $(CONFIGFILE_FILES)) \
 			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES)) \
 
 SRCS_FILES := $(addprefix $(SRCS_DIR), $(SRCS_FILES))

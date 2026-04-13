@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 15:55:00 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 16:52:44 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/13 17:41:03 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 # define __JSONOBJ_HPP__
 
 #include <string>
-#include <array>
 #include <vector>
 #include <map>
+#include <ostream>
 #include "JsonLexer.hpp"
 
 class JsonObj
@@ -42,6 +42,7 @@ class JsonObj
 		e_jsonType			getType(void) const;
 		template <typename T>
 		T const&			getValue(void) const;
+		void				print(std::ostream& out) const;
 	
 	private:
 
@@ -53,9 +54,6 @@ class JsonObj
 		std::map<std::string, JsonObj>	_typeSubObj;
 
 		JsonObj(void);
-		
-		void	setValue(JsonLexer& jsonLexer);
-
 };
 
 #endif

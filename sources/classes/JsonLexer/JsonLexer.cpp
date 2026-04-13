@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:25:08 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 16:32:39 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/13 18:44:25 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,10 @@ JsonLexer::JsonLexer(std::string const& input)
 			case '"':
 			{
 				new_token.type = STRING;
+				++i;
 				while (i < input.size() && input[i] != '"')
 				{
-					if (input[i] != '\\')
+					if (input[i] == '\\')
 						++i;
 					if (i < input.size())
 						new_token.value.push_back(input[i]);
@@ -71,7 +72,6 @@ JsonLexer::JsonLexer(std::string const& input)
 				}
 				if (i >= input.size())
 					throw std::invalid_argument("Invalid argument : missing closing quotes at \"" + input.substr(input.rfind('"', i), 10) + "...\"");
-				++i;
 				break ;
 			}
 			default:
