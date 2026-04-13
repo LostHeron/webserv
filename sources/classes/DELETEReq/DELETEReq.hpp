@@ -1,28 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IMessage.ipp                                       :+:      :+:    :+:   */
+/*   DELETEReq.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 19:18:28 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 19:29:32 by abetemps         ###   ########.fr       */
+/*   Created: 2026/04/01 19:44:47 by abetemps          #+#    #+#             */
+/*   Updated: 2026/04/13 13:43:09 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		__IMESSAGE_IPP__
-# define	__IMESSAGE_IPP__
+#ifndef		__DELETEREQ_HPP__
+# define	__DELETEREQ_HPP__
 
-# include <string>
+# include "ARequest.hpp"
 
-class	IMessage
+class	DELETEReq: public ARequest // only DELETE ?
 {
 	public:
-		virtual ~IMessage(void) {};
+		DELETEReq(void);
+		DELETEReq(const DELETEReq &cpy);
+		~DELETEReq(void);
 
-		virtual const std::string		&getMessage(void) const = 0;
-		virtual const std::string		&getSender(void) const = 0;
-		virtual const std::string		&getTarget(void) const = 0;
+		// DELETEReq		&operator=(const DELETEReq &assign);
+
+		void		execute(void);
 };
 
 #endif

@@ -25,11 +25,15 @@ class	ARequest: public AMessage
 
 		ARequest			&operator=(const ARequest &assign);
 
-		virtual const void	execute(void) = 0;
+		virtual void		execute(void) = 0;
 
-		const uint8_t		&getType(void) const;
+		const std::string	&getType(void) const;
 		const std::string	&getHeader(void) const;
 		const std::string	&getBody(void) const;
+
+		void	setType(const std::string &type);
+		void	setHeader(const std::string &header);
+		void	setBody(const std::string &body);
 
 		enum				e_reqType
 		{
@@ -41,9 +45,9 @@ class	ARequest: public AMessage
 		};
 
 	protected:
-		const uint8_t		_type;
-		const std::string	_header;
-		const std::string	_body;
+		std::string		_type;
+		std::string		_header;
+		std::string		_body;
 };
 
 #endif

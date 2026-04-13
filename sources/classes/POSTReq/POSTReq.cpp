@@ -1,17 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   AFactory.cpp                                       :+:      :+:    :+:   */
+/*   POSTReq.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/10 17:29:02 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/13 18:06:53 by abetemps         ###   ########.fr       */
+/*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
+/*   Updated: 2026/04/13 17:39:47 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "AFactory.hpp"
+#include "POSTReq.hpp"
 
-// Constructors/Destructors ====================================================
+// Constructors/Destructor =====================================================
+POSTReq::POSTReq(const uint8_t &type, const std::string &header, const std::string &body):
+	ARequest(type, header, body) {}
+
+POSTReq::POSTReq(const POSTReq &cpy):
+	ARequest(cpy) {}
+
+POSTReq::~POSTReq(void) {}
 
 // Member functions ============================================================
+void	POSTReq::execute(void)
+{
+	std::cout << "I AM A POST REQUEST!" << std::endl;
+}

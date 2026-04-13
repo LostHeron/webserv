@@ -10,28 +10,51 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "RequestFactory.hpp"
 #include <iostream>
 
 int	main(void)
 {
-	// some function to read info from config file
-	// that would return a structure containing necessary information
-	
-	Server server;
-	server.activate();
-	if (server.fail())
+	RequestFactory facto;
+
+	std::string message;
+	std::string target;
+	std::string sender;
+
+	std::string type;
+	std::string header;
+	std::string body;
+
+	ARequest *req;
+
+	while (1)
 	{
-		std::cerr << "could not launch server\n";
-		return (1);
-	}
-	else
-	{
-		std::cout << "server successfully launched\n";
-		int	a;
-		std::cin >> a;
+		// filling
+		std::cout << "type: ";
+		std::cin >> type;
+		std::cout << std::endl << "header: ";
+		std::cin >> header;
+		std::cout << std::endl << "body: ";
+		std::cin >> body;
+		std::cout << std::endl;
+
+		facto.setMessage(type + "/-/" + header + "/-/" + body + "\n");
+		facto.setTarget("COCO");
+		facto.setSender("JULES");
+		facto.setType(type);
+		facto.setHeader(header);
+		facto.setBody(body);
+		
+		// building
+		req = facto.createElement();
+
+
+		// testing
+		if (!req)
+			continue;
+		req->execute();
+		delete req;
 	}
 	return (0);
 }
-
 

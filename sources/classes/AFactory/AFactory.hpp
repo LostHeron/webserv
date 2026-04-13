@@ -13,31 +13,34 @@
 #ifndef		__AFACTORY_HPP__
 # define	__AFACTORY_HPP__
 
+# include <stdint.h>
+# include <iostream>
+
 template	<class ABase>
-class		AFactory
+class		AFactory: public ABase
 {
 	public:
+		AFactory(void);
+		AFactory(const AFactory<ABase> &cpy);
 		virtual ~AFactory(void);
 
-		ABase								*createElement(void) const;
-	                            		
-	protected:                  		
-		typedef ABase						*(*_constructor)(void);
-		typedef uint8_t						(*_test)(void);
+		ABase					*createElement(void) const;
+	                        
+	protected:              
+		typedef ABase			*(*_constructor)(void);
+		typedef uint8_t			(*_test)(void);
 
-		virtual uint8_t						_determineElement(void) const = 0;
-		void								_runTests(void);
-                                		
-		template							<class CDerived>
-		virtual ABase						*_newElement(void) = 0;
+		virtual ABase			*_newElement(void) const = 0;
+		virtual uint8_t			_determineElement(void) const = 0;
+		void					_runTests(void);
 
-		virtual static const _constructor	_constructorsArray[];
-		virtual static const _test			_testsArray[];
-		virtual const unsigned int			_testsQty;
-		uint16_t							_testsStatus;
+		static _constructor		_constructorsArray[];
+		static _test			_testsArray[];
+		const unsigned int		_testsQty;
+		uint16_t				_testsStatus;
 
 
-}
+};
 
 # include "AFactory.tpp"
 

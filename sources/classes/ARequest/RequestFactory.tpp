@@ -1,30 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   GETReq.hpp                                         :+:      :+:    :+:   */
+/*   RequestFactory.tpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 19:44:47 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 19:49:05 by abetemps         ###   ########.fr       */
+/*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
+/*   Updated: 2026/04/13 18:08:07 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		__GETREQ_HPP__
-# define	__GETREQ_HPP__
+#ifndef		__REQUESTFACTORY_TPP__
+# define	__REQUESTFACTORY_TPP__
 
-# include "ARequest.hpp"
-
-class	GETReq: public ARequest // only GET ?
+template		<class Derived>
+ARequest		*RequestFactory::_newElement(void) const
 {
-	public:
-		GETReq(void);
-		GETReq(const GETReq &cpy);
-		~GETReq(void);
+	return (new Derived(this->_type, this->_header, this->_body));
+}
 
-		// GETReq		&operator=(const GETReq &assign);
-
-		void		execute(void);
-};
 
 #endif

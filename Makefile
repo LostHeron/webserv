@@ -19,26 +19,56 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFD_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFACTORY_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(GETREQ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(POSTREQ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(DELETEREQ_DIR) \
 
-AFD_DIR := AFd/
-AFD_FILES := AFd.cpp \
-			ListenFd.cpp \
-			IOFd.cpp \
+AMESSAGE_DIR := 	AMessage/
+AMESSAGE_FILES := 	AMessage.cpp \
 
-LISTEN_DIR := Listen/
-LISTEN_FILES := Listen.cpp \
+AFACTORY_DIR := 	AFactory/
+AFACTORY_FILES := 	AFactory.cpp \
 
-EPOLLSTRUCT_DIR := EpollStruct/
-EPOLLSTRUCT_FILES := EpollStruct.cpp \
+GETREQ_DIR := 		GETReq/
+GETREQ_FILES := 	GETReq.cpp \
 
-SERVER_DIR := Server/
-SERVER_FILES := Server.cpp \
+DELETEREQ_DIR := 		DELETEReq/
+DELETEREQ_FILES := 		DELETEReq.cpp \
+
+POSTREQ_DIR := 		POSTReq/
+POSTREQ_FILES := 	POSTReq.cpp \
+
+# AFD_DIR := 		AFd/
+# AFD_FILES := 	AFd.cpp \
+				ListenFd.cpp \
+				IOFd.cpp \
+
+# LISTEN_DIR := 	Listen/
+# LISTEN_FILES :=	Listen.cpp \
+#
+# EPOLLSTRUCT_DIR := EpollStruct/
+# EPOLLSTRUCT_FILES := EpollStruct.cpp \
+#
+# SERVER_DIR := Server/
+# SERVER_FILES := Server.cpp \
+
+REQUEST_DIR := ARequest/
+REQUEST_FILES := ARequest.cpp \
+				 RequestFactory.cpp \
 
 CLASSES_DIR := classes/
-CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
-				 $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
-				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
-				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
+CLASSES_FILES :=  	$(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
+					$(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
+					$(addprefix $(GETREQ_DIR), $(GETREQ_FILES)) \
+					$(addprefix $(POSTREQ_DIR), $(POSTREQ_FILES)) \
+					$(addprefix $(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
+					# $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
+					# $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
+					# $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
+					# $(addprefix $(AFD_DIR), $(AFD_FILES)) \
 
 
 SRCS_DIR := sources/

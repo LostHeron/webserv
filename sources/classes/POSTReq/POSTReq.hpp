@@ -1,28 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   GETReq.hpp                                         :+:      :+:    :+:   */
+/*   POSTReq.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:47 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 19:49:05 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/13 13:42:41 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		__GETREQ_HPP__
-# define	__GETREQ_HPP__
+#ifndef		__POSTREQ_HPP__
+# define	__POSTREQ_HPP__
 
 # include "ARequest.hpp"
 
-class	GETReq: public ARequest // only GET ?
+class	POSTReq: public ARequest // only POST ?
 {
 	public:
-		GETReq(void);
-		GETReq(const GETReq &cpy);
-		~GETReq(void);
+		POSTReq(void);
+		POSTReq(const POSTReq &cpy);
+		~POSTReq(void);
 
-		// GETReq		&operator=(const GETReq &assign);
+		// POSTReq		&operator=(const POSTReq &assign);
 
 		void		execute(void);
 };

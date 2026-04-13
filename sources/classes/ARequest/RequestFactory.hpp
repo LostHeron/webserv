@@ -14,14 +14,13 @@
 # define	__REQUESTFACTORY_HPP__
 
 # include "AFactory.hpp"
+# include "ARequest.hpp"
 
 # include "GETReq.hpp"
 # include "POSTReq.hpp"
 # include "DELETEReq.hpp"
 
-class	RequestFactory:
-	public ARequest,
-	public AFactory<ARequest>
+class	RequestFactory: public AFactory<ARequest>
 {
 	public:
 		RequestFactory(void);
@@ -30,7 +29,13 @@ class	RequestFactory:
 
 		RequestFactory	&operator=(const RequestFactory &assign);
 
+		void		execute(void);
+
 	private:
+
+		ARequest	*_newElement(void) const;
+		uint8_t		_determineElement(void) const;
+
 		enum			e_Tests
 		{
 			ISGET,
@@ -39,6 +44,7 @@ class	RequestFactory:
 			CHECKHEADER,
 			CHECKBODY,
 		};
+
 		uint8_t			_isGet(void) const;
 		uint8_t			_isPost(void) const;
 		uint8_t			_isDelete(void) const;
@@ -46,5 +52,7 @@ class	RequestFactory:
 		uint8_t			_checkBody(void) const;
 	
 };
+
+# include "RequestFactory.tpp"
 
 #endif

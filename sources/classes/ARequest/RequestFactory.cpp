@@ -6,21 +6,21 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/10 18:01:23 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/13 18:10:11 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RequestFactory.hpp"
 
 // Static init =================================================================
-const	AFactory<ARequest>::_constructorsArray[TYPES_QTY] =
+AFactory<ARequest>::_constructorsArray[TYPES_QTY] =
 {
-	&AFactory::newElement<GETReq>,
-	&AFactory::newElement<POSTReq>,
-	&AFactory::newElement<DELETEReq>
+	&newElement<GETReq>,
+	&newElement<POSTReq>,
+	&newElement<DELETEReq>
 };
 
-const	AFactory<ARequest>::_testsArray[] =
+AFactory<ARequest>::_testsArray[] =
 {
 	&_isGet,
 	&_isPost,
@@ -32,16 +32,10 @@ const	AFactory<ARequest>::_testsArray[] =
 
 // Constructors/Destructor =====================================================
 RequestFactory::RequestFactory(void):
-	_type(UNKNOWN),
-	_header(0),
-	_body(0),
-	_testsStatus(0) {}
+	AFactory<ARequest>() {}
 
 RequestFactory::RequestFactory(const RequestFactory &cpy):
-	_type(cpy._type),
-	_header(cpy._header),
-	_body(cpy._body),
-	_testsStatus(cpy._testsStatus) {}
+	AFactory<ARequest>(cpy) {}
 
 RequestFactory::~RequestFactory(void) {}
 
@@ -51,11 +45,10 @@ RequestFactory	&RequestFactory::operator=(const RequestFactory &assign) { (void)
 
 
 // Member functions =============================================================
-template		<class T>
-ARequest		*RequestFactory::_newElement(void)
+void			RequestFactory::execute(void)
 {
-	return (new T(this->_type, this->_header, this->_body));
-};
+	std::cout << "Cannot execute Factory class." << std::endl;
+}
 
 uint8_t			RequestFactory::determineElement(void) const
 {

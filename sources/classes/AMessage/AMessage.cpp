@@ -11,6 +11,28 @@
 /* ************************************************************************** */
 
 #include "AMessage.hpp"
+// Constructors/Destructors ====================================================
+AMessage::AMessage(void):
+	_message(0),
+	_target(0),
+	_sender(0) {}
+
+AMessage::AMessage(const std::string &message, const std::string &target, const std::string &sender):
+	_message(message),
+	_target(target),
+	_sender(sender) {}
+
+AMessage::AMessage(const AMessage &cpy):
+	_message(cpy._message),
+	_target(cpy._target),
+	_sender(cpy._sender) {}
+
+AMessage::~AMessage(void) {}
+
+// Setters =====================================================================
+void	AMessage::setMessage(const std::string &message)	{ this->_message = message; }
+void	AMessage::setSender(const std::string &sender) 		{ this->_sender = sender; }
+void	AMessage::setTarget(const std::string &target) 		{ this->_target = target; }
 
 // Getters =====================================================================
 const std::string	&AMessage::getMessage(void) const	{ return(this->_message); }
