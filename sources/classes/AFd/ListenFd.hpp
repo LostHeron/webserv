@@ -14,6 +14,7 @@
 # define LISTENFD_HPP
 
 #include "AFd.hpp"
+#include "Server.hpp"
 #include <cstring>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -21,7 +22,7 @@
 class ListenFd: public AFd
 {
 	public:
-		ListenFd(uint32_t address, uint16_t port);
+		ListenFd(uint32_t address, uint16_t port, Server& server);
 		~ListenFd();
 
 		void	process();

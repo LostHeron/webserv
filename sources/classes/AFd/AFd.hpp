@@ -18,7 +18,7 @@
 class AFd
 {
 	public:
-		AFd();
+		AFd(Server& server);
 		virtual ~AFd();
 
 		int	getFd();
@@ -28,6 +28,7 @@ class AFd
 
 	protected:
 		int		fd;
+		Server&	server;
 
 	private:
 		AFd(const AFd& other);

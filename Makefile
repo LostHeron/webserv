@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/01 16:54:22 by jweber            #+#    #+#              #
-#    Updated: 2026/04/13 13:39:59 by jweber           ###   ########.fr        #
+#    Updated: 2026/04/13 15:27:54 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,6 +40,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 
 SOCKETS_DIR := sockets/
 SOCKETS_FILES := CreateFd.cpp \
+				 start.cpp \
 
 
 SRCS_DIR := sources/

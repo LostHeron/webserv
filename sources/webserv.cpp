@@ -6,12 +6,14 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 13:44:02 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/13 15:19:43 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
+#include "sockets.hpp"
 #include <iostream>
+#include "unistd.h"
 
 int	main(void)
 {
@@ -24,11 +26,6 @@ int	main(void)
 		std::cerr << "could not launch server\n";
 		return (1);
 	}
-	else
-	{
-		std::cout << "server successfully launched\n";
-		int	a;
-		std::cin >> a;
-	}
+	start(server);
 	return (0);
 }

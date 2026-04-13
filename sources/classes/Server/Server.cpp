@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 13:54:04 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/13 15:23:01 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,9 @@ void	Server::add(AFd* fd)
 {
 	this->epoll.add(fd);
 	this->sockets.push_back(fd);
+}
+
+int	Server::getEfd()
+{
+	return (this->epoll.getFd());
 }

@@ -23,14 +23,17 @@ void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 {
 	try
 	{
-		ListenFd* fd = new ListenFd(port, addr);
+		ListenFd* fd = new ListenFd(port, addr, server);
 		fd->activate();
 		if (fd->fail())
 		{
 			server.setFailure(FAILURE);
 			delete fd;
 		}
-		server.add(fd);
+		else
+		{
+			server.add(fd);
+		}
 	}
 	catch (std::exception& e)
 	{
@@ -43,7 +46,7 @@ void	CreateFd(int fd, Server& server)
 {
 	try
 	{
-		IOFd * new_fd = new IOFd(fd);
+		IOFd * new_fd = new IOFd(fd, server);
 		server.add(new_fd);
 	}
 	catch (std::exception& e)

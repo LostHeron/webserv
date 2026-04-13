@@ -11,8 +11,10 @@
 /* ************************************************************************** */
 
 #include "AFd.hpp"
+#include "Server.hpp"
 
-AFd::AFd()
+AFd::AFd(Server& server):
+	server(server)
 {
 }
 

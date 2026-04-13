@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "ListenFd.hpp"
+#include "AFd.hpp"
+#include "Server.hpp"
+#include "sockets.hpp"
 #include "status.hpp"
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -20,7 +23,8 @@
 #include <iostream>
 #include <cerrno>
 
-ListenFd::ListenFd(uint32_t address, uint16_t port)
+ListenFd::ListenFd(uint32_t address, uint16_t port, Server& server):
+	AFd(server)
 {
 	this->status = SUCCESS;
 
@@ -41,24 +45,39 @@ ListenFd::ListenFd(uint32_t address, uint16_t port)
 
 ListenFd::~ListenFd()
 {
-	close(this->fd);
 }
 
 void	ListenFd::process()
 {
-	struct sockaddr_in	peer_addr;
-	socklen_t			peer_addr_len;
-	int	peer_fd = accept(this->fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
+	// ok and here should do stuff with the fd,
+	// and read data and start parsing request
+	int						peer_fd;
+	struct sockaddr_storage peer_addr;
+	socklen_t				peer_addr_len;
+
+	peer_fd = accept(this->fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
 	if (peer_fd < 0)
 	{
-		this->status = FAILURE;
-		return;
+		std::string error_msg(strerror(errno));
+		std::cerr << "epoll_wait: " << error_msg << "\n";
 	}
-	// and here should call the factory to create a new AFd* that should be put inside 
-	// the vector of AFd* in the server class,
-	// but also add it to the epoll instance !
-	// hm so does my epoll instance should be in the AFd* ?
-	// nope but there's stuff to think about !
+	else
+	{
+		std::cout << "a connection was accepted\n";
+		// and here should also do stuff like CreateFD
+		// and that's here i need my server !!
+		// to add the newly created IOFd
+		// but not smart to add it to the process argument
+		// because process
+		// is part of abstract class
+		// and and in the IOFd process, no need for a 'Server'
+		// args in the process function
+	}
+	CreateFd(peer_fd, this->server);
+	if (this->server.fail())
+	{
+		std::cout << "an error happened while processing new incoming connection\n";
+	}
 }
 
 void	ListenFd::activate()
