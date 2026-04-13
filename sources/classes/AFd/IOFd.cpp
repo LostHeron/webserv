@@ -11,12 +11,10 @@
 /* ************************************************************************** */
 
 #include "IOFd.hpp"
-#include "AFd.hpp"
 #include "status.hpp"
 #include <unistd.h>
 
-IOFd::IOFd(int fd, Server& server):
-	AFd(server)
+IOFd::IOFd(int fd)
 {
 	this->fd = fd;
 }

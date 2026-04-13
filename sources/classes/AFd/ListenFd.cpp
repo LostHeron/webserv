@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "ListenFd.hpp"
-#include "AFd.hpp"
 #include "status.hpp"
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -21,8 +20,7 @@
 #include <iostream>
 #include <cerrno>
 
-ListenFd::ListenFd(uint32_t address, uint16_t port, Server& server):
-	AFd(server)
+ListenFd::ListenFd(uint32_t address, uint16_t port)
 {
 	this->status = SUCCESS;
 

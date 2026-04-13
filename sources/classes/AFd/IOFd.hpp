@@ -19,7 +19,7 @@
 class IOFd: public AFd
 {
 	public:
-		IOFd(int fd, Server& server);
+		IOFd(int fd);
 		~IOFd();
 
 		void	process();

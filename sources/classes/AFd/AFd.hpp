@@ -18,7 +18,7 @@
 class AFd
 {
 	public:
-		AFd(Server& other);
+		AFd();
 		virtual ~AFd();
 
 		int	getFd();
@@ -27,11 +27,9 @@ class AFd
 		virtual	bool	fail() = 0;
 
 	protected:
-		Server&	server;
 		int		fd;
 
 	private:
-		AFd();
 		AFd(const AFd& other);
 		AFd& operator=(const AFd& other);
 };

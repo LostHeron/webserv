@@ -21,7 +21,7 @@
 class ListenFd: public AFd
 {
 	public:
-		ListenFd(uint32_t address, uint16_t port, Server& server);
+		ListenFd(uint32_t address, uint16_t port);
 		~ListenFd();
 
 		void	process();

@@ -19,14 +19,11 @@
 #include <exception>
 #include <iostream>
 
-#define LISTEN_FD 1
-#define IO_FD 2
-
 void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 {
 	try
 	{
-		ListenFd* fd = new ListenFd(port, addr, server);
+		ListenFd* fd = new ListenFd(port, addr);
 		fd->activate();
 		if (fd->fail())
 		{
@@ -46,7 +43,7 @@ void	CreateFd(int fd, Server& server)
 {
 	try
 	{
-		IOFd * new_fd = new IOFd(fd, server);
+		IOFd * new_fd = new IOFd(fd);
 		server.add(new_fd);
 	}
 	catch (std::exception& e)

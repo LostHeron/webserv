@@ -12,8 +12,7 @@
 
 #include "AFd.hpp"
 
-AFd::AFd(Server& other):
-	server(other)
+AFd::AFd()
 {
 }
 
