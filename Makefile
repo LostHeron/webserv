@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/04/01 16:54:22 by jweber            #+#    #+#              #
-#    Updated: 2026/04/13 15:27:54 by jweber           ###   ########.fr        #
+#    Updated: 2026/04/15 10:22:23 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,9 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
 
 
+SIGNALS_HANDLING_DIR := signals/
+SIGNALS_HANDLING_FILES := setup_signals.cpp \
+
 SOCKETS_DIR := sockets/
 SOCKETS_FILES := CreateFd.cpp \
 				 start.cpp \
@@ -46,6 +49,7 @@ SOCKETS_FILES := CreateFd.cpp \
 SRCS_DIR := sources/
 SRCS_FILES := webserv.cpp \
 			  $(addprefix $(SOCKETS_DIR), $(SOCKETS_FILES)) \
+			  $(addprefix $(SIGNALS_HANDLING_DIR), $(SIGNALS_HANDLING_FILES)) \
 			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES)) \
 
 SRCS_FILES := $(addprefix $(SRCS_DIR), $(SRCS_FILES))

@@ -1,21 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   status.hpp                                         :+:      :+:    :+:   */
+/*   signals_handling.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/09 11:36:00 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/09 11:36:29 by jweber           ###   ########.fr       */
+/*   Created: 2026/04/15 10:18:24 by jweber            #+#    #+#             */
+/*   Updated: 2026/04/15 10:20:42 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STATUS
-# define STATUS
+#ifndef SIGNALS_HANDLING_HPP
+# define SIGNALS_HANDLING_HPP
 
-# define SUCCESS 0
-# define FAILURE 1
-
-extern int run;
+int	setup_signals();
 
 #endif
