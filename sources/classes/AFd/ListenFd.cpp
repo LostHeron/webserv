@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:31 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 13:42:06 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/15 18:36:20 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Server.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
+#include <cstring>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -22,18 +23,23 @@
 #include <string>
 #include <iostream>
 #include <cerrno>
+#include <fcntl.h>
 
 ListenFd::ListenFd(uint32_t address, uint16_t port, Server& server):
 	AFd(server)
 {
-	this->status = SUCCESS;
-
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->fd < 0)
 	{
 		// socket creation !
 		std::string error_msg(strerror(errno));
 		std::cerr << "socket: " << error_msg << "\n";
+		this->status = FAILURE;
+	}
+	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	{
+		std::string error_msg(strerror(errno));
+		std::cerr << "fcntl: " << error_msg << "\n";
 		this->status = FAILURE;
 	}
 
@@ -55,29 +61,25 @@ void	ListenFd::process()
 	struct sockaddr_storage peer_addr;
 	socklen_t				peer_addr_len;
 
-	peer_fd = accept(this->fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
-	if (peer_fd < 0)
+	std::memset(&peer_addr, 0, sizeof(peer_addr));
+	std::memset(&peer_addr_len, 0, sizeof(peer_addr_len));
+	do 
 	{
-		std::string error_msg(strerror(errno));
-		std::cerr << "epoll_wait: " << error_msg << "\n";
-	}
-	else
-	{
+		peer_fd = accept(this->fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
+		if (peer_fd < 0)
+			break;
 		std::cout << "a connection was accepted\n";
-		// and here should also do stuff like CreateFD
-		// and that's here i need my server !!
-		// to add the newly created IOFd
-		// but not smart to add it to the process argument
-		// because process
-		// is part of abstract class
-		// and and in the IOFd process, no need for a 'Server'
-		// args in the process function
+
+		CreateFd(peer_fd, this->server);
+
+		if (this->server.fail())
+		{
+			std::cout << "an error happened while processing new incoming connection\n";
+			return ;
+		}
 	}
-	CreateFd(peer_fd, this->server);
-	if (this->server.fail())
-	{
-		std::cout << "an error happened while processing new incoming connection\n";
-	}
+	while (peer_fd >= 0);
+	return ;
 }
 
 void	ListenFd::activate()
@@ -101,13 +103,4 @@ void	ListenFd::activate()
 		this->status = FAILURE;
 		return ;
 	}
-}
-
-
-bool	ListenFd::fail()
-{
-	if (this->status != SUCCESS)
-		return (true);
-	else
-		return (false);
 }
