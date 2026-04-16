@@ -159,20 +159,23 @@ void	IOFd::process_version(std::string& str, size_t pos)
 	if (delim == str.npos)
 	{
 		this->version.append(str, pos, str.size() - pos);
-		// check validiry of header
+		//	if (version invalid)
+		//		return (send_bad_request(this->fd, this->status));
 	}
 	else
 	{
-		this->version.append(str, pos, delim - pos);
+		size_t	until;
+		if (str[delim] == '\r')
+			until = delim + 2;
+		else
+			until = delim + 1;
+		this->version.append(str, pos, until - pos);
 		//	if (version invalid)
 		//		return (send_bad_request(this->fd, this->status));
 		//	else
 		//	{
 			this->state++;
-			if (str[delim] == '\r')
-				(this->*process_functions[this->state])(str, delim + 2);
-			else
-				(this->*process_functions[this->state])(str, delim + 1);
+			(this->*process_functions[this->state])(str, until);
 		//	}
 
 	}
@@ -181,8 +184,76 @@ void	IOFd::process_version(std::string& str, size_t pos)
 void	IOFd::process_header(std::string& str, size_t pos)
 {
 	std::cout << "in process header\n";
-	(void) str;
-	(void) pos;
+	size_t	crlf ;
+	size_t	lf;
+	size_t	delim;
+	size_t	until;
+
+	while (pos < str.size())
+	{
+		crlf = str.find("\r\n", pos);
+		lf = str.find("\n", pos);
+		delim = std::min(crlf, lf);
+		if (delim == str.npos) // no \r\n
+			until = str.size();
+		else if (delim == pos)
+		{
+			//here we have a delim at begin,
+			// we need to check if previous last char
+			// stored is also a new line and if so,
+			// next data must go into the body section
+			if (header.size() == 0)
+			{
+				// does it instantly means we are go in the body ??
+				// if (header not valid)
+			// {
+			//		do stuff;
+			// }
+				this->state++;
+				(this->*process_functions[this->state])(str, pos);
+				return;
+			}
+			else
+			{
+				std::string& last_line = this->header[this->header.size() - 1];
+				if (last_line == "" ||
+					last_line[last_line.size() - 1] != '\n')
+				{
+					if (str[delim] == '\r')
+						until = delim + 2;
+					else
+						until = delim + 1;
+				}
+				else
+				{
+					this->state++;
+					(this->*process_functions[this->state])(str, pos);
+					return;
+				}
+			}
+		}
+		else
+		{
+			if (str[delim] == '\r')
+				until = delim + 2;
+			else
+				until = delim + 1;
+		}
+		if (header.size() == 0)
+			this->header.push_back(std::string(str, pos, until - pos));
+		else
+		{
+			std::string& last_line = this->header[this->header.size() - 1];
+			if (last_line.size() == 0 ||
+				last_line[last_line.size() - 1] != '\n')
+				last_line.append(str, pos, until - pos);
+			else
+			{
+				this->header.push_back(std::string(str, pos, until - pos));
+			}
+		}
+		pos = until;
+	}
 }
 
 
@@ -224,6 +295,13 @@ std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 	os << "method: '" << iofd.method << "'; ";
 	os << "uri: '" << iofd.uri << "'; ";
 	os << "version: '" << iofd.version << "'; ";
+	os << "\n----------------------\n";
+	os << "headerlines:\n";
+	for (size_t i = 0; i < iofd.header.size(); i++)
+	{
+		os << iofd.header[i];
+	}
+	os << "\n----------------------\n";
 	os << "\n";
 	return (os);
 }
