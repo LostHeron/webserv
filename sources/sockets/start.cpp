@@ -27,6 +27,7 @@
 void	start(Server& server)
 {
 	struct epoll_event events[EVENT_SIZE];
+	std::cout << "server is now running waiting for events\n";
 	while (run != 0)
 	{
 		int nb_events = epoll_wait(server.getEfd(), events, EVENT_SIZE, -1);

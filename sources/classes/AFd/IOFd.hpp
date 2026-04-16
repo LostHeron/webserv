@@ -15,17 +15,20 @@
 
 # include "AFd.hpp"
 # include "Server.hpp"
-#include <ostream>
+# include <ostream>
 # include <vector>
 # include <string>
+# include <stdint.h>
 
 # define IOFD_MAX_SIZE 2049
+
 
 class IOFd: public AFd
 {
 	public:
 		friend std::ostream& operator<<(std::ostream& os, const IOFd& iofd);
-		IOFd(int fd, Server& server);
+		IOFd(int fd, const struct sockaddr_in& addr, Server& server);
+		
 		~IOFd();
 
 		void	process();
@@ -42,17 +45,22 @@ class IOFd: public AFd
 		// method until white space are encoutered
 		enum States {
 			METHOD,
+			SKIP_SP1,
 			URI,
+			SKIP_SP2,
 			VERSION,
 			HEADER,
 			BODY,
 			DISCARD,
 		};
 
-		void (IOFd::*process_functions[6])(std::string& buf, size_t pos);
+		void (IOFd::*process_functions[10])(std::string& buf, size_t pos);
 
 		// used to know which state the program is in
 		int state;	
+
+		uint16_t	port;
+		uint8_t		addr[4];
 
 		// identify which method the client tries to reach
 		std::string									method;
@@ -69,7 +77,7 @@ class IOFd: public AFd
 		// vector of vector of char, where vector of char
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
-		std::vector< std::vector<unsigned char> >	header;
+		std::vector< std::string >					header;
 		void										process_header(std::string&, size_t pos);
 
 		// body of the request, must be sur a 'content length' is present
@@ -82,6 +90,7 @@ class IOFd: public AFd
 		// if there's still data to process after having retrieved the entire
 		// body, server should close the connection with a bad request response
 		void										process_abort(std::string&, size_t pos);
+		void										process_skip_sp(std::string&, size_t pos);
 };
 
 

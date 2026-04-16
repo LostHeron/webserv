@@ -18,6 +18,7 @@
 #include "status.hpp"
 #include <cctype>
 #include <cstdio>
+#include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -27,22 +28,29 @@
 #include <iostream>
 
 
-IOFd::IOFd(int fd, Server& server):
+IOFd::IOFd(int fd, const struct sockaddr_in& addr, Server& server):
 	AFd(server),
 	state(0)
 {
+	this->port = ntohs(addr.sin_port);
+	uint32_t addrh = (addr.sin_addr.s_addr);
+	for (int i = 0; i < 4; i++)
+	{
+		this->addr[i] = ( reinterpret_cast<uint8_t *>(&addrh) )[i];
+	}
 	this->fd = fd;
 	IOFd::process_functions[0] = &IOFd::process_method;
-	IOFd::process_functions[1] = &IOFd::process_uri;
-	IOFd::process_functions[2] = &IOFd::process_version;
-	IOFd::process_functions[3] = &IOFd::process_header;
-	IOFd::process_functions[4] = &IOFd::process_body;
-	IOFd::process_functions[5] = &IOFd::process_abort;
+	IOFd::process_functions[1] = &IOFd::process_skip_sp;
+	IOFd::process_functions[2] = &IOFd::process_uri;
+	IOFd::process_functions[3] = &IOFd::process_skip_sp;
+	IOFd::process_functions[4] = &IOFd::process_version;
+	IOFd::process_functions[5] = &IOFd::process_header;
+	IOFd::process_functions[6] = &IOFd::process_body;
+	IOFd::process_functions[7] = &IOFd::process_abort;
 }
 
 IOFd::~IOFd()
 {
-	//close(this->fd);
 }
 
 void IOFd::process()
@@ -56,7 +64,8 @@ void IOFd::process()
 	}
 	else if (nb_read == 0)
 	{
-		this->server.remove(this);
+		this->status = FAILURE;
+		//this->server.remove(this);
 	}
 	else
 	{
@@ -68,45 +77,110 @@ void IOFd::process()
 	std::cout << *this << "\n";
 }
 
+void	send_bad_request(int fd, int& status)
+{
+	int ret = send(fd, ERROR_PAGE_400, sizeof(ERROR_PAGE_400), MSG_DONTWAIT | MSG_NOSIGNAL);
+	if (ret < 0)
+	{
+		std::cout << "error while sending error page back to client\n";
+	}
+	status = FAILURE;
+}
+
 void	IOFd::process_method(std::string& str, size_t pos)
 {
 	(void) pos; // this function should always be called with pos 
 	// being 0 !
-	size_t space_pos = str.find(' ');
+	size_t space_pos = str.find(' ', 0);
 	if (space_pos == str.npos)
 	{
-		// no space found adding everything in the 'method'
+		// no space found add: everything in the 'method' field
 		this->method.append(str);
 		if (this->method.size() > IOFD_MAX_SIZE ||
-			this->method.find_first_not_of(ABNF_UPPER))
+			this->method.find_first_not_of(ABNF_UPPER) != this->method.npos)
 		{
-			// here we detected an error
-			// we should send the 'BAD request response to the
-			// client, and then clear ressources for this connection
-			int ret = send(this->fd, ERROR_PAGE_400, sizeof(ERROR_PAGE_400), MSG_DONTWAIT | MSG_NOSIGNAL);
-			if (ret < 0)
-			{
-				std::cout << "error while sending error page back to client\n";
-			}
-			this->status = FAILURE;
+			// Error sending bad request
+			return (send_bad_request(this->fd, this->status));
+		}
+	}
+	else
+	{
+		this->method.append(str, pos, space_pos - pos);
+		if (this->method == "" ||
+			this->method.find_first_not_of(ABNF_UPPER) != this->method.npos ||
+			this->method.size() > IOFD_MAX_SIZE)
+		{
+			return (send_bad_request(this->fd, this->status));
+		}
+		else
+		{
+			// should go to step two !
+			// so is step two objectives to get URI
+			// or to skip SP anv HT ?
+			// et est ce qu'on est strict ou on est large ??
+			this->state++;
+			(this->*process_functions[this->state])(str, space_pos + 1);
 		}
 	}
 }
 
 void	IOFd::process_uri(std::string& str, size_t pos)
 {
-	(void) str;
-	(void) pos;
+	std::cout << "in process uri\n";
+	size_t space_pos = str.find(' ', pos);
+	if (space_pos == str.npos)
+	{
+		this->uri.append(str, pos, str.size() - pos);
+		// here should check that the uri contains only valid characters
+		// and that its size is valid!
+		if (this->uri.size() > IOFD_MAX_SIZE)
+			return (send_bad_request(this->fd, this->status));
+	}
+	else
+	{
+		this->uri.append(str, pos, space_pos - pos);
+		//	here should check that the uri is valid !
+		//	if (uri invalid)
+		//		return (send_bad_request(this->fd, this->status));
+		//	else
+		//	{
+			this->state++;
+			(this->*process_functions[this->state])(str, space_pos);
+		//	}
+	}
 }
 
 void	IOFd::process_version(std::string& str, size_t pos)
 {
-	(void) str;
-	(void) pos;
+	std::cout << "in process version\n";
+	size_t	crlf = str.find("\r\n", pos);
+	size_t	lf = str.find("\n", pos);
+	size_t	delim = std::min(crlf, lf);
+	if (delim == str.npos)
+	{
+		this->version.append(str, pos, str.size() - pos);
+		// check validiry of header
+	}
+	else
+	{
+		this->version.append(str, pos, delim - pos);
+		//	if (version invalid)
+		//		return (send_bad_request(this->fd, this->status));
+		//	else
+		//	{
+			this->state++;
+			if (str[delim] == '\r')
+				(this->*process_functions[this->state])(str, delim + 2);
+			else
+				(this->*process_functions[this->state])(str, delim + 1);
+		//	}
+
+	}
 }
 
 void	IOFd::process_header(std::string& str, size_t pos)
 {
+	std::cout << "in process header\n";
 	(void) str;
 	(void) pos;
 }
@@ -114,19 +188,42 @@ void	IOFd::process_header(std::string& str, size_t pos)
 
 void	IOFd::process_body(std::string& str, size_t pos)
 {
+	std::cout << "in process body\n";
 	(void) str;
 	(void) pos;
 }
 
 void	IOFd::process_abort(std::string& str, size_t pos)
 {
+	std::cout << "in process body\n";
 	(void) str;
 	(void) pos;
+}
+
+void	IOFd::process_skip_sp(std::string& str, size_t pos)
+{
+	std::cout << "in process skip spaces\n";
+	size_t	non_sp_pos = str.find_first_not_of(" ", pos);
+	if (non_sp_pos == str.npos)
+		return ;
+	this->state++;
+	(this->*process_functions[this->state])(str, non_sp_pos);
 }
 
 
 std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 {
-	os << "method: '" << iofd.method << "'\n";
+	os << "connection: ";
+	for (int i = 0; i < 4; i++)
+	{
+		os << static_cast<int>(iofd.addr[i]);
+		if (i != 3)
+			os << ".";
+	}
+	os << ":" << iofd.port << "; ";
+	os << "method: '" << iofd.method << "'; ";
+	os << "uri: '" << iofd.uri << "'; ";
+	os << "version: '" << iofd.version << "'; ";
+	os << "\n";
 	return (os);
 }

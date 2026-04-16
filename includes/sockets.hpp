@@ -16,7 +16,7 @@
 #include "Server.hpp"
 #include <stdint.h>
 
-void	CreateFd(int fd, Server& server);
+void	CreateFd(int fd, const struct sockaddr_in& addr, Server& server);
 void	CreateFd(uint16_t port, uint32_t addr, Server& server);
 void	start(Server& server);
 

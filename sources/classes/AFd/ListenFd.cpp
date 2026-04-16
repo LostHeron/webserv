@@ -15,6 +15,7 @@
 #include "Server.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
+#include <asm-generic/socket.h>
 #include <cstring>
 #include <sys/epoll.h>
 #include <unistd.h>
@@ -29,6 +30,15 @@ ListenFd::ListenFd(uint32_t address, uint16_t port, Server& server):
 	AFd(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	// to allow reusing the same port, should be disabled in prod ?
+	int	optval = 1;
+	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) < 0)
+	{
+		std::cerr << strerror(errno) << "\n";
+		std::cerr << "error occured will trying to set SO_REUSEPORT!\n";
+	}
+
 	if (this->fd < 0)
 	{
 		// socket creation !
@@ -58,19 +68,23 @@ void	ListenFd::process()
 	// ok and here should do stuff with the fd,
 	// and read data and start parsing request
 	int						peer_fd;
-	struct sockaddr_storage peer_addr;
+	struct sockaddr_in		peer_addr;
 	socklen_t				peer_addr_len;
 
-	std::memset(&peer_addr, 0, sizeof(peer_addr));
-	std::memset(&peer_addr_len, 0, sizeof(peer_addr_len));
 	do 
 	{
+		std::memset(&peer_addr, 0, sizeof(peer_addr));
+		peer_addr_len = sizeof(peer_addr);
 		peer_fd = accept(this->fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
+		if (peer_addr_len > sizeof(peer_addr))
+			std::cerr << "WARNING ! peer_addr_len > sizeof(peer_addr), "
+					"BUT THIS IS THE CASE HERE, SOMETHING WENT WRONG"
+					"AND WAS NOT EXPECTED!\n";
 		if (peer_fd < 0)
 			break;
 		std::cout << "a connection was accepted\n";
 
-		CreateFd(peer_fd, this->server);
+		CreateFd(peer_fd, peer_addr, this->server);
 
 		if (this->server.fail())
 		{

@@ -5,3 +5,4 @@ webserv
 *.obj*
 .gdb_history
 .cache/
+.gdbinit
