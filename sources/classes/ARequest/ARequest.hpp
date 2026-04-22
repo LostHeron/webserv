@@ -9,7 +9,6 @@
 /*   Updated: 2026/04/01 21:19:10 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #ifndef		__AREQUEST_HPP__
 # define	__AREQUEST_HPP__
 
@@ -19,7 +18,7 @@ class	ARequest: public AMessage
 {
 	public:
 		ARequest(void);
-		ARequest(const uint8_t &type, const std::string &header, const std::string &body);
+		ARequest(const std::string &type, const std::string &header, const std::string &body);
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 

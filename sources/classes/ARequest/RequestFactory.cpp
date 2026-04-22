@@ -6,29 +6,28 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/13 18:10:11 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/13 18:47:27 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RequestFactory.hpp"
 
 // Static init =================================================================
-AFactory<ARequest>::_constructorsArray[TYPES_QTY] =
+const AFactory<ARequest>::_constructor	RequestFactory::_constructorsArray[] =
 {
-	&newElement<GETReq>,
-	&newElement<POSTReq>,
-	&newElement<DELETEReq>
+	&RequestFactory::_newElement<GETReq>,
+	&RequestFactory::_newElement<POSTReq>,
+	&RequestFactory::_newElement<DELETEReq>
 };
 
-AFactory<ARequest>::_testsArray[] =
+const AFactory<ARequest>::_test			RequestFactory::_testsArray[] =
 {
-	&_isGet,
-	&_isPost,
-	&_isDelete,
-	&_checkHeader,
-	&_checkBody,
+	&RequestFactory::_isGet,
+	&RequestFactory::_isPost,
+	&RequestFactory::_isDelete,
+	&RequestFactory::_checkHeader,
+	&RequestFactory::_checkBody
 };
-
 
 // Constructors/Destructor =====================================================
 RequestFactory::RequestFactory(void):
@@ -44,31 +43,41 @@ RequestFactory::~RequestFactory(void) {}
 RequestFactory	&RequestFactory::operator=(const RequestFactory &assign) { (void) assign; return (*this); }
 
 
+// Getters ======================================================================
+const AFactory<ARequest>::_constructor		*RequestFactory::_getConstructors(void) const
+{
+	return (RequestFactory::_constructorsArray);
+}
+
+const AFactory<ARequest>::_test		*RequestFactory::_getTests(void) const
+{
+	return (RequestFactory::_testsArray);
+}
+
 // Member functions =============================================================
 void			RequestFactory::execute(void)
 {
 	std::cout << "Cannot execute Factory class." << std::endl;
 }
 
-uint8_t			RequestFactory::determineElement(void) const
+uint8_t			RequestFactory::_determineElement(void) const
 {
-
-	if (!this->_testsStatus & (1 << CHECKHEADER))
-		return (UNKNOWN);
+	if (!(this->_testsStatus & (1 << 3)))
+		return (4);
 
 	int	i;
 
-	for (i = 0; i < TYPE_QTY; ++i)
+	for (i = 0; i < 3; ++i)
 	{
 		if (this->_testsStatus & (1 << i))
 		{
-			if (i == ISPOST && this->_testsStatus & (1 << CHECKBODY))
+			if (i == 1 && (this->_testsStatus & (1 << 4)))
 				break;
 			else
-				return (UNKNOWN);
+				return (4);
 		}
-		else if (i == TYPES_QTY - 1  && !this->_testsStatus & (1 << i))
-			return (UNKNOWN);
+		else if (i == 3 - 1  && !(this->_testsStatus & (1 << i)))
+			return (4);
 	}
 	return (i);
 }

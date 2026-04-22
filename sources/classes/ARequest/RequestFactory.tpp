@@ -6,18 +6,22 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/13 18:08:07 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/13 18:42:03 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef		__REQUESTFACTORY_TPP__
 # define	__REQUESTFACTORY_TPP__
 
-template		<class Derived>
-ARequest		*RequestFactory::_newElement(void) const
+template	<class Derived>
+ARequest	*RequestFactory::_newElement(const ARequest &tmp)
 {
-	return (new Derived(this->_type, this->_header, this->_body));
+	return (new Derived(tmp.getType(), tmp.getHeader(), tmp.getBody()));
 }
 
+/*	std::autoptr
+ 	auto delete	
+	ownership transfer
+*/
 
 #endif

@@ -13,6 +13,8 @@
 #ifndef		__AMESSAGE_HPP__
 # define	__AMESSAGE_HPP__
 
+# include <iostream>
+
 class	AMessage
 {
 	public:

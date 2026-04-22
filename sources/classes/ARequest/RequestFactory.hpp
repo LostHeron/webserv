@@ -31,25 +31,25 @@ class	RequestFactory: public AFactory<ARequest>
 
 		void		execute(void);
 
-	private:
 
-		ARequest	*_newElement(void) const;
+	private:
+		static const _constructor	_constructorsArray[];
+		static const _test			_testsArray[];
+
+		const _constructor		*_getConstructors(void) const;
+		const _test				*_getTests(void) const;
+
+		uint8_t						_isGet(void) const;
+		uint8_t						_isPost(void) const;
+		uint8_t						_isDelete(void) const;
+		uint8_t						_checkHeader(void) const;
+		uint8_t						_checkBody(void) const;
+
+		template	<class Derived>
+		static ARequest	*_newElement(const ARequest &tmp);
+
 		uint8_t		_determineElement(void) const;
 
-		enum			e_Tests
-		{
-			ISGET,
-			ISPOST,
-			ISDELETE,
-			CHECKHEADER,
-			CHECKBODY,
-		};
-
-		uint8_t			_isGet(void) const;
-		uint8_t			_isPost(void) const;
-		uint8_t			_isDelete(void) const;
-		uint8_t			_checkHeader(void) const;
-		uint8_t			_checkBody(void) const;
 	
 };
 
