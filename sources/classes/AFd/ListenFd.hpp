@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:35 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/10 16:50:30 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/13 13:36:53 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LISTENFD_HPP
 
 #include "AFd.hpp"
+#include "Server.hpp"
 #include <cstring>
 #include <netinet/in.h>
 #include <sys/socket.h>

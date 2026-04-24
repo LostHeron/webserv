@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
+/*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/09 13:51:48 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/13 18:42:57 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RequestFactory.hpp"
 #include <iostream>
 
-int	main(void)
+int	main(int ac, char **av)
 {
 	RequestFactory facto;
 
@@ -69,4 +69,3 @@ int	main(void)
 	}
 	return (0);
 }
-

@@ -6,14 +6,16 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/09 13:51:40 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/13 15:23:01 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "Listen.hpp"
+#include "AFd.hpp"
+#include "sockets.hpp"
 #include "status.hpp"
 #include <sys/epoll.h>
+#include <cstdlib>
 
 Server::Server():
 	status(SUCCESS),
@@ -25,13 +27,16 @@ Server::Server():
 	}
 	else
 	{
-		listens.push_back(Listen(0, 4343));
+		CreateFd(0, 4343, *this);
 	}
-	//listens.emplace_back(Args &&args...);
 };
 
 Server::~Server()
 {
+	for (size_t	i = 0; i < this->sockets.size(); i++)
+	{
+		delete (this->sockets[i]);
+	}
 }
 
 bool	Server::fail()
@@ -42,18 +47,19 @@ bool	Server::fail()
 		return (false);
 }
 
-void	Server::activate()
+void	Server::setFailure(int value)
 {
-	if (this->fail() == true)
-		return;
-	for (size_t i = 0; i < listens.size(); i++)
-	{
-		listens[i].activate();
-		if (listens[i].fail() == true)
-		{
-			this->status = FAILURE;
-			return ;
-		}
-		//epoll_ctl(this->epoll.getFd(), EPOLL_CTL_ADD, listens[i].getFd(), struct epoll_event *event)
-	}
+	this->status = value;
+}
+
+// function used to add the AFd pointer 
+void	Server::add(AFd* fd)
+{
+	this->epoll.add(fd);
+	this->sockets.push_back(fd);
+}
+
+int	Server::getEfd()
+{
+	return (this->epoll.getFd());
 }
