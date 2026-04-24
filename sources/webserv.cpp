@@ -32,19 +32,18 @@ int	main(void)
 		// input
 		std::cout << "target: ";
 		std::cin >> target;
-		std::cout << std::endl << "sender: ";
+		std::cout << "sender: ";
 		std::cin >> sender;
-		std::cout << std::endl;
 		std::cout << "type: ";
 		std::cin >> type;
-		std::cout << std::endl << "header: ";
+		std::cout << "header: ";
 		std::cin >> header;
-		std::cout << std::endl << "body: ";
+		std::cout << "body: ";
 		std::cin >> body;
 		std::cout << std::endl;
 
 		// filling
-		facto.setMessage(type + "/-/" + header + "/-/" + body + "\n");
+		facto.setMessage("\n------------------\n" + header + "\n" + body + "\n------------\n");
 		facto.setTarget(target);
 		facto.setSender(sender);
 		facto.setType(type);
@@ -57,9 +56,14 @@ int	main(void)
 
 		// testing
 		if (!req)
+		{
+			std::cout << "ERROR!" << std::endl;
 			continue;
+		}
 
 		// output
+		std::cout << "from: " << req->getSender() << " to: " << req->getTarget() << "\nmsg: " << req->getMessage() << std::endl;
+		std::cout << "type: " << req->getType() << "\nheader: " << req->getHeader() << " body: " << req->getBody() << std::endl;
 		req->execute();
 		delete req;
 	}

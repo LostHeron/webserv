@@ -21,9 +21,9 @@ ARequest::ARequest(void):
 
 ARequest::ARequest(const std::string &message, const std::string &target, const std::string &sender):
 	AMessage(message, target, sender),
-	_type(0),
-	_header(0),
-	_body(0) {}
+	_type(""),
+	_header(""),
+	_body("") {}
 
 ARequest::ARequest(const AMessage &message, const std::string &type, const std::string &header, const std::string &body):
 	AMessage(message),
