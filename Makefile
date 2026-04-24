@@ -32,11 +32,15 @@ AMESSAGE_FILES := 	AMessage.cpp \
 AFACTORY_DIR := 	AFactory/
 AFACTORY_FILES := 	AFactory.cpp \
 
+REQUEST_DIR := 		ARequest/
+REQUEST_FILES := 	ARequest.cpp \
+				 	RequestFactory.cpp \
+
 GETREQ_DIR := 		GETReq/
 GETREQ_FILES := 	GETReq.cpp \
 
-DELETEREQ_DIR := 		DELETEReq/
-DELETEREQ_FILES := 		DELETEReq.cpp \
+DELETEREQ_DIR := 	DELETEReq/
+DELETEREQ_FILES := 	DELETEReq.cpp \
 
 POSTREQ_DIR := 		POSTReq/
 POSTREQ_FILES := 	POSTReq.cpp \
@@ -55,12 +59,10 @@ POSTREQ_FILES := 	POSTReq.cpp \
 # SERVER_DIR := Server/
 # SERVER_FILES := Server.cpp \
 
-REQUEST_DIR := ARequest/
-REQUEST_FILES := ARequest.cpp \
-				 RequestFactory.cpp \
 
 CLASSES_DIR := classes/
-CLASSES_FILES :=  	$(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
+CLASSES_FILES :=	$(addprefix $(AMESSAGE_DIR), $(AMESSAGE_FILES)) \
+					$(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
 					$(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
 					$(addprefix $(GETREQ_DIR), $(GETREQ_FILES)) \
 					$(addprefix $(POSTREQ_DIR), $(POSTREQ_FILES)) \

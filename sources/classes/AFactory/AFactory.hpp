@@ -24,25 +24,15 @@ class		AFactory: public ABase
 		AFactory(const AFactory<ABase> &cpy);
 		virtual ~AFactory(void);
 
-		ABase						*createElement(void) const;
+		ABase							*createElement(void) const;
 	                        
 	protected:              
-		typedef ABase				*(*_constructor)(const ABase &tmp);
-		typedef uint8_t				(*_test)(void);
+		typedef ABase					*(*_constructor)(const ABase &tmp);
 
 		virtual uint8_t					_determineElement(void) const = 0;
 		virtual const _constructor		*_getConstructors(void) const = 0;
-		virtual const _test				*_getTests(void) const = 0;
 
-		void							_runTests(void);
-
-		// virtual ABase			*_newElement(void) const = 0;
 		// static _constructor			_constructorsArray[];
-		// static _test				_testsArray[];
-
-		const unsigned int			_testsQty;
-		uint16_t					_testsStatus;
-
 
 };
 

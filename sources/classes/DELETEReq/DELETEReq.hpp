@@ -20,6 +20,7 @@ class	DELETEReq: public ARequest // only DELETE ?
 	public:
 		DELETEReq(void);
 		DELETEReq(const std::string &type, const std::string &header, const std::string &body);
+		DELETEReq(const ARequest &cpy);
 		DELETEReq(const DELETEReq &cpy);
 		~DELETEReq(void);
 

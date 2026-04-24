@@ -22,26 +22,26 @@
 // Constructors/Destructors ====================================================
 template	<class ABase>
 AFactory<ABase>::AFactory(void):
-	ABase(),
-	_testsQty(0),
-	_testsStatus(0) {}
+	ABase() {}
 
 template	<class ABase>
 AFactory<ABase>::AFactory(const AFactory<ABase> &cpy):
-	ABase(cpy),
-	_testsQty(cpy._testsQty),
-	_testsStatus(cpy._testsStatus) {}
+	ABase(cpy) {}
+
+template	<class ABase>
+AFactory<ABase>::~AFactory(void) {}
 
 // Member functions ============================================================
-template	<class ABase>
-void		AFactory<ABase>::_runTests(void)
-{
-	const _test	*testsArray = this->_getTests();
-	for (int i = 0; i < this->_testsQty; ++i)
-	{
-		this->_testsStatus |= (testsArray[i]() << i);
-	}
-}
+// template	<class ABase>
+// void		AFactory<ABase>::_runTests(void)
+// {
+// 	const _test	*testsArray = this->_getTests();
+// 	for (int i = 0; i < this->_testsQty; ++i)
+// 	{
+// 		this->_testsStatus |= (testsArray[i]() << i);
+// 	}
+// }
+
 template	<class ABase>
 ABase		*AFactory<ABase>::createElement(void) const
 {

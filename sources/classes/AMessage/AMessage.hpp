@@ -21,7 +21,7 @@ class	AMessage
 		AMessage(void);
 		AMessage(const std::string &message, const std::string &target, const std::string &sender);
 		AMessage(const AMessage &cpy);
-		~AMessage(void);
+		virtual ~AMessage(void);
 
 		const std::string		&getMessage(void) const;
 		const std::string		&getTarget(void) const;

@@ -13,9 +13,9 @@
 #include "AMessage.hpp"
 // Constructors/Destructors ====================================================
 AMessage::AMessage(void):
-	_message(0),
-	_target(0),
-	_sender(0) {}
+	_message(""),
+	_target(""),
+	_sender("") {}
 
 AMessage::AMessage(const std::string &message, const std::string &target, const std::string &sender):
 	_message(message),

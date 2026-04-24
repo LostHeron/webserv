@@ -20,6 +20,7 @@ class	POSTReq: public ARequest // only POST ?
 	public:
 		POSTReq(void);
 		POSTReq(const std::string &type, const std::string &header, const std::string &body);
+		POSTReq(const ARequest &cpy);
 		POSTReq(const POSTReq &cpy);
 		~POSTReq(void);
 

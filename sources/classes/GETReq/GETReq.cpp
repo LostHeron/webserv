@@ -16,6 +16,9 @@
 GETReq::GETReq(const std::string &type, const std::string &header, const std::string &body):
 	ARequest(type, header, body) {}
 
+GETReq::GETReq(const ARequest &cpy):
+	ARequest(cpy) {}
+
 GETReq::GETReq(const GETReq &cpy):
 	ARequest(cpy) {}
 

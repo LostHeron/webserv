@@ -27,7 +27,7 @@ int	main(void)
 
 	ARequest *req;
 
-	while (1)
+	while (std::cin)
 	{
 		// input
 		std::cout << "target: ";

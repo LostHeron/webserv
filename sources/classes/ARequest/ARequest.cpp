@@ -13,17 +13,24 @@
 # include "ARequest.hpp"
 
 // Construction/Destruction ====================================================
+ARequest::ARequest(void):
+	AMessage(),
+	_type(""),
+	_header(""),
+	_body("") {}
+
 ARequest::ARequest(const std::string &message, const std::string &target, const std::string &sender):
 	AMessage(message, target, sender),
 	_type(0),
 	_header(0),
 	_body(0) {}
 
-// ARequest::ARequest(const uint8_t &type, const std::string &header, const std::string &body):
-// 	_type(type),
-// 	_header(header),
-// 	_body(body) {}
-//
+ARequest::ARequest(const AMessage &message, const std::string &type, const std::string &header, const std::string &body):
+	AMessage(message),
+	_type(type),
+	_header(header),
+	_body(body) {}
+
 
 ARequest::ARequest(const ARequest &cpy):
 	AMessage(cpy),

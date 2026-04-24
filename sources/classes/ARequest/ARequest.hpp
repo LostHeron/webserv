@@ -18,7 +18,8 @@ class	ARequest: public AMessage
 {
 	public:
 		ARequest(void);
-		ARequest(const std::string &type, const std::string &header, const std::string &body);
+		ARequest(const std::string &message, const std::string &target, const std::string &sender);
+		ARequest(const AMessage &message, const std::string &type, const std::string &header, const std::string &body);
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 
