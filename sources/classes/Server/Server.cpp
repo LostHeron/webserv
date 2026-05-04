@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 15:23:01 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/15 18:25:51 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "AFd.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
+#include <algorithm>
 #include <sys/epoll.h>
 #include <cstdlib>
 
@@ -62,4 +63,12 @@ void	Server::add(AFd* fd)
 int	Server::getEfd()
 {
 	return (this->epoll.getFd());
+}
+
+void	Server::remove(AFd *afd)
+{
+	delete afd;
+	this->sockets.erase(
+		std::find(this->sockets.begin(), this->sockets.end(), afd)
+	);
 }

@@ -6,12 +6,13 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 15:35:00 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/15 18:39:04 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sockets.hpp"
 #include "AFd.hpp"
+#include "status.hpp"
 #include <cstring>
 #include <sys/epoll.h>
 #include <string>
@@ -21,12 +22,14 @@
 
 #define EVENT_SIZE 50
 
+// run is a global variable set to 1 in the main files (webserv.cpp)
+// it is set to 0 when using ^C to allow the program to quit
 void	start(Server& server)
 {
-	(void) server;
-	while (true)
+	struct epoll_event events[EVENT_SIZE];
+	std::cout << "server is now running waiting for events\n";
+	while (run != 0)
 	{
-		struct epoll_event events[EVENT_SIZE];
 		int nb_events = epoll_wait(server.getEfd(), events, EVENT_SIZE, -1);
 		if (nb_events < 0)
 		{
@@ -39,8 +42,22 @@ void	start(Server& server)
 			std::cout << nb_events << " event where received in the epoll_wait function\n";
 			for (int i = 0; i < nb_events; i++)
 			{
-				AFd* ptr = static_cast<AFd*>(events[i].data.ptr);
-				ptr->process();
+				AFd* event = static_cast<AFd*>(events[i].data.ptr);
+				event->process();
+				if (event->fail())
+					server.remove(event);
+				// here someking of code like :
+				/* try
+				 * {
+				 *		event->process
+				 * }
+				 * catch (std::exception& e)
+				 * {
+				 *		server.free_space() // (some function that would \
+				 *		search for the more consumming process, terminate the  \
+				 *		connection and removed all ressources associated with the process) \
+				 * }
+				*/
 			}
 		}
 	}

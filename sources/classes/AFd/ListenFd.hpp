@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:35 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 13:36:53 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/15 18:37:01 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ class ListenFd: public AFd
 
 		void	process();
 		void	activate();
-		bool	fail();
 
 	protected:
 
@@ -36,9 +35,7 @@ class ListenFd: public AFd
 		ListenFd(const ListenFd& other);
 		ListenFd& operator=(const ListenFd& other);
 
-		int					status;
 		struct sockaddr_in	addr_data;
 };
-
 
 #endif

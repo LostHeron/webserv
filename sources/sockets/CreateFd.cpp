@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:14:12 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 13:45:36 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/15 18:36:46 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "IOFd.hpp"
 #include "Server.hpp"
 #include "status.hpp"
+#include <netinet/in.h>
 #include <stdint.h>
 #include <exception>
 #include <iostream>
@@ -42,11 +43,11 @@ void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 	}
 }
 
-void	CreateFd(int fd, Server& server)
+void	CreateFd(int fd, const struct sockaddr_in& addr, Server& server)
 {
 	try
 	{
-		IOFd * new_fd = new IOFd(fd, server);
+		IOFd * new_fd = new IOFd(fd, addr, server);
 		server.add(new_fd);
 	}
 	catch (std::exception& e)

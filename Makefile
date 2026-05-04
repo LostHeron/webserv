@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: cviel <cviel@student.42.fr>                +#+  +:+       +#+         #
+#    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/04/01 16:54:22 by jweber            #+#    #+#              #
-#    Updated: 2026/04/13 18:21:52 by cviel            ###   ########.fr        #
+#    Created: 2026/05/04 15:22:00 by jweber            #+#    #+#              #
+#    Updated: 2026/05/04 15:25:45 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,23 +19,19 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFD_DIR) \
-<<<<<<< HEAD
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFACTORY_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(GETREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(POSTREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(DELETEREQ_DIR) \
-=======
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONLEXER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONOBJ_DIR) \
 
->>>>>>> 947a2797646ddb2b39267fb7dff2eff773a0bd7a
 
 AMESSAGE_DIR := 	AMessage/
 AMESSAGE_FILES := 	AMessage.cpp \
 
-<<<<<<< HEAD
 AFACTORY_DIR := 	AFactory/
 AFACTORY_FILES := 	AFactory.cpp \
 
@@ -52,23 +48,20 @@ DELETEREQ_FILES := 	DELETEReq.cpp \
 POSTREQ_DIR := 		POSTReq/
 POSTREQ_FILES := 	POSTReq.cpp \
 
-# AFD_DIR := 		AFd/
-# AFD_FILES := 	AFd.cpp \
+AFD_DIR := 		AFd/
+AFD_FILES := 	AFd.cpp \
 				ListenFd.cpp \
 				IOFd.cpp \
 
-# LISTEN_DIR := 	Listen/
-# LISTEN_FILES :=	Listen.cpp \
-#
-# EPOLLSTRUCT_DIR := EpollStruct/
-# EPOLLSTRUCT_FILES := EpollStruct.cpp \
-#
-# SERVER_DIR := Server/
-# SERVER_FILES := Server.cpp \
-=======
+
 EPOLLSTRUCT_DIR := EpollStruct/
 EPOLLSTRUCT_FILES := EpollStruct.cpp \
->>>>>>> 947a2797646ddb2b39267fb7dff2eff773a0bd7a
+
+SERVER_DIR := Server/
+SERVER_FILES := Server.cpp \
+
+EPOLLSTRUCT_DIR := EpollStruct/
+EPOLLSTRUCT_FILES := EpollStruct.cpp \
 
 
 JSONLEXER_DIR := JsonLexer/
@@ -78,25 +71,20 @@ JSONOBJ_DIR := JsonObj/
 JSONOBJ_FILES := JsonObj.cpp
 
 CLASSES_DIR := classes/
-<<<<<<< HEAD
 CLASSES_FILES :=	$(addprefix $(AMESSAGE_DIR), $(AMESSAGE_FILES)) \
 					$(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
 					$(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
 					$(addprefix $(GETREQ_DIR), $(GETREQ_FILES)) \
 					$(addprefix $(POSTREQ_DIR), $(POSTREQ_FILES)) \
 					$(addprefix $(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
-					# $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
-					# $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
-					# $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
-					# $(addprefix $(AFD_DIR), $(AFD_FILES)) \
-=======
-CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
-				 $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
-				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
-				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
-				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
-				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
->>>>>>> 947a2797646ddb2b39267fb7dff2eff773a0bd7a
+					$(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
+					$(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
+					$(addprefix $(AFD_DIR), $(AFD_FILES)) \
+					$(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
+					$(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
+
+SIGNALS_HANDLING_DIR := signals/
+SIGNALS_HANDLING_FILES := setup_signals.cpp \
 
 SOCKETS_DIR := sockets/
 SOCKETS_FILES := CreateFd.cpp \
@@ -109,6 +97,7 @@ SRCS_DIR := sources/
 SRCS_FILES := webserv.cpp \
 			  $(addprefix $(SOCKETS_DIR), $(SOCKETS_FILES)) \
 			  $(addprefix $(CONFIGFILE_DIR), $(CONFIGFILE_FILES)) \
+			  $(addprefix $(SIGNALS_HANDLING_DIR), $(SIGNALS_HANDLING_FILES)) \
 			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES)) \
 
 SRCS_FILES := $(addprefix $(SRCS_DIR), $(SRCS_FILES))

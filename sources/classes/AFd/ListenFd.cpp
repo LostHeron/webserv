@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:31 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 13:42:06 by jweber           ###   ########.fr       */
+/*   Updated: 2026/04/15 18:36:20 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "Server.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
+#include <asm-generic/socket.h>
+#include <cstring>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -22,18 +24,32 @@
 #include <string>
 #include <iostream>
 #include <cerrno>
+#include <fcntl.h>
 
 ListenFd::ListenFd(uint32_t address, uint16_t port, Server& server):
 	AFd(server)
 {
-	this->status = SUCCESS;
-
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
+
+	// to allow reusing the same port, should be disabled in prod ?
+	int	optval = 1;
+	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) < 0)
+	{
+		std::cerr << strerror(errno) << "\n";
+		std::cerr << "error occured will trying to set SO_REUSEPORT!\n";
+	}
+
 	if (this->fd < 0)
 	{
 		// socket creation !
 		std::string error_msg(strerror(errno));
 		std::cerr << "socket: " << error_msg << "\n";
+		this->status = FAILURE;
+	}
+	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	{
+		std::string error_msg(strerror(errno));
+		std::cerr << "fcntl: " << error_msg << "\n";
 		this->status = FAILURE;
 	}
 
@@ -52,32 +68,32 @@ void	ListenFd::process()
 	// ok and here should do stuff with the fd,
 	// and read data and start parsing request
 	int						peer_fd;
-	struct sockaddr_storage peer_addr;
+	struct sockaddr_in		peer_addr;
 	socklen_t				peer_addr_len;
 
-	peer_fd = accept(this->fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
-	if (peer_fd < 0)
+	do 
 	{
-		std::string error_msg(strerror(errno));
-		std::cerr << "epoll_wait: " << error_msg << "\n";
-	}
-	else
-	{
+		std::memset(&peer_addr, 0, sizeof(peer_addr));
+		peer_addr_len = sizeof(peer_addr);
+		peer_fd = accept(this->fd, (struct sockaddr*)&peer_addr, &peer_addr_len);
+		if (peer_addr_len > sizeof(peer_addr))
+			std::cerr << "WARNING ! peer_addr_len > sizeof(peer_addr), "
+					"BUT THIS IS THE CASE HERE, SOMETHING WENT WRONG"
+					"AND WAS NOT EXPECTED!\n";
+		if (peer_fd < 0)
+			break;
 		std::cout << "a connection was accepted\n";
-		// and here should also do stuff like CreateFD
-		// and that's here i need my server !!
-		// to add the newly created IOFd
-		// but not smart to add it to the process argument
-		// because process
-		// is part of abstract class
-		// and and in the IOFd process, no need for a 'Server'
-		// args in the process function
+
+		CreateFd(peer_fd, peer_addr, this->server);
+
+		if (this->server.fail())
+		{
+			std::cout << "an error happened while processing new incoming connection\n";
+			return ;
+		}
 	}
-	CreateFd(peer_fd, this->server);
-	if (this->server.fail())
-	{
-		std::cout << "an error happened while processing new incoming connection\n";
-	}
+	while (peer_fd >= 0);
+	return ;
 }
 
 void	ListenFd::activate()
@@ -101,13 +117,4 @@ void	ListenFd::activate()
 		this->status = FAILURE;
 		return ;
 	}
-}
-
-
-bool	ListenFd::fail()
-{
-	if (this->status != SUCCESS)
-		return (true);
-	else
-		return (false);
 }
