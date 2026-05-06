@@ -56,7 +56,7 @@ IOFd::~IOFd()
 void IOFd::process()
 {
 	char buf[BUFSIZ];
-	ssize_t nb_read = read(this->fd, buf, BUFSIZ);
+	ssize_t nb_read = recv(this->fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (nb_read < 0)
 	{
 		std::string error_msg(strerror(errno));
