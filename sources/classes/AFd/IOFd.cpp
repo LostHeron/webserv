@@ -18,7 +18,10 @@
 #include "status.hpp"
 #include <cctype>
 #include <cstdio>
+#include <cstdlib>
+#include <cwctype>
 #include <netinet/in.h>
+#include <ostream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -26,6 +29,7 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include <vector>
 
 
 IOFd::IOFd(int fd, const struct sockaddr_in& addr, Server& server):
@@ -245,6 +249,12 @@ static int	check_version(const std::string& version)
 	return (SUCCESS);
 }
 
+// here depending on the version, it should exepct no header 
+// so getting here, if version is empty, then it is a 'simple-request'
+// if it is a simple request, then the method should be 'GET'
+// and if it is the case, the request is complete, and should 
+// be processed using only method and uri, then closed and all other
+// ressources send should be ignored
 void	IOFd::process_header(std::string& str, size_t pos)
 {
 	std::cout << "in process header\n";
@@ -252,17 +262,35 @@ void	IOFd::process_header(std::string& str, size_t pos)
 	size_t	lf;
 	size_t	delim;
 	size_t	until;
+	if (this->version == "")
+	{
+		if (this->method == "GET")
+		{
+			// do stuff to stop parsing incoming data,
+			// and process the request using only information
+			// in 'method' and in 'uri'
+			// return ...
+		}
+		else
+		{
+			return (send_bad_request(this->fd, this->status));
+		}
+	}
 
 	while (pos < str.size())
 	{
 		crlf = str.find("\r\n", pos);
 		lf = str.find("\n", pos);
 		delim = std::min(crlf, lf);
-		if (delim == str.npos) // no \r\n
+		if (delim == std::string::npos) // no \r\n
 			until = str.size();
 		else if (delim == pos)
 		{
-			//here we have a delim at begin,
+			if (str[delim] == '\r')
+				until = delim + 2;
+			else
+				until = delim + 1;
+			// here we have a delim at begin,
 			// we need to check if previous last char
 			// stored is also a new line and if so,
 			// next data must go into the body section
@@ -274,24 +302,17 @@ void	IOFd::process_header(std::string& str, size_t pos)
 			//		do stuff;
 			// }
 				this->state++;
-				(this->*process_functions[this->state])(str, pos);
+				(this->*process_functions[this->state])(str, until);
 				return;
 			}
 			else
 			{
 				std::string& last_line = this->header[this->header.size() - 1];
-				if (last_line == "" ||
-					last_line[last_line.size() - 1] != '\n')
-				{
-					if (str[delim] == '\r')
-						until = delim + 2;
-					else
-						until = delim + 1;
-				}
-				else
+				if (last_line != "" &&
+					last_line[last_line.size() - 1] == '\n')
 				{
 					this->state++;
-					(this->*process_functions[this->state])(str, pos);
+					(this->*process_functions[this->state])(str, until);
 					return;
 				}
 			}
@@ -312,9 +333,7 @@ void	IOFd::process_header(std::string& str, size_t pos)
 				last_line[last_line.size() - 1] != '\n')
 				last_line.append(str, pos, until - pos);
 			else
-			{
 				this->header.push_back(std::string(str, pos, until - pos));
-			}
 		}
 		pos = until;
 	}
