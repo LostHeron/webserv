@@ -94,41 +94,42 @@ void	send_bad_request(int fd, int& status)
 	status = FAILURE;
 }
 
+static int	check_method(std::string& method);
+
 void	IOFd::process_method(std::string& str, size_t pos)
-{
-	(void) pos; // this function should always be called with pos 
+{ 
+	// this function should always be called with pos
 	// being 0 !
+	(void) pos; 
+
 	size_t space_pos = str.find(' ', 0);
 	if (space_pos == str.npos)
 	{
-		// no space found add: everything in the 'method' field
+		// no space found: add everything in the 'method' field
 		this->method.append(str);
-		if (this->method.size() > IOFD_MAX_SIZE ||
-			this->method.find_first_not_of(ABNF_UPPER) != this->method.npos)
-		{
-			// Error sending bad request
+		if (check_method(this->method) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
-		}
 	}
 	else
 	{
 		this->method.append(str, pos, space_pos - pos);
-		if (this->method == "" ||
-			this->method.find_first_not_of(ABNF_UPPER) != this->method.npos ||
-			this->method.size() > IOFD_MAX_SIZE)
-		{
+		if (check_method(this->method) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
-		}
 		else
 		{
-			// should go to step two !
-			// so is step two objectives to get URI
-			// or to skip SP anv HT ?
-			// et est ce qu'on est strict ou on est large ??
 			this->state++;
 			(this->*process_functions[this->state])(str, space_pos + 1);
 		}
 	}
+}
+
+static int	check_method(std::string& method)
+{
+	if (method == "" ||
+		method.size() > IOFD_MAX_SIZE ||
+		method.find_first_not_of(ABNF_UPPER) != std::string::npos)
+		return (FAILURE);
+	return (SUCCESS);
 }
 
 void	IOFd::process_uri(std::string& str, size_t pos)
