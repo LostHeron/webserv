@@ -132,11 +132,17 @@ static int	check_method(std::string& method)
 	return (SUCCESS);
 }
 
+// should check rules for valid URI and not valid URI
+// like reject any uri containing invalid char, like newline etc.
+// should also remove .. and . for the URI before going to next step
 void	IOFd::process_uri(std::string& str, size_t pos)
 {
 	std::cout << "in process uri\n";
 	size_t space_pos = str.find(' ', pos);
-	if (space_pos == str.npos)
+	size_t crlf = str.find("\r\n", pos);
+	size_t lf = str.find("\n", pos);
+	size_t delim = std::min(space_pos, std::min(crlf, lf));
+	if (delim == std::string::npos)
 	{
 		this->uri.append(str, pos, str.size() - pos);
 		// here should check that the uri contains only valid characters
@@ -146,15 +152,12 @@ void	IOFd::process_uri(std::string& str, size_t pos)
 	}
 	else
 	{
-		this->uri.append(str, pos, space_pos - pos);
-		//	here should check that the uri is valid !
-		//	if (uri invalid)
-		//		return (send_bad_request(this->fd, this->status));
-		//	else
-		//	{
-			this->state++;
-			(this->*process_functions[this->state])(str, space_pos);
-		//	}
+		if (delim > pos)
+			this->uri.append(str, pos, delim - pos);
+		if (this->uri.find_first_not_of(ABNF_PATH_ABEMPTY) != std::string::npos)
+			return (send_bad_request(this->fd, this->status));
+		this->state++;
+		(this->*process_functions[this->state])(str, delim);
 	}
 }
 
