@@ -343,8 +343,10 @@ void	IOFd::process_header(std::string& str, size_t pos)
 void	IOFd::process_body(std::string& str, size_t pos)
 {
 	std::cout << "in process body\n";
-	(void) str;
-	(void) pos;
+	// should reserve size of body right here because it should be known !
+	// this->body.push_back(str.data(), pos, str.size() - pos);
+	if (pos < str.size())
+		this->body.insert(this->body.end(), str.begin() + pos, str.end());
 }
 
 void	IOFd::process_abort(std::string& str, size_t pos)
@@ -364,6 +366,19 @@ void	IOFd::process_skip_sp(std::string& str, size_t pos)
 	(this->*process_functions[this->state])(str, non_sp_pos);
 }
 
+std::ostream& operator<<(std::ostream& os, std::vector<unsigned char> data)
+{
+	for (size_t	i = 0; i < data.size(); i++)
+	{
+		char c;
+		if (std::isprint(data.at(i)) )//|| std::iswspace(data.at(i)))
+			c = static_cast<char>(data.at(i));
+		else
+			c = '.';
+		os << c;
+	}
+	return (os);
+}
 
 std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 {
@@ -379,12 +394,15 @@ std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 	os << "uri: '" << iofd.uri << "'; ";
 	os << "version: '" << iofd.version << "'; ";
 	os << "\n----------------------\n";
-	os << "headerlines:\n";
+	os << "headerlines: (nb headerlines: " << iofd.header.size() << ")\n";
 	for (size_t i = 0; i < iofd.header.size(); i++)
 	{
 		os << iofd.header[i];
 	}
-	os << "\n----------------------\n";
+	os << "----------------------\n";
+	os << "body:\n";
+	os << iofd.body;
 	os << "\n";
 	return (os);
 }
+
