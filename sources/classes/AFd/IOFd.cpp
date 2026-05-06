@@ -59,17 +59,24 @@ void IOFd::process()
 	ssize_t nb_read = recv(this->fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (nb_read < 0)
 	{
+		// error happened
 		std::string error_msg(strerror(errno));
 		std::cerr << "read: " << error_msg << "\n";
+		this->status = FAILURE;
 	}
 	else if (nb_read == 0)
 	{
+		// other end closed the connection
 		this->status = FAILURE;
-		//this->server.remove(this);
 	}
 	else
 	{
+		// nomal behaviour
+
+		// creating string from buffer
 		std::string str(buf, nb_read);
+
+		// processing buffer based on current state of IOFd;
 		(this->*process_functions[this->state])(str, 0);
 		if (this->fail())
 			return ;
