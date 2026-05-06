@@ -13,9 +13,9 @@
 #include "POSTReq.hpp"
 
 // Constructors/Destructor =====================================================
-POSTReq::POSTReq(const std::string &type, const std::string &header, const std::string &body):
-	ARequest(type, header, body) {}
-
+// POSTReq::POSTReq(const std::string &type, const std::string &header, const std::string &body):
+// 	ARequest(type, header, body) {}
+//
 POSTReq::POSTReq(const ARequest &cpy):
 	ARequest(cpy) {}
 

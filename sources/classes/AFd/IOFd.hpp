@@ -31,6 +31,12 @@ class IOFd: public AFd
 		
 		~IOFd();
 
+		const std::string					&getMethod(void) const;
+		const std::string					&getUri(void) const;
+		const std::string					&getVersion(void) const;
+		const std::vector< std::string >	&getHeader(void) const;
+		const std::vector<unsigned char>	&getBody(void) const;
+
 		void	process();
 		
 	protected:

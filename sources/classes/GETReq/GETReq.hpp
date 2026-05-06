@@ -18,8 +18,8 @@
 class	GETReq: public ARequest // only GET ?
 {
 	public:
-		GETReq(void);
-		GETReq(const std::string &type, const std::string &header, const std::string &body);
+		// GETReq(void);
+		// GETReq(const std::string &type, const std::string &header, const std::string &body);
 		GETReq(const ARequest &cpy);
 		GETReq(const GETReq &cpy);
 		~GETReq(void);

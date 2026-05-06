@@ -17,11 +17,11 @@
 # include <iostream>
 
 template	<class ABase>
-class		AFactory: public ABase
+class		AFactory//: public ABase
 {
 	public:
 		AFactory(void);
-		AFactory(const AFactory<ABase> &cpy);
+		// AFactory(const AFactory<ABase> &cpy);
 		virtual ~AFactory(void);
 
 		ABase							*createElement(void) const;

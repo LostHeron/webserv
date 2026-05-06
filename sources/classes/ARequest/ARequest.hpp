@@ -13,13 +13,14 @@
 # define	__AREQUEST_HPP__
 
 # include "AMessage.hpp"
+# include "IOFd.hpp"
 
 class	ARequest: public AMessage
 {
 	public:
-		ARequest(void);
-		ARequest(const std::string &message, const std::string &target, const std::string &sender);
-		ARequest(const AMessage &message, const std::string &type, const std::string &header, const std::string &body);
+		// ARequest(void);
+		ARequest(const IOFd &IOMessage);
+		// ARequest(const AMessage &message, const std::string &type, const std::string &header, const std::string &body);
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 
@@ -27,13 +28,13 @@ class	ARequest: public AMessage
 
 		virtual void		execute(void) = 0;
 
-		const std::string	&getType(void) const;
-		const std::string	&getHeader(void) const;
-		const std::string	&getBody(void) const;
-
-		void	setType(const std::string &type);
-		void	setHeader(const std::string &header);
-		void	setBody(const std::string &body);
+		// const std::string	&getType(void) const;
+		// const std::string	&getHeader(void) const;
+		// const std::string	&getBody(void) const;
+		//
+		// void	setType(const std::string &type);
+		// void	setHeader(const std::string &header);
+		// void	setBody(const std::string &body);
 
 		enum				e_reqType
 		{
@@ -45,9 +46,11 @@ class	ARequest: public AMessage
 		};
 
 	protected:
-		std::string		_type;
-		std::string		_header;
-		std::string		_body;
+		const std::string				  	_method;
+		const std::string				  	_uri;
+		const std::string				  	_version;
+		const std::vector< std::string >	_header;
+		const std::vector<unsigned char>	_body;
 };
 
 #endif

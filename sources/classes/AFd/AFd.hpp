@@ -22,7 +22,7 @@ class AFd
 		AFd(Server& server);
 		virtual ~AFd();
 
-		int	getFd();
+		int	getFd() const;
 
 		virtual void	process() = 0;
 		virtual	bool	fail();

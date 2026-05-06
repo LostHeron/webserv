@@ -17,7 +17,6 @@ template	<class Derived>
 ARequest	*RequestFactory::_newElement(const ARequest &tmp)
 {
 	return (new Derived(tmp));
-	// return (new Derived(tmp, tmp.getType(), tmp.getHeader(), tmp.getBody()));
 }
 
 /*	std::autoptr

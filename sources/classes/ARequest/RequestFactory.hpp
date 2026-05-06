@@ -16,14 +16,18 @@
 # include "AFactory.hpp"
 # include "ARequest.hpp"
 
+# include "IOFd.hpp"
+
 # include "GETReq.hpp"
 # include "POSTReq.hpp"
 # include "DELETEReq.hpp"
 
-class	RequestFactory: public AFactory<ARequest>
+class	RequestFactory:
+	public ARequest,
+	public AFactory<ARequest>
 {
 	public:
-		RequestFactory(void);
+		RequestFactory(const IOFd &IOMessage);
 		RequestFactory(const RequestFactory &cpy);
 		~RequestFactory(void);
 

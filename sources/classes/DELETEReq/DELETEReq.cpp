@@ -13,8 +13,8 @@
 #include "DELETEReq.hpp"
 
 // Constructors/Destructor =====================================================
-DELETEReq::DELETEReq(const std::string &type, const std::string &header, const std::string &body):
-	ARequest(type, header, body) {}
+// DELETEReq::DELETEReq(const std::string &type, const std::string &header, const std::string &body):
+// 	ARequest(type, header, body) {}
 
 DELETEReq::DELETEReq(const ARequest &cpy):
 	ARequest(cpy) {}

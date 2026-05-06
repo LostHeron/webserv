@@ -53,6 +53,14 @@ IOFd::~IOFd()
 {
 }
 
+const std::string					&IOFd::getMethod(void) const { return(this->method); }
+const std::string					&IOFd::getUri(void) const { return(this->uri); }
+const std::string					&IOFd::getVersion(void) const { return(this->version); }
+const std::vector< std::string >	&IOFd::getHeader(void) const { return(this->header); }
+const std::vector<unsigned char>	&IOFd::getBody(void) const { return(this->body); }
+
+
+
 void IOFd::process()
 {
 	char buf[BUFSIZ];

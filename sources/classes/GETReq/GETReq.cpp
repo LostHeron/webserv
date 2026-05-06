@@ -13,8 +13,8 @@
 #include "GETReq.hpp"
 
 // Constructors/Destructor =====================================================
-GETReq::GETReq(const std::string &type, const std::string &header, const std::string &body):
-	ARequest(type, header, body) {}
+// GETReq::GETReq(void):
+// 	ARequest(type, header, body) {}
 
 GETReq::GETReq(const ARequest &cpy):
 	ARequest(cpy) {}

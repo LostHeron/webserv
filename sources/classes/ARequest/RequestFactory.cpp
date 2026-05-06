@@ -21,11 +21,13 @@ const AFactory<ARequest>::_constructor	RequestFactory::_constructorsArray[] =
 };
 
 // Constructors/Destructor =====================================================
-RequestFactory::RequestFactory(void):
+RequestFactory::RequestFactory(const IOFd &IOMessage):
+	ARequest(IOMessage),
 	AFactory<ARequest>() {}
 
 RequestFactory::RequestFactory(const RequestFactory &cpy):
-	AFactory<ARequest>(cpy) {}
+	ARequest(cpy),
+	AFactory<ARequest>() {}
 
 RequestFactory::~RequestFactory(void) {}
 
@@ -51,11 +53,11 @@ uint8_t			RequestFactory::_determineElement(void) const
 	if (!this->_checkHeader())
 		return (UNKNOWN);
 
-	if (this->_type == "GET")
+	if (this->_method == "GET")
 		return (ARequest::GET);
-	else if (this->_type == "POST" && this->_checkBody())
+	else if (this->_method == "POST" && this->_checkBody())
 		return (ARequest::POST);
-	else if (this->_type == "DELETE")
+	else if (this->_method == "DELETE")
 		return (ARequest::DELETE);
 	else
 		return (UNKNOWN);

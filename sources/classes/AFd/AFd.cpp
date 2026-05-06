@@ -28,7 +28,7 @@ AFd::~AFd()
 	close(this->fd);
 }
 
-int	AFd::getFd()
+int	AFd::getFd() const
 {
 	return (this->fd);
 }

@@ -18,23 +18,16 @@
 class	AMessage
 {
 	public:
-		AMessage(void);
-		AMessage(const std::string &message, const std::string &target, const std::string &sender);
+		// AMessage(void);
+		AMessage(const int &fd);
 		AMessage(const AMessage &cpy);
 		virtual ~AMessage(void);
 
-		const std::string		&getMessage(void) const;
-		const std::string		&getTarget(void) const;
-		const std::string		&getSender(void) const;
-
-		void					setMessage(const std::string &message);
-		void					setTarget(const std::string &target);
-		void					setSender(const std::string &sender);
+		const int		&getFd(void) const;
+		// void			setFd(const int &fd);
 
 	protected:
-		std::string				_message;
-		std::string				_target;
-		std::string				_sender;
+		const int		_fd;
 };
 
 #endif
