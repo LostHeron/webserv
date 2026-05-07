@@ -6,18 +6,18 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/03 18:49:38 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/07 17:36:17 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __VIRTUALHOST_HPP__
-# define __VIRTUALHOST_HPP__
+#ifndef VIRTUALHOST_HPP
+# define VIRTUALHOST_HPP
 
-#include <string>
-#include <streambuf>
-#include <ostream>
-#include <vector>
-#include <map>
+# include <string>
+# include <streambuf>
+# include <ostream>
+# include <vector>
+# include <map>
 
 class VirtualHost
 {
@@ -35,7 +35,7 @@ class VirtualHost
 
 		enum e_reqtype
 		{
-			GET = 0,
+			GET,
 			POST,
 			DELETE
 		};
@@ -70,6 +70,7 @@ class VirtualHost
 			
 			private:
 
+				std::string		_name;
 				std::string		_root;
 				std::string		_index;
 				unsigned int	_allowedReqBitfield;
@@ -85,11 +86,11 @@ class VirtualHost
 		std::map<int, std::string>		_errorPage;
 
 		// StreambufNull					_streambufNull;
-		// std::ostream					_streamNull;
+		// std::ostream						_streamNull;
 		// std::ostream*					_successLogs;
 		// std::ostream*					_errorLogs;
 	
 		std::map<std::string, Location>	_locations;
 };
 
-#endif
+#endif // VIRUTALHOST_HPP

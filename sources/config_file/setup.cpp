@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:50:25 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 19:23:32 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/07 18:49:34 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,7 @@ void    host_setup(char const* filename)
 	input_stream << config_file.rdbuf();
 	
 	JsonLexer						lexer(input_stream.str());
-	std::map<std::string, JsonObj>	objects;
-
+	std::map<std::string, JsonObj>	obj_map;
 
 	while (!lexer.empty())
 	{
@@ -47,7 +46,7 @@ void    host_setup(char const* filename)
 
 		JsonObj	val(lexer);
 
-		if (!objects.insert(std::pair<std::string, JsonObj>(key, val)).second)
-			throw std::runtime_error("Insertion failed");
+		obj_map.insert(std::pair<std::string, JsonObj>(key, val));
 	}
+	
 }

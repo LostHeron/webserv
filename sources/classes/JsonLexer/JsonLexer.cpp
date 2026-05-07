@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:25:08 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 18:44:25 by cviel            ###   ########.fr       */
+/*   Updated: 2026/04/20 14:56:27 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ JsonLexer::e_tokenType	JsonLexer::peekType(void) const
 	return (this->_tokenQueue.front().type);
 }
 
-std::string	JsonLexer::popToken(void)
+std::string const&	JsonLexer::popToken(void)
 {
 	if (this->_tokenQueue.empty())
 		throw std::range_error("Lexer is empty : trying to access non-existant element");
