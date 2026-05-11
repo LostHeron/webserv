@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 20:36:35 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/07 20:03:22 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/11 14:57:42 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,27 +22,8 @@ ASchema::ASchema(std::string const& name, JsonObj::e_jsonType type, bool is_requ
 	_allowMultiple(allow_multiple)
 {}
 
-ASchema::ASchema(ASchema const& other) :
-	_name(other._name),
-	_type(other._type),
-	_isRequired(other._isRequired),
-	_allowMultiple(other._allowMultiple)
-{}
-
 ASchema::~ASchema()
 {}
-
-ASchema&	ASchema::operator=(ASchema const& other)
-{
-	if (this != &other)
-	{
-		this->_name = other._name;
-		this->_type = other._type;
-		this->_isRequired = other._isRequired;
-		this->_allowMultiple = other._allowMultiple;
-	}
-	return (*this);
-}
 
 bool	ASchema::validate(std::map<std::string, JsonObj> const& obj_map) const
 {

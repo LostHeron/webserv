@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:30:18 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/07 17:49:16 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:03:53 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,22 @@ class IntSchema :
 	public:
 
 		IntSchema(std::string const& name, bool is_required, bool is_unique);
-		IntSchema(IntSchema const& other);
 		virtual ~IntSchema();
-
-		IntSchema&	operator=(IntSchema const& other);
-
+		
 		void	setMin(int min);
 		void	setMax(int max);
-
+		
 	private:
-
+		
 		int	_min;
 		int	_max;
-
+		
 		IntSchema(void);
+		IntSchema(IntSchema const& other);
+		
+		IntSchema&	operator=(IntSchema const& other);
 
 		virtual bool	checkValue(JsonObj const& object);
-}
-
+};
 
 #endif // INTSCHEMA_HPP

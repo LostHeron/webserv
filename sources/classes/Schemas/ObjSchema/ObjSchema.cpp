@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:47:44 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/07 19:45:28 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:02:11 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,19 @@ ObjSchema::ObjSchema(std::string const& name, bool is_required, bool is_unique) 
 	_fields()
 {}
 
-ObjSchema::ObjSchema(ObjSchema const& other) :
-	ASchema(other),
-	_fields(other._fields)
-{}
-
 ObjSchema::~ObjSchema()
 {}
 
-ObjSchema&	ObjSchema::operator=(ObjSchema const& other)
+void	ObjSchema::addField(ASchema* schema)
 {
-	if (this != &src)
-	{
-		ASchema::this = ASchema::other;
-		this->_fields = other._fields;
-	}
-	return (*this);
+	this->_fields.push_back(schema);
 }
 
 bool	ObjSchema::checkValue(JsonObj const& object)
 {
 	for (std::vector<ASchema*>::const_iterator field_it = this->_fields.begin(); field_it != this->_fields.end(); ++field_it)
 	{
-		if (field_it->validate(object.getSubObj()) == false)
+		if ((*field_it)->validate(object.getSubObj()) == false)
 			return (false);
 	}
 	return (true);

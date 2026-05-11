@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:47:44 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/07 18:28:06 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/11 14:59:13 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,8 @@ StringSchema::StringSchema(std::string const& name, bool is_required, bool is_un
 	ASchema(name, JsonObj::STRING, is_required, is_unique)
 {}
 
-StringSchema::StringSchema(StringSchema const& other) :
-	ASchema(other)
-{}
-
 StringSchema::~StringSchema()
 {}
-
-StringSchema&	StringSchema::operator=(StringSchema const& other)
-{
-	if (this != &src)
-	{
-		ASchema::this = ASchema::other;
-	}
-	return (*this);
-}
 
 bool	StringSchema::checkValue(JsonObj const& object)
 {
