@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:30:18 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/11 15:03:53 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:49:13 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ class IntSchema :
 		
 		IntSchema&	operator=(IntSchema const& other);
 
-		virtual bool	checkValue(JsonObj const& object);
+		virtual void	checkValue(JsonObj const& object) const;
 };
 
 #endif // INTSCHEMA_HPP

@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 20:28:04 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/11 14:59:44 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:45:31 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ class ASchema
 		ASchema(std::string const& name, JsonObj::e_jsonType type, bool is_required, bool is_unique);
 		virtual ~ASchema();
 		
-		bool	validate(std::map<std::string, JsonObj> const& obj_map) const;
+		void	validate(std::map<std::string, JsonObj> const& obj_map) const;
+
+		std::string const&	getName(void) const;
 		
 	private:
 		
@@ -37,8 +39,8 @@ class ASchema
 		
 		ASchema&	operator=(ASchema const& other);
 
-		bool			checkType(JsonObj const& object) const;
-		virtual bool	checkValue(JsonObj const& object) const = 0;
+		void			checkType(JsonObj const& object) const;
+		virtual void	checkValue(JsonObj const& object) const = 0;
 };
 
 #endif // ASCHEMA_HPP

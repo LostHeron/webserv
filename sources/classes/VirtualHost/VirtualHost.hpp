@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/07 17:36:17 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:07:31 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,73 +24,75 @@ class VirtualHost
 	public:
 
 		VirtualHost(void);
-		VirtualHost(VirtualHost const& other);
 		~VirtualHost();
-
-		VirtualHost&	operator=(VirtualHost const& other);
-
+		
+		
 		// void	log(bool success);
-
+		
 	private:
-
+		
 		enum e_reqtype
 		{
 			GET,
 			POST,
 			DELETE
 		};
-
+		
 		// class StreambufNull :
 		// 	public std::streambuf
 		// {
 		// 	public:
-			
+		
 		// 		StreambufNull(void);
 		// 		StreambufNull(StreambufNull const& other);
 		// 		~StreambufNull();
-
+		
 		// 		StreambufNull&	operator=(StreambufNull const& other);
-			
+		
 		// 	protected:
-
+		
 		// 		virtual int_type		overflow(int ch);
 		// 		virtual std::streamsize	xsputn(const char_type* s, std::streamsize count);	
 		// 		virtual int				sync(void);		
 		// };
-		
+
 		class Location
 		{
 			public:
-
-				Location(void);
-				Location(Location const& other);
-				~Location();
-
-				Location&	operator=(Location const& other);
+			
+			Location(void);
+			Location(Location const& other);
+			~Location();
+			
+			Location&	operator=(Location const& other);
 			
 			private:
-
-				std::string		_name;
-				std::string		_root;
-				std::string		_index;
-				unsigned int	_allowedReqBitfield;
-
-				// std::ostream*	_successLogs;
-				// std::ostream*	_errorLogs;
+			
+			std::string		_name;
+			std::string		_root;
+			std::string		_index;
+			unsigned int	_allowedReqBitfield;
+			
+			// std::ostream*	_successLogs;
+			// std::ostream*	_errorLogs;
 		};
-	
+		
 		std::vector<std::string>		_hosts;
 		std::string						_root;
 		std::string						_index;
 		unsigned int					_allowedReqBitfield;
 		std::map<int, std::string>		_errorPage;
-
+		
 		// StreambufNull					_streambufNull;
 		// std::ostream						_streamNull;
 		// std::ostream*					_successLogs;
 		// std::ostream*					_errorLogs;
-	
+		
 		std::map<std::string, Location>	_locations;
-};
+		
+		VirtualHost(VirtualHost const& other);
 
-#endif // VIRUTALHOST_HPP
+		VirtualHost&	operator=(VirtualHost const& other);
+	};
+		
+		#endif // VIRUTALHOST_HPP
