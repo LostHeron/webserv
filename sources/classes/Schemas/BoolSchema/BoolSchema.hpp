@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:30:18 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/11 15:49:20 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/12 18:32:43 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class BoolSchema :
 {
 	public:
 
-		BoolSchema(std::string const& name, bool is_required, bool is_unique);
+		BoolSchema(std::string const& name, bool is_required, bool allow_multiple);
 		virtual ~BoolSchema();	
 		
 	private:

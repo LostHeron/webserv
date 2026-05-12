@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:30:18 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/11 15:48:53 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/12 19:16:17 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,14 @@ class StringSchema :
 {
 	public:
 
-		StringSchema(std::string const& name, bool is_required, bool is_unique);
+		StringSchema(std::string const& name, bool is_required, bool allow_multiple);
 		virtual ~StringSchema();
+
+		void	addValidator(void (*validator)(void));
 		
 	private:
+
+		void	(*_validator)(void);
 		
 		StringSchema(void);
 		StringSchema(StringSchema const& other);

@@ -1,26 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BoolSchema.cpp                                     :+:      :+:    :+:   */
+/*   config_file.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/07 17:47:44 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/12 18:32:43 by cviel            ###   ########.fr       */
+/*   Created: 2026/05/12 19:25:38 by cviel             #+#    #+#             */
+/*   Updated: 2026/05/12 19:27:33 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <string>
-#include <limits>
-#include "JsonObj.hpp"
-#include "BoolSchema.hpp"
+#ifndef CONFIG_FILE_HPP
+# define CONFIG_FILE_HPP
 
-BoolSchema::BoolSchema(std::string const& name, bool is_required, bool allow_multiple) :
-	ASchema(name, JsonObj::BOOL, is_required, allow_multiple)
-{}
+#include "ObjSchema.hpp"
 
-BoolSchema::~BoolSchema()
-{}
+void    host_setup(char const* filename);
+void    server_schema_builder(ObjSchema& server_schema);
 
-void    BoolSchema::checkValue(JsonObj const& object) const
-{}
+#endif

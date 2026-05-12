@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:50:25 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/11 15:08:05 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/12 19:28:19 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include "config_file.hpp"
 #include "JsonLexer.hpp"
 #include "JsonObj.hpp"
-#include <iostream>
+#include "ObjSchema.hpp"
 
 void    host_setup(char const* filename)
 {
@@ -49,4 +50,7 @@ void    host_setup(char const* filename)
 		obj_map.insert(std::pair<std::string, JsonObj>(key, val));
 	}
 	
+	ObjSchema	server_schema("server", true, false);
+	
+	server_schema_builder(server_schema);
 }
