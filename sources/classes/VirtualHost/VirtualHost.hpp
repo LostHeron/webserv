@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/11 15:07:31 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/13 17:39:23 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,29 @@
 # include <ostream>
 # include <vector>
 # include <map>
+# include "JsonObj.hpp"
 
 class VirtualHost
 {
 	public:
 
-		VirtualHost(void);
+		VirtualHost(JsonObj const& host_obj);
 		~VirtualHost();
-		
 		
 		// void	log(bool success);
 		
 	private:
-		
-		enum e_reqtype
+
+		struct s_ip_range
 		{
-			GET,
-			POST,
-			DELETE
+			u_int32_t	min;	
+			u_int32_t	max;	
+		};
+
+		struct s_redir
+		{
+			std::string	from;
+			std::string	to;	
 		};
 		
 		// class StreambufNull :
@@ -60,39 +65,48 @@ class VirtualHost
 		{
 			public:
 			
-			Location(void);
-			Location(Location const& other);
-			~Location();
-			
-			Location&	operator=(Location const& other);
+				Location(JsonObj const& location_obj);
+				~Location();
 			
 			private:
 			
-			std::string		_name;
-			std::string		_root;
-			std::string		_index;
-			unsigned int	_allowedReqBitfield;
+				struct s_redir
+				{
+					std::string	from;
+					std::string	to;	
+				};
+			
+				Location(Location const& other);
+
+				Location&	operator=(Location const& other);
+				
+				std::string					_name;
+				std::string					_root;
+				std::string					_index;
+				std::vector<std::string>	_allowedRequests;
+				std::vector<struct s_redir>	_redirections;
+			
 			
 			// std::ostream*	_successLogs;
 			// std::ostream*	_errorLogs;
 		};
 		
-		std::vector<std::string>		_hosts;
+		VirtualHost(VirtualHost const& other);
+
+		VirtualHost&	operator=(VirtualHost const& other);
+
+		std::vector<std::string>		_name;
 		std::string						_root;
 		std::string						_index;
-		unsigned int					_allowedReqBitfield;
+		std::vector<std::string>		_allowedRequests;
 		std::map<int, std::string>		_errorPage;
+		std::vector<struct s_ip_ramge>	_allowedInterfaces;
+		std::map<std::string, Location>	_locations;
 		
 		// StreambufNull					_streambufNull;
 		// std::ostream						_streamNull;
 		// std::ostream*					_successLogs;
 		// std::ostream*					_errorLogs;
-		
-		std::map<std::string, Location>	_locations;
-		
-		VirtualHost(VirtualHost const& other);
-
-		VirtualHost&	operator=(VirtualHost const& other);
 	};
 		
 		#endif // VIRUTALHOST_HPP
