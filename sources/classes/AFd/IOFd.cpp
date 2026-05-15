@@ -149,7 +149,7 @@ static int	check_method(std::string& method)
 // should also remove .. and . for the URI before going to next step
 void	IOFd::process_uri(std::string& str, size_t pos)
 {
-	std::cout << "in process uri\n";
+	// std::cout << "in process uri\n";
 	size_t space_pos = str.find(' ', pos);
 	size_t crlf = str.find("\r\n", pos);
 	size_t lf = str.find("\n", pos);
@@ -183,7 +183,7 @@ static int	check_version(const std::string& version);
 //	- 
 void	IOFd::process_version(std::string& str, size_t pos)
 {
-	std::cout << "in process version\n";
+	// std::cout << "in process version\n";
 	size_t	crlf = str.find("\r\n", pos);
 	size_t	lf = str.find("\n", pos);
 	size_t	delim = std::min(crlf, lf);
@@ -265,7 +265,7 @@ static int	check_version(const std::string& version)
 // ressources send should be ignored
 void	IOFd::process_header(std::string& str, size_t pos)
 {
-	std::cout << "in process header\n";
+	// std::cout << "in process header\n";
 	size_t	crlf ;
 	size_t	lf;
 	size_t	delim;
@@ -350,7 +350,7 @@ void	IOFd::process_header(std::string& str, size_t pos)
 
 void	IOFd::process_body(std::string& str, size_t pos)
 {
-	std::cout << "in process body\n";
+	// std::cout << "in process body\n";
 	// should reserve size of body right here because it should be known !
 	// this->body.push_back(str.data(), pos, str.size() - pos);
 	if (pos < str.size())
@@ -359,14 +359,14 @@ void	IOFd::process_body(std::string& str, size_t pos)
 
 void	IOFd::process_abort(std::string& str, size_t pos)
 {
-	std::cout << "in process body\n";
+	// std::cout << "in process body\n";
 	(void) str;
 	(void) pos;
 }
 
 void	IOFd::process_skip_sp(std::string& str, size_t pos)
 {
-	std::cout << "in process skip spaces\n";
+	// std::cout << "in process skip spaces\n";
 	size_t	non_sp_pos = str.find_first_not_of(" ", pos);
 	if (non_sp_pos == str.npos)
 		return ;

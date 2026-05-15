@@ -18,13 +18,11 @@
 class	AMessage
 {
 	public:
-		// AMessage(void);
 		AMessage(const int &fd);
 		AMessage(const AMessage &cpy);
 		virtual ~AMessage(void);
 
 		const int		&getFd(void) const;
-		// void			setFd(const int &fd);
 
 	protected:
 		const int		_fd;

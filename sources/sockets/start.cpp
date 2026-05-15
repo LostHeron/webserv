@@ -12,6 +12,9 @@
 
 #include "sockets.hpp"
 #include "AFd.hpp"
+#include "Response.hpp"
+#include "IOFd.hpp"
+#include "RequestFactory.hpp"
 #include "status.hpp"
 #include <cstring>
 #include <sys/epoll.h>
@@ -46,6 +49,27 @@ void	start(Server& server)
 				event->process();
 				if (event->fail())
 					server.remove(event);
+				else
+				{
+					// ach: processes only iofds
+					if (!dynamic_cast<IOFd *>(event))
+						continue;
+					IOFd *io = dynamic_cast<IOFd *>(event);
+
+					// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
+					RequestFactory facto = RequestFactory(*io);
+					ARequest *req = facto.createElement();
+
+					// ach: execute request and build response
+					Response resp = req->execute();
+
+
+					delete req;
+					
+					// ach: send resp -> deported inside event queue
+					// resp->send();
+				}
+				
 				// here someking of code like :
 				/* try
 				 * {

@@ -13,14 +13,6 @@
 # include "ARequest.hpp"
 
 // Construction/Destruction ====================================================
-// ARequest::ARequest(void):
-// 	AMessage(),
-// 	_method(""),
-// 	_uri(""),
-// 	_version(""),
-// 	_header(0),
-// 	_body(0) {}
-//
 ARequest::ARequest(const IOFd &IOMessage):
 	AMessage(IOMessage.getFd()),
 	_method(IOMessage.getMethod()),
@@ -47,8 +39,11 @@ ARequest			&ARequest::operator=(const ARequest &assign){ (void) assign; return (
 // void	ARequest::setType(const std::string &type)		{ this->_type = type; }
 // void	ARequest::setHeader(const std::string &header) 	{ this->_header = header; }
 // void	ARequest::setBody(const std::string &body) 		{ this->_body = body; }
-//
+
+
 // // Getters =====================================================================
-// const std::string	&ARequest::getType(void) const		{ return(this->_type); }
-// const std::string	&ARequest::getHeader(void) const	{ return(this->_header); }
-// const std::string	&ARequest::getBody(void) const		{ return(this->_body); }
+const std::string					&ARequest::getMethod(void) const { return(this->_method); }
+const std::string					&ARequest::getUri(void) const { return(this->_uri); }
+const std::string					&ARequest::getVersion(void) const { return(this->_version); }
+const std::vector< std::string >	&ARequest::getHeader(void) const { return(this->_header); }
+const std::vector<unsigned char>	&ARequest::getBody(void) const { return(this->_body); }

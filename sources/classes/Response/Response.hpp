@@ -10,25 +10,31 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		__ARESPONSE_HPP__
-# define	__ARESPONSE_HPP__
+#ifndef		__RESPONSE_HPP__
+# define	__RESPONSE_HPP__
 
-class	AResponse: public AMessage
+# include "AMessage.hpp"
+# include "stdint.h"
+
+class	Response: public AMessage
 {
 	public:
-		AResponse(void);
-		AResponse(const AResponse &cpy);
-		~AResponse(void);
+		Response(const int &fd);
+		Response(const Response &cpy);
+		~Response(void);
 
-		AResponse		&operator=(const AResponse &assign);
+		Response		&operator=(const Response &assign);
 
-		virtual void	send(void) const = 0;
+		// void	send(void); // remove, metadata to store and then to be processed (queue) by epoll
+		//
 
 		const uint16_t	&getStatus(void) const;
 
 	protected:
+		// metadata
 		uint16_t		_status;
-
+		int				_resourceFd;
+		// if no resources to read during response, build pipe, resource fd becomes read side, response write onto write side the error (bad request/invalide resouce...)
 };
 
 #endif

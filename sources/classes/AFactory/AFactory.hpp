@@ -16,6 +16,8 @@
 # include <stdint.h>
 # include <iostream>
 
+# define ERROR -1
+
 template	<class ABase>
 class		AFactory//: public ABase
 {
@@ -24,12 +26,12 @@ class		AFactory//: public ABase
 		// AFactory(const AFactory<ABase> &cpy);
 		virtual ~AFactory(void);
 
-		ABase							*createElement(void) const;
+		virtual ABase					*createElement(void) const = 0;
 	                        
 	protected:              
 		typedef ABase					*(*_constructor)(const ABase &tmp);
 
-		virtual uint8_t					_determineElement(void) const = 0;
+		virtual int8_t					_determineElement(void) const = 0;
 		virtual const _constructor		*_getConstructors(void) const = 0;
 
 		// static _constructor			_constructorsArray[];

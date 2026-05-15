@@ -21,6 +21,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFD_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFACTORY_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(GETREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(POSTREQ_DIR) \
@@ -32,6 +33,9 @@ INCLUDES = -I includes\
 AMESSAGE_DIR := 	AMessage/
 AMESSAGE_FILES := 	AMessage.cpp \
 
+RESPONSE_DIR := 	Response/
+RESPONSE_FILES := 	Response.cpp \
+					
 AFACTORY_DIR := 	AFactory/
 AFACTORY_FILES := 	AFactory.cpp \
 
@@ -72,6 +76,7 @@ JSONOBJ_FILES := JsonObj.cpp
 
 CLASSES_DIR := classes/
 CLASSES_FILES :=	$(addprefix $(AMESSAGE_DIR), $(AMESSAGE_FILES)) \
+					$(addprefix $(RESPONSE_DIR), $(RESPONSE_FILES)) \
 					$(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
 					$(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
 					$(addprefix $(GETREQ_DIR), $(GETREQ_FILES)) \

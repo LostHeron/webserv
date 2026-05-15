@@ -25,7 +25,11 @@ GETReq::GETReq(const GETReq &cpy):
 GETReq::~GETReq(void) {}
 
 // Member functions ============================================================
-void	GETReq::execute(void)
+Response	GETReq::execute(void)
 {
+	Response resp(this->_fd);
+
 	std::cout << "I AM A GET REQUEST!" << std::endl;
+
+	return (resp);
 }

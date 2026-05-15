@@ -26,7 +26,7 @@ class	POSTReq: public ARequest // only POST ?
 
 		// POSTReq		&operator=(const POSTReq &assign);
 
-		void		execute(void);
+		Response		execute(void);
 };
 
 #endif

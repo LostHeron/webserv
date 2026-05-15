@@ -26,7 +26,7 @@ class	DELETEReq: public ARequest // only DELETE ?
 
 		// DELETEReq		&operator=(const DELETEReq &assign);
 
-		void		execute(void);
+		Response		execute(void);
 };
 
 #endif

@@ -43,15 +43,29 @@ const AFactory<ARequest>::_constructor		*RequestFactory::_getConstructors(void) 
 }
 
 // Member functions =============================================================
-void			RequestFactory::execute(void)
+Response			RequestFactory::execute(void)
 {
+	Response resp(-1);
+
 	std::cout << "Cannot execute Factory class." << std::endl;
+
+	return (resp);
 }
 
-uint8_t			RequestFactory::_determineElement(void) const
+ARequest		*RequestFactory::createElement(void) const
+{
+	const _constructor	*constructorsArray = this->_getConstructors();
+	const int			i = this->_determineElement();
+
+	if (i == ERROR)
+		return (NULL);
+	return (constructorsArray[i](*this));
+}
+
+int8_t			RequestFactory::_determineElement(void) const
 {
 	if (!this->_checkHeader())
-		return (UNKNOWN);
+		return (ERROR);
 
 	if (this->_method == "GET")
 		return (ARequest::GET);
@@ -60,7 +74,7 @@ uint8_t			RequestFactory::_determineElement(void) const
 	else if (this->_method == "DELETE")
 		return (ARequest::DELETE);
 	else
-		return (UNKNOWN);
+		return (ERROR);
 }
 
 

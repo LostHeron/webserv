@@ -25,7 +25,11 @@ DELETEReq::DELETEReq(const DELETEReq &cpy):
 DELETEReq::~DELETEReq(void) {}
 
 // Member functions ============================================================
-void	DELETEReq::execute(void)
+Response	DELETEReq::execute(void)
 {
+	Response resp(this->_fd);
+
 	std::cout << "I AM A DELETE REQUEST!" << std::endl;
+
+	return (resp);
 }

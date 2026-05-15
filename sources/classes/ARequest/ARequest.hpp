@@ -13,28 +13,25 @@
 # define	__AREQUEST_HPP__
 
 # include "AMessage.hpp"
+# include "Response.hpp"
 # include "IOFd.hpp"
 
 class	ARequest: public AMessage
 {
 	public:
-		// ARequest(void);
 		ARequest(const IOFd &IOMessage);
-		// ARequest(const AMessage &message, const std::string &type, const std::string &header, const std::string &body);
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 
-		ARequest			&operator=(const ARequest &assign);
+		ARequest							&operator=(const ARequest &assign);
+                                			
+		virtual Response					execute(void) = 0; // instant execute immediate actions, then build Response according to execution metadata, status...
 
-		virtual void		execute(void) = 0;
-
-		// const std::string	&getType(void) const;
-		// const std::string	&getHeader(void) const;
-		// const std::string	&getBody(void) const;
-		//
-		// void	setType(const std::string &type);
-		// void	setHeader(const std::string &header);
-		// void	setBody(const std::string &body);
+		const std::string					&getMethod(void) const;
+		const std::string					&getUri(void) const;
+		const std::string					&getVersion(void) const;
+		const std::vector< std::string >	&getHeader(void) const;
+		const std::vector<unsigned char>	&getBody(void) const;
 
 		enum				e_reqType
 		{

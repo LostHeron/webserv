@@ -31,14 +31,15 @@ class	RequestFactory:
 		RequestFactory(const RequestFactory &cpy);
 		~RequestFactory(void);
 
-		RequestFactory	&operator=(const RequestFactory &assign);
+		RequestFactory				&operator=(const RequestFactory &assign);
 
-		void						execute(void);
+		Response					execute(void);
+		ARequest					*createElement(void) const;
 
 
 	private:
 		const _constructor			*_getConstructors(void) const;
-		uint8_t						_determineElement(void) const;
+		int8_t						_determineElement(void) const;
 
 		template					<class Derived>
 		static ARequest				*_newElement(const ARequest &tmp);

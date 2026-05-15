@@ -26,7 +26,7 @@ class	GETReq: public ARequest // only GET ?
 
 		// GETReq		&operator=(const GETReq &assign);
 
-		void		execute(void);
+		Response		execute(void);
 };
 
 #endif

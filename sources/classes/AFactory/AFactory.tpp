@@ -20,20 +20,16 @@ AFactory<ABase>::AFactory(void) {}
 template	<class ABase>
 AFactory<ABase>::~AFactory(void) {}
 
-// template	<class ABase>
-// AFactory<ABase>::AFactory(const AFactory<ABase> &cpy):
-// 	ABase(cpy) {}
-//
 // Member functions ============================================================
-template	<class ABase>
-ABase		*AFactory<ABase>::createElement(void) const
-{
-	const _constructor	*constructorsArray = this->_getConstructors();
-	const int			i = this->_determineElement();
-
-	if (i == 4)
-		return (NULL);
-	return (constructorsArray[i](*this));
-}
+// template	<class ABase>
+// ABase		*AFactory<ABase>::createElement(void) const
+// {
+// 	const _constructor	*constructorsArray = this->_getConstructors();
+// 	const int			i = this->_determineElement();
+//
+// 	if (i == ERROR)
+// 		return (NULL);
+// 	return (constructorsArray[i](*this));
+// }
 
 #endif
