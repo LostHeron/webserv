@@ -18,7 +18,10 @@
 #include "status.hpp"
 #include <cctype>
 #include <cstdio>
+#include <cstdlib>
+#include <cwctype>
 #include <netinet/in.h>
+#include <ostream>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -26,6 +29,7 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include <vector>
 
 
 IOFd::IOFd(int fd, const struct sockaddr_in& addr, Server& server):
@@ -64,20 +68,27 @@ const std::vector<unsigned char>	&IOFd::getBody(void) const { return(this->body)
 void IOFd::process()
 {
 	char buf[BUFSIZ];
-	ssize_t nb_read = read(this->fd, buf, BUFSIZ);
+	ssize_t nb_read = recv(this->fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (nb_read < 0)
 	{
+		// error happened
 		std::string error_msg(strerror(errno));
 		std::cerr << "read: " << error_msg << "\n";
+		this->status = FAILURE;
 	}
 	else if (nb_read == 0)
 	{
+		// other end closed the connection
 		this->status = FAILURE;
-		//this->server.remove(this);
 	}
 	else
 	{
+		// nomal behaviour
+
+		// creating string from buffer
 		std::string str(buf, nb_read);
+
+		// processing buffer based on current state of IOFd;
 		(this->*process_functions[this->state])(str, 0);
 		if (this->fail())
 			return ;
@@ -95,48 +106,55 @@ void	send_bad_request(int fd, int& status)
 	status = FAILURE;
 }
 
+static int	check_method(std::string& method);
+
 void	IOFd::process_method(std::string& str, size_t pos)
-{
-	(void) pos; // this function should always be called with pos 
+{ 
+	// this function should always be called with pos
 	// being 0 !
+	(void) pos; 
+
 	size_t space_pos = str.find(' ', 0);
 	if (space_pos == str.npos)
 	{
-		// no space found add: everything in the 'method' field
+		// no space found: add everything in the 'method' field
 		this->method.append(str);
-		if (this->method.size() > IOFD_MAX_SIZE ||
-			this->method.find_first_not_of(ABNF_UPPER) != this->method.npos)
-		{
-			// Error sending bad request
+		if (check_method(this->method) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
-		}
 	}
 	else
 	{
 		this->method.append(str, pos, space_pos - pos);
-		if (this->method == "" ||
-			this->method.find_first_not_of(ABNF_UPPER) != this->method.npos ||
-			this->method.size() > IOFD_MAX_SIZE)
-		{
+		if (check_method(this->method) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
-		}
 		else
 		{
-			// should go to step two !
-			// so is step two objectives to get URI
-			// or to skip SP anv HT ?
-			// et est ce qu'on est strict ou on est large ??
 			this->state++;
 			(this->*process_functions[this->state])(str, space_pos + 1);
 		}
 	}
 }
 
+static int	check_method(std::string& method)
+{
+	if (method == "" ||
+		method.size() > IOFD_MAX_SIZE ||
+		method.find_first_not_of(ABNF_UPPER) != std::string::npos)
+		return (FAILURE);
+	return (SUCCESS);
+}
+
+// should check rules for valid URI and not valid URI
+// like reject any uri containing invalid char, like newline etc.
+// should also remove .. and . for the URI before going to next step
 void	IOFd::process_uri(std::string& str, size_t pos)
 {
 	std::cout << "in process uri\n";
 	size_t space_pos = str.find(' ', pos);
-	if (space_pos == str.npos)
+	size_t crlf = str.find("\r\n", pos);
+	size_t lf = str.find("\n", pos);
+	size_t delim = std::min(space_pos, std::min(crlf, lf));
+	if (delim == std::string::npos)
 	{
 		this->uri.append(str, pos, str.size() - pos);
 		// here should check that the uri contains only valid characters
@@ -146,18 +164,23 @@ void	IOFd::process_uri(std::string& str, size_t pos)
 	}
 	else
 	{
-		this->uri.append(str, pos, space_pos - pos);
-		//	here should check that the uri is valid !
-		//	if (uri invalid)
-		//		return (send_bad_request(this->fd, this->status));
-		//	else
-		//	{
-			this->state++;
-			(this->*process_functions[this->state])(str, space_pos);
-		//	}
+		if (delim > pos)
+			this->uri.append(str, pos, delim - pos);
+		if (this->uri.find_first_not_of(ABNF_PATH_ABEMPTY) != std::string::npos)
+			return (send_bad_request(this->fd, this->status));
+		this->state++;
+		(this->*process_functions[this->state])(str, delim);
 	}
 }
 
+static int	check_version(const std::string& version);
+
+// here function to process version part of the request
+// should look something like: HTTP/*[DIGITS].*[DIGITS] or nothing 
+// condition of failed version:
+//	- version field greater than 2048 char (arbitrary size)
+//	- version number not supported ?
+//	- 
 void	IOFd::process_version(std::string& str, size_t pos)
 {
 	std::cout << "in process version\n";
@@ -166,7 +189,10 @@ void	IOFd::process_version(std::string& str, size_t pos)
 	size_t	delim = std::min(crlf, lf);
 	if (delim == str.npos)
 	{
+		// no new line found !
 		this->version.append(str, pos, str.size() - pos);
+		if (this->version.size() > IOFD_MAX_SIZE)
+			return (send_bad_request(this->fd, this->status));
 		//	if (version invalid)
 		//		return (send_bad_request(this->fd, this->status));
 	}
@@ -177,18 +203,66 @@ void	IOFd::process_version(std::string& str, size_t pos)
 			until = delim + 2;
 		else
 			until = delim + 1;
-		this->version.append(str, pos, until - pos);
+		this->version.append(str, pos, delim - pos);
+
+		size_t	trailing_space_pos = this->version.find_last_not_of(" ") + 1;
+		this->version.erase(trailing_space_pos, version.size() - trailing_space_pos);
+
+		if (check_version(this->version) != SUCCESS)
+			return (send_bad_request(this->fd, this->status));
 		//	if (version invalid)
 		//		return (send_bad_request(this->fd, this->status));
 		//	else
 		//	{
-			this->state++;
-			(this->*process_functions[this->state])(str, until);
+		this->state++;
+		(this->*process_functions[this->state])(str, until);
 		//	}
 
 	}
 }
 
+// should begin with HTTP
+// should be followed by a /
+// and then two number separated by a '.'
+// or should be empty
+static int	check_version(const std::string& version)
+{
+	if (version.size() > IOFD_MAX_SIZE)
+		return (FAILURE);
+	if (version == "")
+	{
+		// TODO HERE IF NO VERSION WAS GIVEN:
+		// CHECK THAT THE KEYWORD IS GET 
+		// OR REFUSE WITH BAD REQUEST 
+		return (SUCCESS);
+	}
+	if (std::strncmp(version.c_str(), "HTTP/", 5) != 0)
+		return (FAILURE);
+
+	size_t	dot_pos = version.find_first_not_of(ABNF_DIGIT, 5);
+	if (dot_pos == std::string::npos || version.at(dot_pos) != '.')
+		return (FAILURE);
+	long major = std::strtol(version.c_str() + 5, NULL, 10);
+	if (major != 1)
+		return (FAILURE);
+	// TODO return 505 version not handled by the server
+
+	size_t	end_pos = version.find_first_not_of(ABNF_DIGIT, dot_pos + 1);
+	if (end_pos != std::string::npos)
+		return (FAILURE);
+	long minor = std::strtol(version.c_str() + dot_pos, NULL, 10);
+	if (minor != 0 && minor != 1 && minor != 2 && minor != 3)
+		return (FAILURE);
+	// TODO return 505 version not handled by the server
+	return (SUCCESS);
+}
+
+// here depending on the version, it should exepct no header 
+// so getting here, if version is empty, then it is a 'simple-request'
+// if it is a simple request, then the method should be 'GET'
+// and if it is the case, the request is complete, and should 
+// be processed using only method and uri, then closed and all other
+// ressources send should be ignored
 void	IOFd::process_header(std::string& str, size_t pos)
 {
 	std::cout << "in process header\n";
@@ -196,17 +270,35 @@ void	IOFd::process_header(std::string& str, size_t pos)
 	size_t	lf;
 	size_t	delim;
 	size_t	until;
+	if (this->version == "")
+	{
+		if (this->method == "GET")
+		{
+			// do stuff to stop parsing incoming data,
+			// and process the request using only information
+			// in 'method' and in 'uri'
+			// return ...
+		}
+		else
+		{
+			return (send_bad_request(this->fd, this->status));
+		}
+	}
 
 	while (pos < str.size())
 	{
 		crlf = str.find("\r\n", pos);
 		lf = str.find("\n", pos);
 		delim = std::min(crlf, lf);
-		if (delim == str.npos) // no \r\n
+		if (delim == std::string::npos) // no \r\n
 			until = str.size();
 		else if (delim == pos)
 		{
-			//here we have a delim at begin,
+			if (str[delim] == '\r')
+				until = delim + 2;
+			else
+				until = delim + 1;
+			// here we have a delim at begin,
 			// we need to check if previous last char
 			// stored is also a new line and if so,
 			// next data must go into the body section
@@ -218,24 +310,17 @@ void	IOFd::process_header(std::string& str, size_t pos)
 			//		do stuff;
 			// }
 				this->state++;
-				(this->*process_functions[this->state])(str, pos);
+				(this->*process_functions[this->state])(str, until);
 				return;
 			}
 			else
 			{
 				std::string& last_line = this->header[this->header.size() - 1];
-				if (last_line == "" ||
-					last_line[last_line.size() - 1] != '\n')
-				{
-					if (str[delim] == '\r')
-						until = delim + 2;
-					else
-						until = delim + 1;
-				}
-				else
+				if (last_line != "" &&
+					last_line[last_line.size() - 1] == '\n')
 				{
 					this->state++;
-					(this->*process_functions[this->state])(str, pos);
+					(this->*process_functions[this->state])(str, until);
 					return;
 				}
 			}
@@ -256,9 +341,7 @@ void	IOFd::process_header(std::string& str, size_t pos)
 				last_line[last_line.size() - 1] != '\n')
 				last_line.append(str, pos, until - pos);
 			else
-			{
 				this->header.push_back(std::string(str, pos, until - pos));
-			}
 		}
 		pos = until;
 	}
@@ -268,8 +351,10 @@ void	IOFd::process_header(std::string& str, size_t pos)
 void	IOFd::process_body(std::string& str, size_t pos)
 {
 	std::cout << "in process body\n";
-	(void) str;
-	(void) pos;
+	// should reserve size of body right here because it should be known !
+	// this->body.push_back(str.data(), pos, str.size() - pos);
+	if (pos < str.size())
+		this->body.insert(this->body.end(), str.begin() + pos, str.end());
 }
 
 void	IOFd::process_abort(std::string& str, size_t pos)
@@ -289,6 +374,19 @@ void	IOFd::process_skip_sp(std::string& str, size_t pos)
 	(this->*process_functions[this->state])(str, non_sp_pos);
 }
 
+std::ostream& operator<<(std::ostream& os, std::vector<unsigned char> data)
+{
+	for (size_t	i = 0; i < data.size(); i++)
+	{
+		char c;
+		if (std::isprint(data.at(i)) )//|| std::iswspace(data.at(i)))
+			c = static_cast<char>(data.at(i));
+		else
+			c = '.';
+		os << c;
+	}
+	return (os);
+}
 
 std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 {
@@ -304,12 +402,15 @@ std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 	os << "uri: '" << iofd.uri << "'; ";
 	os << "version: '" << iofd.version << "'; ";
 	os << "\n----------------------\n";
-	os << "headerlines:\n";
+	os << "headerlines: (nb headerlines: " << iofd.header.size() << ")\n";
 	for (size_t i = 0; i < iofd.header.size(); i++)
 	{
 		os << iofd.header[i];
 	}
-	os << "\n----------------------\n";
+	os << "----------------------\n";
+	os << "body:\n";
+	os << iofd.body;
 	os << "\n";
 	return (os);
 }
+
