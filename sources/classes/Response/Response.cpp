@@ -32,7 +32,11 @@ Response::~Response(void) {}
 // Ops overloading =============================================================
 Response			&Response::operator=(const Response &assign){ (void) assign; return (*this); }
 
-// // Setters =====================================================================
+// Setters =====================================================================
+void				Response::setResourceFd(const int &resourceFd)
+{
+	// maybe try if already set
+	this->_resourceFd = resourceFd;
+}
 
-
-// // Getters =====================================================================
+// Getters =====================================================================

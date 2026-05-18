@@ -14,7 +14,7 @@
 # define	__RESPONSE_HPP__
 
 # include "AMessage.hpp"
-# include "stdint.h"
+# include <stdint.h>
 
 class	Response: public AMessage
 {
@@ -29,6 +29,7 @@ class	Response: public AMessage
 		//
 
 		const uint16_t	&getStatus(void) const;
+		void			setResourceFd(const int &resourceFd);
 
 	protected:
 		// metadata

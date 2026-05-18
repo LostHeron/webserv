@@ -15,6 +15,11 @@
 # include "AMessage.hpp"
 # include "Response.hpp"
 # include "IOFd.hpp"
+# include <unistd.h>
+# include <fcntl.h>
+
+
+# define TEMP_ROOT "/home/abetemps/goinfre/webserv_root"
 
 class	ARequest: public AMessage
 {
