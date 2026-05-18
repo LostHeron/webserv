@@ -17,6 +17,7 @@
 #include "default_pages.hpp"
 #include "status.hpp"
 #include <cctype>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cwctype>
@@ -144,9 +145,14 @@ static int	check_method(std::string& method)
 	return (SUCCESS);
 }
 
+static int	check_uri(std::string& uri);
+static void	clear_uri(std::string& uri);
+
 // should check rules for valid URI and not valid URI
 // like reject any uri containing invalid char, like newline etc.
 // should also remove .. and . for the URI before going to next step
+// do we treat url encoding and decoding ? like '/hi%20you.html' should
+// be transformed to '/hi 20yo.html' that's some question we need to ask
 void	IOFd::process_uri(std::string& str, size_t pos)
 {
 	// std::cout << "in process uri\n";
@@ -157,20 +163,89 @@ void	IOFd::process_uri(std::string& str, size_t pos)
 	if (delim == std::string::npos)
 	{
 		this->uri.append(str, pos, str.size() - pos);
-		// here should check that the uri contains only valid characters
-		// and that its size is valid!
-		if (this->uri.size() > IOFD_MAX_SIZE)
+		if (check_uri(this->uri) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
 	}
 	else
 	{
 		if (delim > pos)
 			this->uri.append(str, pos, delim - pos);
-		if (this->uri.find_first_not_of(ABNF_PATH_ABEMPTY) != std::string::npos)
+		if (check_uri(this->uri) || this->uri == "")
 			return (send_bad_request(this->fd, this->status));
+		clear_uri(this->uri);
 		this->state++;
 		(this->*process_functions[this->state])(str, delim);
 	}
+}
+
+// what is an invalid uri ?
+// if size is too large
+// if it contains other than allowed characters
+static int	check_uri(std::string& uri)
+{
+	if (uri.size() > IOFD_MAX_SIZE ||
+		uri.find_first_not_of(ABNF_PATH_ABEMPTY "?") != std::string::npos
+	)
+		return (FAILURE);
+	if (uri.size() > 0)
+	{
+		if (uri.at(0) != '/')
+			return (FAILURE);
+	}
+	return (SUCCESS);
+}
+
+void split(std::vector<std::string>& res, std::string& src, std::string charset)
+{
+	size_t	start = 0;
+	size_t	end = 0;
+
+	while (start != std::string::npos && end != std::string::npos)
+	{
+		start = src.find_first_not_of(charset, end);
+		end = src.find_first_of(charset, start);
+		if (start == std::string::npos)
+			return ;
+		else if (end == std::string::npos)
+		{
+			res.push_back(std::string(src, start, src.size() - start));
+			return ;
+		}
+		else
+		{
+			res.push_back(std::string(src, start, end - start));
+		}
+	}
+}
+
+// this function should clear uri, by removing '..'
+// like '/hi/../you' into '/you'
+static void	clear_uri(std::string& uri)
+{
+	std::vector<std::string>	splitted;
+	bool						end_by_slash;
+	std::vector<std::string>	transformed;
+
+	if (uri[uri.size() - 1] == '/')
+		end_by_slash = true;
+
+	split(splitted, uri, "/");
+	for (size_t i = 0; i < splitted.size(); i++)
+	{
+		if (splitted[i] == ".")
+			;
+		else if (splitted[i] == ".." && transformed.size() > 0)
+			transformed.pop_back();
+		else
+			transformed.push_back(splitted[i]);
+	}
+	uri = "/";
+	for (size_t i = 0; i < transformed.size(); i++)
+	{
+		uri += transformed[i];
+	}
+	if (end_by_slash == true)
+		uri += '/';
 }
 
 static int	check_version(const std::string& version);
@@ -258,6 +333,12 @@ static int	check_version(const std::string& version)
 }
 
 // here depending on the version, it should exepct no header 
+// maybe header should be in key-value pairs ? like:
+// std::map<std::string, std::string>, but a map is annoying because it
+// does not allow duplicate keys, and keys can be duplicate
+// so maybe more an std::vector of std::pairs of std::string, std::string
+// maybe this is better this way ? i think we will go this way
+// but its so much verbose ...
 // so getting here, if version is empty, then it is a 'simple-request'
 // if it is a simple request, then the method should be 'GET'
 // and if it is the case, the request is complete, and should 

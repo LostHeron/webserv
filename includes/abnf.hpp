@@ -21,7 +21,12 @@
 # define ABNF_HEXDIG "ABCDEF" "abcdef" ABNF_DIGIT
 # define ABNF_PCT_ENCODED "%" ABNF_HEXDIG ABNF_HEXDIG
 # define ABNF_SUBDELIM "!" "$" "&" "'" "("  ")" "*" "+" "," ";" "="
+//# define UNRESERVED ";"  "/" "?"  ":"  "@"  "&"  "="  "+"  "$"  ","
 # define ABNF_PCHAR	ABNF_UNRESERVED ABNF_PCT_ENCODED ABNF_SUBDELIM ":" "@"
+# define ABNF_UNWISE "{" "}" "|" "\\" "^" "[" "]" "`"
+// ABNF PATH ABEMPTY contains characters allowed in the location part of
+// an URI, and should be used to check and uri does not contains
+// forbidden characters
 # define ABNF_PATH_ABEMPTY "/" ABNF_PCHAR
 
 #endif

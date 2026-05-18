@@ -20,7 +20,7 @@
 # include <string>
 # include <stdint.h>
 
-# define IOFD_MAX_SIZE 2049
+# define IOFD_MAX_SIZE 5000
 
 
 class IOFd: public AFd
