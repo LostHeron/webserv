@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/13 17:39:23 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/18 20:41:30 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,10 @@ class VirtualHost
 {
 	public:
 
-		VirtualHost(JsonObj const& host_obj);
+		VirtualHost(VirtualHost const& other);
 		~VirtualHost();
+		
+		static std::pair<u_int16_t, VirtualHost>	build(std::map<std::string, JsonObj> obj_map);
 		
 		// void	log(bool success);
 		
@@ -65,8 +67,10 @@ class VirtualHost
 		{
 			public:
 			
-				Location(JsonObj const& location_obj);
+				Location(Location const& other);
 				~Location();
+
+				static std::pair<std::string, Location>	build(std::map<std::string, JsonObj> const& loc_obj);
 			
 			private:
 			
@@ -75,33 +79,47 @@ class VirtualHost
 					std::string	from;
 					std::string	to;	
 				};
-			
-				Location(Location const& other);
-
-				Location&	operator=(Location const& other);
 				
-				std::string					_name;
-				std::string					_root;
-				std::string					_index;
-				std::vector<std::string>	_allowedRequests;
-				std::vector<struct s_redir>	_redirections;
-			
-			
+				std::string							_root;
+				std::string							_index;
+				std::vector<std::string>			_allowedRequest;
+				bool								_allowDirList;
+				std::vector<Location::s_redir>		_redirection;
+				std::map<std::string, std::string>	_cgi;
+				
+				Location(void);
+				
+				Location&	operator=(Location const& other);
+
+				static Location::s_redir	buildRedir(std::string const& redir);
+				
 			// std::ostream*	_successLogs;
 			// std::ostream*	_errorLogs;
 		};
 		
-		VirtualHost(VirtualHost const& other);
+		std::vector<std::string>						_names;
+		std::string										_root;
+		std::string										_index;
+		u_int32_t										_max_body_size;
+		std::vector<VirtualHost::s_ip_range>			_allowedInterface;
+		std::vector<std::string>						_allowedRequest;
+		bool											_allowDirList;
+		std::map<int, std::string>						_error;
+		std::map<std::string, VirtualHost::Location>	_location;
+		std::map<std::string, std::string>				_cgi;
+		
+		VirtualHost(void);
 
 		VirtualHost&	operator=(VirtualHost const& other);
 
-		std::vector<std::string>		_name;
-		std::string						_root;
-		std::string						_index;
-		std::vector<std::string>		_allowedRequests;
-		std::map<int, std::string>		_errorPage;
-		std::vector<struct s_ip_ramge>	_allowedInterfaces;
-		std::map<std::string, Location>	_locations;
+		template <typename T>
+		static bool	checkDuplicates(T const& val, std::vector<T> const& vec);
+
+		static VirtualHost::s_ip_range	buildInterfaceRange(std::string const& interfaces);
+		static u_int32_t				buildInterface(std::string const& interface);
+		static void						addErrorPage(std::map<std::string, JsonObj> const& error, std::map<int, std::string>& host_error);
+		static void						addLocation(std::map<std::string, JsonObj> const& location, std::map<std::string, VirtualHost::Location>& host_location);
+		static void						addCgi(std::map<std::string, JsonObj> const& cgi, std::map<std::string, std::string>& host_cgi);		
 		
 		// StreambufNull					_streambufNull;
 		// std::ostream						_streamNull;
@@ -109,4 +127,4 @@ class VirtualHost
 		// std::ostream*					_errorLogs;
 	};
 		
-		#endif // VIRUTALHOST_HPP
+#endif // VIRUTALHOST_HPP

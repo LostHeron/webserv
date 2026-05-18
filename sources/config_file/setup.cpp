@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:50:25 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/13 17:27:33 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/18 18:20:16 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,15 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include "VirtualHost.hpp"
 #include "config_file.hpp"
 #include "JsonLexer.hpp"
 #include "JsonObj.hpp"
 #include "ObjSchema.hpp"
 
-void    host_setup(char const* filename)
+void	host_setup(char const* filename, std::map<int, VirtualHost>& host_map)
 {
-	std::ifstream   config_file(filename);
+	std::ifstream	config_file(filename);
 
 	if (config_file.fail())
 		throw std::runtime_error("File stream failed to properly setup");
@@ -47,11 +48,7 @@ void    host_setup(char const* filename)
 
 		JsonObj	val(lexer);
 
-		obj_map.insert(std::pair<std::string, JsonObj>(key, val));
+		if (obj_map.insert(std::pair<std::string, JsonObj>(key, val)).second == false)
+			throw std::logic_error("Key '" + key + "' already exists");
 	}
-	
-	ObjSchema	server_schema("server", true, false);
-	
-	server_schema_builder(server_schema);
-	server_schema.validate(obj_map);
 }
