@@ -1,0 +1,8 @@
+root, index  : watch out for security when trying to get to a specified path (do not allow requests to go to specific directories)
+logs ?
+locations : look into ports and 'location aliases' for a better implementation (some things could be not as intuitive as expected)
+could use a map of <port, vector<server_name>> as the global data structure
+look into default values implementation, and default server redirection if no match
+
+need to decide what happens when trying to copy a virtual host from another one, if even possible
+logs seems to be the biggest issue : who handles logs ? who checks if logs are needed ? how to "copy" logs destination from one virtual server to another ?

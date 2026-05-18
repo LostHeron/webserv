@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:18:42 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 19:25:00 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/07 16:58:46 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ JsonObj::JsonObj(JsonLexer& jsonLexer)
 
 				this->_typeArray.push_back(val);
 			}
+			if (this->_typeArray.empty() == true)
+				throw std::invalid_argument("Array is empty");
 			this->_type = JsonObj::ARRAY;
 			jsonLexer.popToken();
 			break ;
@@ -87,7 +89,7 @@ JsonObj::JsonObj(JsonLexer& jsonLexer)
 				JsonObj	val(jsonLexer);
 
 				if (!this->_typeSubObj.insert(std::pair<std::string, JsonObj>(key, val)).second)
-					throw std::runtime_error("Insertion failed");
+					throw std::runtime_error("An element with the same key already exists");
 			}
 			this->_type = JsonObj::SUBOBJ;
 			jsonLexer.popToken();
@@ -194,36 +196,39 @@ JsonObj::e_jsonType	JsonObj::getType(void) const
 	return (this->_type);
 }
 
-template <typename T>
-T const&	JsonObj::getValue(void) const
+int	JsonObj::getInt(void) const
 {
-	switch (this->_type)
-	{
-		case INT:
-		{
-			return (this->_typeInt);
-		}
-		case BOOL:
-		{
-			return (this->_typeBool);
-		}
-		case STRING:
-		{
-			return (this->_typeString);
-		}
-		case ARRAY:
-		{
-			return (this->_typeArray);
-		}
-		case SUBOBJ:
-		{
-			return (this->_typeSubObj);
-		}
-		default:
-		{
-			throw std::runtime_error("JsonObj has unknown or invalid type : Cannot get value");
-		}
-	}
+	if (this->_type != INT)
+		throw std::runtime_error("Using integer getter for a non integer");
+	return (this->_typeInt);
+}
+
+bool	JsonObj::getBool(void) const
+{
+	if (this->_type != BOOL)
+		throw std::runtime_error("Using boolean getter for a non boolean");
+	return (this->_typeBool);
+}
+
+std::string	const&	JsonObj::getString(void) const
+{
+	if (this->_type != STRING)
+		throw std::runtime_error("Using string getter for a non string");
+	return (this->_typeString);
+}
+
+std::vector<JsonObj> const&	JsonObj::getArray(void) const
+{
+	if (this->_type != ARRAY)
+		throw std::runtime_error("Using array getter for a non array");
+	return (this->_typeArray);
+}
+
+std::map<std::string, JsonObj> const&	JsonObj::getSubObj(void) const
+{
+	if (this->_type != SUBOBJ)
+		throw std::runtime_error("Using nested object getter for a non nested object");
+	return (this->_typeSubObj);
 }
 
 void	JsonObj::print(std::ostream& out) const

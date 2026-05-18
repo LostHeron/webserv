@@ -6,15 +6,15 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:10:23 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 17:23:56 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/07 17:36:29 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __JSONLEXER_HPP__
-# define __JSONLEXER_HPP__
+#ifndef JSONLEXER_HPP
+# define JSONLEXER_HPP
 
-#include <string>
-#include <queue>
+# include <string>
+# include <queue>
 
 class JsonLexer
 {
@@ -40,9 +40,9 @@ class JsonLexer
 
 		JsonLexer&	operator=(JsonLexer const& other);
 
-		bool		empty(void) const;
-		e_tokenType	peekType(void) const;
-		std::string	popToken(void);
+		bool				empty(void) const;
+		e_tokenType			peekType(void) const;
+		std::string	const&	popToken(void);
 
 	private:
 
@@ -57,4 +57,4 @@ class JsonLexer
 		JsonLexer(void);
 };
 
-#endif
+#endif // JSONLEXER_HPP

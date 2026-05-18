@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:50:25 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 19:23:32 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/13 17:27:33 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include "config_file.hpp"
 #include "JsonLexer.hpp"
 #include "JsonObj.hpp"
-#include <iostream>
+#include "ObjSchema.hpp"
 
 void    host_setup(char const* filename)
 {
@@ -30,8 +31,7 @@ void    host_setup(char const* filename)
 	input_stream << config_file.rdbuf();
 	
 	JsonLexer						lexer(input_stream.str());
-	std::map<std::string, JsonObj>	objects;
-
+	std::map<std::string, JsonObj>	obj_map;
 
 	while (!lexer.empty())
 	{
@@ -47,7 +47,11 @@ void    host_setup(char const* filename)
 
 		JsonObj	val(lexer);
 
-		if (!objects.insert(std::pair<std::string, JsonObj>(key, val)).second)
-			throw std::runtime_error("Insertion failed");
+		obj_map.insert(std::pair<std::string, JsonObj>(key, val));
 	}
+	
+	ObjSchema	server_schema("server", true, false);
+	
+	server_schema_builder(server_schema);
+	server_schema.validate(obj_map);
 }
