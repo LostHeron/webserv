@@ -28,7 +28,19 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(DELETEREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONLEXER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONOBJ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(ASCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(BOOL_SCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INT_SCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJ_SCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STR_SCHEMA_DIR)
 
+SCHEMA_DIR :=		Schemas/
+ASCHEMA_DIR :=		ASchema/
+BOOL_SCHEMA_DIR :=	BoolSchema/
+INT_SCHEMA_DIR :=	IntSchema/
+OBJ_SCHEMA_DIR :=	ObjSchema/
+STR_SCHEMA_DIR :=	StringSchema/
+					
 
 AMESSAGE_DIR := 	AMessage/
 AMESSAGE_FILES := 	AMessage.cpp \
@@ -85,8 +97,8 @@ CLASSES_FILES :=	$(addprefix $(AMESSAGE_DIR), $(AMESSAGE_FILES)) \
 					$(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 					$(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
 					$(addprefix $(AFD_DIR), $(AFD_FILES)) \
-					$(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
-					$(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
+					# $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
+					# $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
 
 SIGNALS_HANDLING_DIR := signals/
 SIGNALS_HANDLING_FILES := setup_signals.cpp \
@@ -101,9 +113,9 @@ CONFIGFILE_FILES := setup.cpp \
 SRCS_DIR := sources/
 SRCS_FILES := webserv.cpp \
 			  $(addprefix $(SOCKETS_DIR), $(SOCKETS_FILES)) \
-			  $(addprefix $(CONFIGFILE_DIR), $(CONFIGFILE_FILES)) \
 			  $(addprefix $(SIGNALS_HANDLING_DIR), $(SIGNALS_HANDLING_FILES)) \
-			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES)) \
+			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES))
+			  # $(addprefix $(CONFIGFILE_DIR), $(CONFIGFILE_FILES)) \
 
 SRCS_FILES := $(addprefix $(SRCS_DIR), $(SRCS_FILES))
 
@@ -160,3 +172,6 @@ debug_fclean:
 
 debug_re:
 	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3" OBJ_DIR=".obj_debug/"
+
+print-%:
+	@echo $($(patsubst print-%,%,$@))
