@@ -18,7 +18,7 @@ Response::Response(const int &fd):
 	_status(0),
 	_resourceFd(-1)
 {
-	std::cout << "fd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
+	std::cout << "==> RESPONSE CREATION\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
 }
 
 Response::Response(const Response &cpy):
@@ -33,10 +33,20 @@ Response::~Response(void) {}
 Response			&Response::operator=(const Response &assign){ (void) assign; return (*this); }
 
 // Setters =====================================================================
+void				Response::setStatus(const uint16_t &status)
+{
+	// maybe try if already set
+	this->_status = status;
+	std::cout << "==> STATUS SET\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
+}
+
 void				Response::setResourceFd(const int &resourceFd)
 {
 	// maybe try if already set
 	this->_resourceFd = resourceFd;
+	std::cout << "==> RESOURCEFD SET\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
 }
 
 // Getters =====================================================================
+const uint16_t		&Response::getStatus(void) const {	return (this->_status); }
+const int			&Response::getResourceFd(void) const {	return (this->_resourceFd); }

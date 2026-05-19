@@ -60,14 +60,11 @@ void	start(Server& server)
 					RequestFactory facto = RequestFactory(*io);
 					ARequest *req = facto.createElement();
 
-					// ach: execute request and build response
+					// ach: execute request and build response, then Jules handle the Client transmission
 					Response resp = req->execute();
-
 
 					delete req;
 					
-					// ach: send resp -> deported inside event queue
-					// resp->send();
 				}
 				
 				// here someking of code like :

@@ -29,6 +29,9 @@ class	Response: public AMessage
 		//
 
 		const uint16_t	&getStatus(void) const;
+		const int		&getResourceFd(void) const;
+
+		void			setStatus(const uint16_t &status);
 		void			setResourceFd(const int &resourceFd);
 
 	protected:

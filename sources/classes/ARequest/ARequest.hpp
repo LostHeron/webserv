@@ -19,7 +19,8 @@
 # include <fcntl.h>
 
 
-# define TEMP_ROOT "/home/abetemps/goinfre/webserv_root"
+# define TEMP_ROOT "/home/abetemps/temp_webserv_root"
+
 
 class	ARequest: public AMessage
 {
@@ -43,8 +44,8 @@ class	ARequest: public AMessage
 			GET,
 			POST,
 			DELETE,
-			TYPE_QTY,
 			UNKNOWN,
+			TYPE_QTY,
 		};
 
 	protected:
