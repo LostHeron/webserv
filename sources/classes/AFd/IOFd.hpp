@@ -60,7 +60,7 @@ class IOFd: public AFd
 			DISCARD,
 		};
 
-		void (IOFd::*process_functions[10])(std::string& buf, size_t pos);
+		void (IOFd::*process_functions[10])(std::string& buf, size_t& pos);
 
 		// used to know which state the program is in
 		int state;	
@@ -70,33 +70,32 @@ class IOFd: public AFd
 
 		// identify which method the client tries to reach
 		std::string									method;
-		void										process_method(std::string&, size_t pos);
+		void										process_method(std::string&, size_t& pos);
 
 		// identify which uri the client tries to reach
 		std::string									uri;
-		void										process_uri(std::string&, size_t pos);
+		void										process_uri(std::string&, size_t& pos);
 
 		// identify which version of HTTP the client tries to reach
 		std::string									version;
-		void										process_version(std::string&, size_t pos);
+		void										process_version(std::string&, size_t& pos);
 
 		// vector of vector of char, where vector of char
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
 		std::vector< std::string >					header;
-		void										process_header(std::string&, size_t pos);
+		void										process_header(std::string&, size_t& pos);
 
 		// body of the request, must be sur a 'content length' is present
 		// in the request to know how much data to store in the body !
 		// also in here do we store the data send ? or do we wait until
 		// we know what to do with the request ...
 		std::vector<unsigned char>					body;
-		void										process_body(std::string&, size_t pos);
+		void										process_body(std::string&, size_t& pos);
 
 		// if there's still data to process after having retrieved the entire
 		// body, server should close the connection with a bad request response
-		void										process_abort(std::string&, size_t pos);
-		void										process_skip_sp(std::string&, size_t pos);
+		void										process_skip_sp(std::string&, size_t& pos);
 };
 
 

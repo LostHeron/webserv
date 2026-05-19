@@ -49,6 +49,7 @@ void	start(Server& server)
 				event->process();
 				if (event->fail())
 					server.remove(event);
+				/*
 				else
 				{
 					// ach: processes only iofds
@@ -69,6 +70,7 @@ void	start(Server& server)
 					// ach: send resp -> deported inside event queue
 					// resp->send();
 				}
+				*/
 				
 				// here someking of code like :
 				/* try
