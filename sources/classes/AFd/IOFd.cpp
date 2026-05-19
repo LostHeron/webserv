@@ -184,7 +184,7 @@ void	IOFd::process_uri(std::string& str, size_t pos)
 static int	check_uri(std::string& uri)
 {
 	if (uri.size() > IOFD_MAX_SIZE ||
-		uri.find_first_not_of(ABNF_PATH_ABEMPTY "?") != std::string::npos
+		uri.find_first_not_of(ABNF_PATH_ABEMPTY "[]{}<>?#") != std::string::npos
 	)
 		return (FAILURE);
 	if (uri.size() > 0)
@@ -236,15 +236,18 @@ static void	clear_uri(std::string& uri)
 			;
 		else if (splitted[i] == ".." && transformed.size() > 0)
 			transformed.pop_back();
+		else if (splitted[i] == "..")
+			;
 		else
 			transformed.push_back(splitted[i]);
 	}
-	uri = "/";
+	uri = "";
 	for (size_t i = 0; i < transformed.size(); i++)
 	{
+		uri += '/';
 		uri += transformed[i];
 	}
-	if (end_by_slash == true)
+	if (transformed.size() == 0 || end_by_slash == true)
 		uri += '/';
 }
 
