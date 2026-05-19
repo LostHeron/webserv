@@ -48,6 +48,87 @@ class	ARequest: public AMessage
 			TYPE_QTY,
 		};
 
+		enum				e_reqStatus
+		{
+			INFO = 100,
+			SUCCESS = 200,
+			REDIR = 300,
+			C_ERROR = 400
+			S_ERROR = 500
+		};
+
+		enum				e_reqStatusInfo
+		{
+			CONTINUE,
+			SWITCH,
+			PROCESSING,
+			EARLY_HINTS
+		};
+
+		enum				e_reqStatusSuccess
+		{
+			OK,
+			CREATED,
+			ACCEPTED,
+			NON_AUTHORITATIVE_INFO,
+			NO_CONTENT,
+			RESET_CONTENT,
+			PARTIAL_CONTENT,
+			MULTI_STATUS,
+			ALREADY_REPORTED,
+			IM_USED
+		};
+
+		enum				e_reqStatusRedir
+		{
+			MULTIPLE_CHOICES,
+			MOVED_PERM,
+			FOUND,
+			SEE_OTHER,
+			NOT_MODIFIED,
+			USE_PROXY,
+			UNUSED,
+			TEMP_REDIR,
+			PERM_REDIR
+		};
+
+		enum				e_reqStatusClientError
+		{
+			BAD_REQ,
+			UNAUTHORIZED,
+			PAYMENT_REQUIRED,
+			FORBIDDEN,
+			NOT_FOUND,
+			NOT_ALLOWED_METHOD,
+			PROXY_AUTH_REQUIRED,
+			TIMEOUT,
+			CONFLICT,
+			GONE,
+			LENGTH_REQUIRED,
+			PRECONDITION_FAILED,
+			TOO_LARGE,
+			TOO_LONG_URI,
+			UNSUPPORTED_MEDIA_TYPE,
+			RANGE_NOT_SATISFIABLE,
+			EXPECTATION_FAILED,
+			TEAPOT,
+			MISDIRECTED_REQ,
+			UNPROCESSABLE_CONTENT,
+			LOCKED,
+			FAILED_DEP,
+			TOO_EARLY,
+			UPGRADE_REQUIRED,
+			PRECONDITION_REQUIRED,
+			TOO_MANY_REQUEST,
+			TOO_LARGE_HDR_FIELDS,
+			LEGAL
+		};
+
+		enum				e_reqStatusServerError
+		{
+
+		};
+
 	protected:
 		const std::string				  	_method;
 		const std::string				  	_uri;

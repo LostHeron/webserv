@@ -16,10 +16,7 @@
 Response::Response(const int &fd):
 	AMessage(fd),
 	_status(0),
-	_resourceFd(-1)
-{
-	std::cout << "==> RESPONSE CREATION\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
-}
+	_resourceFd(-1) {}
 
 Response::Response(const Response &cpy):
 	AMessage(cpy._fd),

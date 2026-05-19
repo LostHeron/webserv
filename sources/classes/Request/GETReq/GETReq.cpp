@@ -27,14 +27,14 @@ GETReq::~GETReq(void) {}
 // Member functions ============================================================
 
 // tempp!!!!
-void display_file(int fd)
+void send_file(int fd, int client)
 {
 	int rv = 0;
 	char buf[1024 + 1];
 	do
 	{
 		buf[rv] = '\0';
-		std::cout << buf;
+		write(client, buf, rv);
 		rv = read(fd, buf, 1024);
 	} while (rv);
 }
@@ -49,13 +49,11 @@ Response	GETReq::execute(void)
 				<< " for full path: " << path
 				<< std::endl;
 	
-	// check perms
-	// - chmod
-	// - config_file
+	// check perms = config_file
 
-	// if dir, return index page, else:
+	// check dir or file, return index page
 	
-	// try open
+	// try open: existence/chmod
 	int	resourceFd = open(path.c_str(), O_RDONLY);
 	if (resourceFd < 0)
 	{
@@ -68,7 +66,7 @@ Response	GETReq::execute(void)
 	resp.setResourceFd(resourceFd);
 
 	// DEBUG
-	display_file(resourceFd);
+	send_file(resourceFd, this->_fd);
 	// DEBUG
 
 

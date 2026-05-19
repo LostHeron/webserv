@@ -57,14 +57,15 @@ void	start(Server& server)
 					IOFd *io = dynamic_cast<IOFd *>(event);
 
 					// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
-					RequestFactory facto = RequestFactory(*io);
+					RequestFactory facto(*io);
 					ARequest *req = facto.createElement();
 
-					// ach: execute request and build response, then Jules handle the Client transmission
+					// ach: execute request building response metadata, then Jules will handle the Client transmission
 					Response resp = req->execute();
 
 					delete req;
 					
+					close(resp.getResourceFd());
 				}
 				
 				// here someking of code like :
