@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/18 20:41:30 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/19 16:08:37 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ class VirtualHost
 		~VirtualHost();
 		
 		static std::pair<u_int16_t, VirtualHost>	build(std::map<std::string, JsonObj> obj_map);
+
+		std::vector<std::string> const&	getName(void) const;
 		
 		// void	log(bool success);
 		
@@ -97,7 +99,7 @@ class VirtualHost
 			// std::ostream*	_errorLogs;
 		};
 		
-		std::vector<std::string>						_names;
+		std::vector<std::string>						_name;
 		std::string										_root;
 		std::string										_index;
 		u_int32_t										_max_body_size;

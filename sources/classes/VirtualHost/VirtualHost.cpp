@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/18 20:50:17 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/19 16:08:53 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ VirtualHost::VirtualHost(void) :
 {}
 
 VirtualHost::VirtualHost(VirtualHost const& other) :
-	_names(other._names),
+	_name(other._name),
 	_root(other._root),
 	_index(other._index),
 	_max_body_size(other._max_body_size),
@@ -41,11 +41,6 @@ VirtualHost::~VirtualHost()
 
 std::pair<u_int16_t, VirtualHost>	VirtualHost::build(std::map<std::string, JsonObj> obj_map)
 {
-	ObjSchema	host_schema(HOST_KEY, true, false);
-	
-	host_schema_builder(host_schema);
-	host_schema.validate(obj_map);
-	
 	u_int16_t	port = obj_map.find(HOST_PORT_KEY)->second.getInt();
 	VirtualHost	host;
 	std::map<std::string, JsonObj>::const_iterator	obj_it = obj_map.find(HOST_NAME_KEY);
@@ -54,13 +49,13 @@ std::pair<u_int16_t, VirtualHost>	VirtualHost::build(std::map<std::string, JsonO
 	{
 		for (std::vector<JsonObj>::const_iterator it = obj_it->second.getArray().begin(); it != obj_it->second.getArray().end(); ++it)
 		{
-			if (VirtualHost::checkDuplicates<std::string>(it->getString(), host._names) == true)
+			if (VirtualHost::checkDuplicates<std::string>(it->getString(), host._name) == true)
 				throw std::logic_error(std::string(HOST_NAME_KEY) + std::string(" array has duplicates"));
-			host._names.push_back(it->getString());
+			host._name.push_back(it->getString());
 		}
 	}
 	else
-		host._names.push_back(obj_it->second.getString());
+		host._name.push_back(obj_it->second.getString());
 	host._root = obj_map.find(HOST_ROOT_KEY)->second.getString();
 	obj_it = obj_map.find(HOST_INDEX_KEY);
 	if (obj_it != obj_map.end())
@@ -146,6 +141,7 @@ std::pair<u_int16_t, VirtualHost>	VirtualHost::build(std::map<std::string, JsonO
 		else
 			VirtualHost::addCgi(obj_it->second.getSubObj(), host._cgi);
 	}
+	return (std::pair<u_int16_t, VirtualHost>(obj_map.find(HOST_PORT_KEY)->second.getInt(), host));
 }
 
 template <typename T>
@@ -214,6 +210,11 @@ void	VirtualHost::addCgi(std::map<std::string, JsonObj> const& cgi, std::map<std
 		throw std::logic_error("CGI duplicate");
 }
 
+std::vector<std::string> const&	VirtualHost::getName(void) const
+{
+	return (this->_name);		
+}
+
 std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::map<std::string, JsonObj> const& loc_obj_map)
 {
 	Location	loc;
@@ -271,6 +272,7 @@ std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::
 		else
 			addCgi(loc_obj_it->second.getSubObj(), loc._cgi);
 	}
+	return (std::pair<std::string, Location>(loc_obj_map.find(LOC_NAME_KEY)->second.getString(), loc));
 }
 
 VirtualHost::Location::s_redir	VirtualHost::Location::buildRedir(std::string const& redirection)

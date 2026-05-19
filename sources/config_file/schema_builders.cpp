@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/18 19:19:48 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/19 15:57:20 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	cgi_schema_builder(ObjSchema& cgi_schema);
 
 void	host_schema_builder(ObjSchema& host_schema)
 {   
-	IntSchema*	port_schema = new IntSchema(HOST_PORT_KEY, true, true);
+	IntSchema*	port_schema = new IntSchema(HOST_PORT_KEY, true, false);
 
 	port_schema->setMin(1);
 	port_schema->setMax(65535);
