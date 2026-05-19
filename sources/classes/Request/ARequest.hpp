@@ -126,7 +126,16 @@ class	ARequest: public AMessage
 
 		enum				e_reqStatusServerError
 		{
-
+			INTERNAL,
+			NOT_IMPLEMENTED,
+			BAD_GATEWAY,
+			TIMEOUT_GATEWAY,
+			HTTP_VERSION_NOT_SUPPORTED,
+			VARIANT_ALSO_NEGOTIATE,
+			INSUFFICENT_STORAGE,
+			LOOP_DETECTED,
+			NOT_EXTENDED,
+			NETWORK_AUTH_REQUIRED
 		};
 
 	protected:
