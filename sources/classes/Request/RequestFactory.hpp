@@ -21,6 +21,7 @@
 # include "GETReq.hpp"
 # include "POSTReq.hpp"
 # include "DELETEReq.hpp"
+# include "UNKNOWNReq.hpp"
 
 class	RequestFactory:
 	public ARequest,

@@ -23,9 +23,10 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFACTORY_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(GETREQ_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(POSTREQ_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(DELETEREQ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(GETREQ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(POSTREQ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(DELETEREQ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(UNKNOWNREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONLEXER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONOBJ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(ASCHEMA_DIR) \
@@ -51,7 +52,7 @@ RESPONSE_FILES := 	Response.cpp \
 AFACTORY_DIR := 	AFactory/
 AFACTORY_FILES := 	AFactory.cpp \
 
-REQUEST_DIR := 		ARequest/
+REQUEST_DIR := 		Request/
 REQUEST_FILES := 	ARequest.cpp \
 				 	RequestFactory.cpp \
 
@@ -63,6 +64,9 @@ DELETEREQ_FILES := 	DELETEReq.cpp \
 
 POSTREQ_DIR := 		POSTReq/
 POSTREQ_FILES := 	POSTReq.cpp \
+
+UNKNOWNREQ_DIR := 	UNKNOWNReq/
+UNKNOWNREQ_FILES := UNKNOWNReq.cpp \
 
 AFD_DIR := 		AFd/
 AFD_FILES := 	AFd.cpp \
@@ -91,9 +95,10 @@ CLASSES_FILES :=	$(addprefix $(AMESSAGE_DIR), $(AMESSAGE_FILES)) \
 					$(addprefix $(RESPONSE_DIR), $(RESPONSE_FILES)) \
 					$(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
 					$(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
-					$(addprefix $(GETREQ_DIR), $(GETREQ_FILES)) \
-					$(addprefix $(POSTREQ_DIR), $(POSTREQ_FILES)) \
-					$(addprefix $(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
+					$(addprefix $(REQUEST_DIR)$(GETREQ_DIR), $(GETREQ_FILES)) \
+					$(addprefix $(REQUEST_DIR)$(POSTREQ_DIR), $(POSTREQ_FILES)) \
+					$(addprefix $(REQUEST_DIR)$(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
+					$(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
 					$(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 					$(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
 					$(addprefix $(AFD_DIR), $(AFD_FILES)) \

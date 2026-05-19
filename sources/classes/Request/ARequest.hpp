@@ -52,7 +52,7 @@ class	ARequest: public AMessage
 		const std::string				  	_method;
 		const std::string				  	_uri;
 		const std::string				  	_version;
-		const std::vector< std::string >	_header;
+		const std::vector<std::string>		_header;
 		const std::vector<unsigned char>	_body;
 };
 

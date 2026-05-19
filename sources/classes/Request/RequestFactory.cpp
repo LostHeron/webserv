@@ -17,7 +17,8 @@ const AFactory<ARequest>::_constructor	RequestFactory::_constructorsArray[] =
 {
 	&RequestFactory::_newElement<GETReq>,
 	&RequestFactory::_newElement<POSTReq>,
-	&RequestFactory::_newElement<DELETEReq>
+	&RequestFactory::_newElement<DELETEReq>,
+	&RequestFactory::_newElement<UNKNOWNReq>
 };
 
 // Constructors/Destructor =====================================================
@@ -74,7 +75,7 @@ int8_t			RequestFactory::_determineElement(void) const
 	else if (this->_method == "DELETE")
 		return (ARequest::DELETE);
 	else
-		return (ERROR);
+		return (UNKNOWN);
 }
 
 
