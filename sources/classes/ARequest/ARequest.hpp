@@ -15,6 +15,7 @@
 # include "AMessage.hpp"
 # include "Response.hpp"
 # include "IOFd.hpp"
+#include <vector>
 
 class	ARequest: public AMessage
 {
@@ -27,11 +28,11 @@ class	ARequest: public AMessage
                                 			
 		virtual Response					execute(void) = 0; // instant execute immediate actions, then build Response according to execution metadata, status...
 
-		const std::string					&getMethod(void) const;
-		const std::string					&getUri(void) const;
-		const std::string					&getVersion(void) const;
-		const std::vector< std::string >	&getHeader(void) const;
-		const std::vector<unsigned char>	&getBody(void) const;
+		const std::string										&getMethod(void) const;
+		const std::string										&getUri(void) const;
+		const std::string										&getVersion(void) const;
+		const std::map< std::string, std::vector<std::string> >	&getHeader(void) const;
+		const std::vector<unsigned char>						&getBody(void) const;
 
 		enum				e_reqType
 		{
@@ -43,11 +44,11 @@ class	ARequest: public AMessage
 		};
 
 	protected:
-		const std::string				  	_method;
-		const std::string				  	_uri;
-		const std::string				  	_version;
-		const std::vector< std::string >	_header;
-		const std::vector<unsigned char>	_body;
+		const std::string										_method;
+		const std::string				  						_uri;
+		const std::string				  						_version;
+		const std::map< std::string, std::vector<std::string> >	_header;
+		const std::vector<unsigned char>						_body;
 };
 
 #endif

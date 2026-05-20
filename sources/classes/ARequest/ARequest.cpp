@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 # include "ARequest.hpp"
+#include <vector>
 
 // Construction/Destruction ====================================================
 ARequest::ARequest(const IOFd &IOMessage):
@@ -42,8 +43,8 @@ ARequest			&ARequest::operator=(const ARequest &assign){ (void) assign; return (
 
 
 // // Getters =====================================================================
-const std::string					&ARequest::getMethod(void) const { return(this->_method); }
-const std::string					&ARequest::getUri(void) const { return(this->_uri); }
-const std::string					&ARequest::getVersion(void) const { return(this->_version); }
-const std::vector< std::string >	&ARequest::getHeader(void) const { return(this->_header); }
-const std::vector<unsigned char>	&ARequest::getBody(void) const { return(this->_body); }
+const std::string										&ARequest::getMethod(void) const { return(this->_method); }
+const std::string										&ARequest::getUri(void) const { return(this->_uri); }
+const std::string										&ARequest::getVersion(void) const { return(this->_version); }
+const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void) const { return(this->_header); }
+const std::vector<unsigned char>						&ARequest::getBody(void) const { return(this->_body); }

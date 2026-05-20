@@ -57,17 +57,19 @@ IOFd::~IOFd()
 {
 }
 
-const std::string					&IOFd::getMethod(void) const { return(this->method); }
-const std::string					&IOFd::getUri(void) const { return(this->uri); }
-const std::string					&IOFd::getVersion(void) const { return(this->version); }
-const std::vector< std::string >	&IOFd::getHeader(void) const { return(this->header); }
-const std::vector<unsigned char>	&IOFd::getBody(void) const { return(this->body); }
-
+const std::string										&IOFd::getMethod(void) const { return(this->method); }
+const std::string										&IOFd::getUri(void) const { return(this->uri); }
+const std::string										&IOFd::getVersion(void) const { return(this->version); }
+const std::map< std::string, std::vector<std::string> >	&IOFd::getHeader(void) const { return(this->header); }
+const std::vector<unsigned char>						&IOFd::getBody(void) const { return(this->body); }
 
 
 void IOFd::process()
 {
 	char buf[BUFSIZ];
+	// ok maybe add a check here before to read, if the buffer is empty,
+	// and by buffer i mean the 'str' variable down below that
+	// should be then made static so it can be accessed over different calls
 	ssize_t nb_read = recv(this->fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (nb_read < 0)
 	{
@@ -336,107 +338,6 @@ static int	check_version(const std::string& method, const std::string& version)
 	return (SUCCESS);
 }
 
-// here depending on the version, it should exepct no header 
-// maybe header should be in key-value pairs ? like:
-// std::map<std::string, std::string>, but a map is annoying because it
-// does not allow duplicate keys, and keys can be duplicate
-// so maybe more an std::vector of std::pairs of std::string, std::string
-// maybe this is better this way ? i think we will go this way
-// but its so much verbose ...
-// or a std::map<std::string, std::vector<std::string>>
-// this ones gives flexibility, but also very verbose
-// so i do not really know ??
-// so getting here, if version is empty, then it is a 'simple-request'
-// if it is a simple request, then the method should be 'GET'
-// and if it is the case, the request is complete, and should 
-// be processed using only method and uri, then closed and all other
-// ressources send should be ignored
-void	IOFd::process_header(std::string& str, size_t& pos)
-{
-	// std::cout << "in process header\n";
-	size_t	crlf ;
-	size_t	lf;
-	size_t	delim;
-	size_t	until;
-	if (this->version == "")
-	{
-		if (this->method == "GET")
-		{
-			// do stuff to stop parsing incoming data,
-			// and process the request using only information
-			// in 'method' and in 'uri'
-			// return ...
-		}
-		else
-		{
-			return (send_bad_request(this->fd, this->status));
-		}
-	}
-
-	while (pos < str.size())
-	{
-		crlf = str.find("\r\n", pos);
-		lf = str.find("\n", pos);
-		delim = std::min(crlf, lf);
-		if (delim == std::string::npos) // no \r\n
-			until = str.size();
-		else if (delim == pos)
-		{
-			if (str[delim] == '\r')
-				until = delim + 2;
-			else
-				until = delim + 1;
-			// here we have a delim at begin,
-			// we need to check if previous last char
-			// stored is also a new line and if so,
-			// next data must go into the body section
-			if (header.size() == 0)
-			{
-				// does it instantly means we are go in the body ??
-				// if (header not valid)
-			// {
-			//		do stuff;
-			// }
-				this->state++;
-				//(this->*process_functions[this->state])(str, until);
-				pos = until;
-				return;
-			}
-			else
-			{
-				std::string& last_line = this->header[this->header.size() - 1];
-				if (last_line != "" &&
-					last_line[last_line.size() - 1] == '\n')
-				{
-					this->state++;
-					//(this->*process_functions[this->state])(str, until);
-					pos = until;
-					return;
-				}
-			}
-		}
-		else
-		{
-			if (str[delim] == '\r')
-				until = delim + 2;
-			else
-				until = delim + 1;
-		}
-		if (header.size() == 0)
-			this->header.push_back(std::string(str, pos, until - pos));
-		else
-		{
-			std::string& last_line = this->header[this->header.size() - 1];
-			if (last_line.size() == 0 ||
-				last_line[last_line.size() - 1] != '\n')
-				last_line.append(str, pos, until - pos);
-			else
-				this->header.push_back(std::string(str, pos, until - pos));
-		}
-		pos = until;
-	}
-}
-
 
 void	IOFd::process_body(std::string& str, size_t& pos)
 {
@@ -457,6 +358,19 @@ void	IOFd::process_skip_sp(std::string& str, size_t& pos)
 	this->state++;
 	pos = non_sp_pos;
 	return ;
+}
+
+size_t		getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims)
+{
+	size_t res = std::string::npos;
+
+	for (size_t i = 0; i < delims.size(); i++)
+	{
+		size_t	tmp = str.find(delims.at(i), start);
+		if (tmp < res)
+			res = tmp;
+	}
+	return (res);
 }
 
 std::ostream& operator<<(std::ostream& os, std::vector<unsigned char> data)
@@ -488,9 +402,13 @@ std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 	os << "version: '" << iofd.version << "'; ";
 	os << "\n----------------------\n";
 	os << "headerlines: (nb headerlines: " << iofd.header.size() << ")\n";
-	for (size_t i = 0; i < iofd.header.size(); i++)
+	for (string_map::const_iterator l = iofd.header.begin(); l != iofd.header.end(); l++)
 	{
-		os << iofd.header[i];
+		os << l->first << ": ";
+		for (size_t i = 0; i < l->second.size(); i++)
+		{
+			os << "'" << l->second[i] << "', ";
+		}
 	}
 	os << "----------------------\n";
 	os << "body:\n";

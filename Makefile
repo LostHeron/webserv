@@ -56,6 +56,7 @@ AFD_DIR := 		AFd/
 AFD_FILES := 	AFd.cpp \
 				ListenFd.cpp \
 				IOFd.cpp \
+				IOFd_process_header.cpp \
 
 
 EPOLLSTRUCT_DIR := EpollStruct/

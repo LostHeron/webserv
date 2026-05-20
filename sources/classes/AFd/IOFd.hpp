@@ -15,6 +15,7 @@
 
 # include "AFd.hpp"
 # include "Server.hpp"
+#include <map>
 # include <ostream>
 # include <vector>
 # include <string>
@@ -22,6 +23,7 @@
 
 # define IOFD_MAX_SIZE 5000
 
+typedef std::map<std::string, std::vector<std::string> > string_map;
 
 class IOFd: public AFd
 {
@@ -34,7 +36,7 @@ class IOFd: public AFd
 		const std::string					&getMethod(void) const;
 		const std::string					&getUri(void) const;
 		const std::string					&getVersion(void) const;
-		const std::vector< std::string >	&getHeader(void) const;
+		const string_map					&getHeader(void) const;
 		const std::vector<unsigned char>	&getBody(void) const;
 
 		void	process();
@@ -63,40 +65,43 @@ class IOFd: public AFd
 		void (IOFd::*process_functions[10])(std::string& buf, size_t& pos);
 
 		// used to know which state the program is in
-		int state;	
+		int			state;	
 
 		uint16_t	port;
 		uint8_t		addr[4];
 
 		// identify which method the client tries to reach
-		std::string									method;
-		void										process_method(std::string&, size_t& pos);
+		std::string					method;
+		void						process_method(std::string&, size_t& pos);
 
 		// identify which uri the client tries to reach
-		std::string									uri;
-		void										process_uri(std::string&, size_t& pos);
+		std::string					uri;
+		void						process_uri(std::string&, size_t& pos);
 
 		// identify which version of HTTP the client tries to reach
-		std::string									version;
-		void										process_version(std::string&, size_t& pos);
+		std::string					version;
+		void						process_version(std::string&, size_t& pos);
 
 		// vector of vector of char, where vector of char
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
-		std::vector< std::string >					header;
-		void										process_header(std::string&, size_t& pos);
+		//std::vector< std::string >					header;
+		string_map					header;
+		void						process_header(std::string&, size_t& pos);
 
 		// body of the request, must be sur a 'content length' is present
 		// in the request to know how much data to store in the body !
 		// also in here do we store the data send ? or do we wait until
 		// we know what to do with the request ...
-		std::vector<unsigned char>					body;
-		void										process_body(std::string&, size_t& pos);
+		std::vector<unsigned char>	body;
+		void						process_body(std::string&, size_t& pos);
 
 		// if there's still data to process after having retrieved the entire
 		// body, server should close the connection with a bad request response
-		void										process_skip_sp(std::string&, size_t& pos);
+		void						process_skip_sp(std::string&, size_t& pos);
 };
 
+void		send_bad_request(int fd, int& status);
+size_t		getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims);
 
 #endif
