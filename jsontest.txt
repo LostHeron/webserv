@@ -1,0 +1,6 @@
+
+"host":{
+    "listen":8080,
+    "name": "test",
+    "root":"/"
+}

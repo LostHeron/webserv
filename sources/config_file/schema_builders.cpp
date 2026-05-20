@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/19 15:57:20 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 17:42:04 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	host_schema_builder(ObjSchema& host_schema)
 	name_schema->addValidator(non_empty_validator);
 	host_schema.addField(root_schema);
 
-	StringSchema*	index_schema = new StringSchema(HOST_INDEX_KEY, true, false);
+	StringSchema*	index_schema = new StringSchema(HOST_INDEX_KEY, false, false);
 	
 	name_schema->addValidator(non_empty_validator);
 	host_schema.addField(index_schema);

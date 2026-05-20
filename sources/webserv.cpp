@@ -6,12 +6,12 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 16:54:41 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/13 17:50:10 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/19 16:39:58 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "VirtualHost.hpp"
 #include "config_file.hpp"
+#include "HostList.hpp"
 #include "Server.hpp"
 #include "sockets.hpp"
 #include <iostream>
@@ -26,19 +26,16 @@ int	main(int ac, char **av)
 		std::cerr << "You must specify a config file only" << std::endl;
 		return (1);
 	}
-	
 	try
 	{	
-		std::map<u_int16_t, VirtualHost>	host_map;
-		
-		host_setup(av[1], host_map);
+		HostList	host_list(HostList::build(av[1]));	
 	}
 	catch(const std::exception& e)
 	{
 		std::cerr << "Config file error: " << e.what() << std::endl;
 		return (1);
 	}
-	
+	return (0);
 	Server server;
 	if (server.fail())
 	{

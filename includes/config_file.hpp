@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:25:38 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/18 19:18:28 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 14:33:17 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,11 @@
 # define CGI_EXTENSION_KEY "extension"
 # define CGI_EXEC_KEY "execution"
 
+# include <stdint.h>
 # include "VirtualHost.hpp"
 # include "ObjSchema.hpp"
 
-void	host_setup(char const* filename, std::map<u_int16_t, VirtualHost> host_map);
+void	host_setup(char const* filename, std::map<uint16_t, VirtualHost> host_map);
 void	host_schema_builder(ObjSchema& server_schema);
 void	interface_validator(std::string const& interface);
 void	request_validator(std::string const& request);

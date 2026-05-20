@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 20:36:35 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/18 18:17:32 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 17:33:48 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	ASchema::validate(std::map<std::string, JsonObj> const& obj_map) const
 
 void	ASchema::checkType(JsonObj const& object) const
 {
-	if (object.getType() == this->_type)
+	if (object.getType() != this->_type)
 		throw std::domain_error("Object '" + this->_name + "' doesn't have the right type");
 }
 

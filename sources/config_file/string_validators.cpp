@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:21:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/18 20:34:03 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/19 16:46:01 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <sstream>
 #include <cctype>
 #include "config_file.hpp"
+
+static void	ip_validator(std::string const& ip_address);
 
 void	interface_validator(std::string const& interface)
 {
@@ -84,7 +86,7 @@ void	extension_validator(std::string const& extension)
 
 	if (it == extension.end() || *it != '.' || ++it == extension.end())
 		throw std::invalid_argument("Extension is empty or invalid");
-	for (it; it != extension.end(); ++it)
+	for (; it != extension.end(); ++it)
 	{
 		if (std::isalpha(static_cast<unsigned char>(*it)) == 0)
 			throw std::invalid_argument("Extension is invalid (contains non alpha characters)");

@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:18:42 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/07 16:58:46 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 17:22:38 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ JsonObj::JsonObj(JsonLexer& jsonLexer)
 			while (jsonLexer.peekType() != JsonLexer::OBJ_CLOSE)
 			{
 				if (jsonLexer.peekType() != JsonLexer::COMMA && jsonLexer.peekType() != JsonLexer::OBJ_OPEN)
-					throw std::invalid_argument("Missing comma between values in array");
+					throw std::invalid_argument("Missing comma between values in object");
 				jsonLexer.popToken();
 				if (jsonLexer.peekType() != JsonLexer::STRING)
 					throw std::invalid_argument("Invalid key");

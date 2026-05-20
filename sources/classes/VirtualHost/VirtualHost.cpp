@@ -6,10 +6,11 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/19 16:08:53 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 17:12:10 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdint.h>
 #include <string>
 #include <map>
 #include <vector>
@@ -39,10 +40,9 @@ VirtualHost::VirtualHost(VirtualHost const& other) :
 VirtualHost::~VirtualHost()
 {}
 
-std::pair<u_int16_t, VirtualHost>	VirtualHost::build(std::map<std::string, JsonObj> obj_map)
+std::pair<uint16_t, VirtualHost>	VirtualHost::build(std::map<std::string, JsonObj> obj_map)
 {
-	u_int16_t	port = obj_map.find(HOST_PORT_KEY)->second.getInt();
-	VirtualHost	host;
+	VirtualHost										host;
 	std::map<std::string, JsonObj>::const_iterator	obj_it = obj_map.find(HOST_NAME_KEY);
 	
 	if (obj_it->second.getType() == JsonObj::ARRAY)
@@ -141,13 +141,13 @@ std::pair<u_int16_t, VirtualHost>	VirtualHost::build(std::map<std::string, JsonO
 		else
 			VirtualHost::addCgi(obj_it->second.getSubObj(), host._cgi);
 	}
-	return (std::pair<u_int16_t, VirtualHost>(obj_map.find(HOST_PORT_KEY)->second.getInt(), host));
+	return (std::pair<uint16_t, VirtualHost>(obj_map.find(HOST_PORT_KEY)->second.getInt(), host));
 }
 
 template <typename T>
 bool	VirtualHost::checkDuplicates(T const& val, std::vector<T> const& vec)
 {
-	for (std::vector<T>::const_iterator it = vec.begin(); it != vec.end(); ++it)
+	for (typename std::vector<T>::const_iterator it = vec.begin(); it != vec.end(); ++it)
 	{
 		if (val == *it)
 			return (true);
@@ -173,14 +173,14 @@ VirtualHost::s_ip_range	VirtualHost::buildInterfaceRange(std::string const& inte
 	return (ip_range);
 }
 
-u_int32_t	VirtualHost::buildInterface(std::string const& interface)
+uint32_t	VirtualHost::buildInterface(std::string const& interface)
 {
-	u_int32_t			interface_bits = 0;
+	uint32_t			interface_bits = 0;
 	std::stringstream	interface_stream(interface);
 
 	for (unsigned int i = 0; i < 4; ++i)
 	{
-		u_int8_t	interface_part;
+		uint8_t	interface_part;
 		
 		interface_stream >> interface_part;
 		if (i < 3)
@@ -190,6 +190,7 @@ u_int32_t	VirtualHost::buildInterface(std::string const& interface)
 			interface_stream.ignore();
 		}
 	}
+	return (interface_bits);
 }
 
 void	VirtualHost::addErrorPage(std::map<std::string, JsonObj> const& error, std::map<int, std::string>& host_error)
@@ -215,6 +216,22 @@ std::vector<std::string> const&	VirtualHost::getName(void) const
 	return (this->_name);		
 }
 
+VirtualHost::Location::Location(void) :
+	_allowDirList(false)
+{}
+
+VirtualHost::Location::Location(Location const& other) :
+	_root(other._root),
+	_index(other._index),
+	_allowedRequest(other._allowedRequest),
+	_allowDirList(other._allowDirList),
+	_redirection(other._redirection),
+	_cgi(other._cgi)
+{}
+
+VirtualHost::Location::~Location()
+{}
+
 std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::map<std::string, JsonObj> const& loc_obj_map)
 {
 	Location	loc;
@@ -222,7 +239,7 @@ std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::
 
 	loc._root = loc_obj_it->second.getString();
 	loc_obj_it = loc_obj_map.find(LOC_INDEX_KEY);
-	if (loc_obj_it != loc_obj_map.end());
+	if (loc_obj_it != loc_obj_map.end())
 		loc._index = loc_obj_it->second.getString();
 	loc_obj_it = loc_obj_map.find(LOC_ALLOWED_REQUEST_KEY);
 	if (loc_obj_it != loc_obj_map.end())
@@ -239,6 +256,8 @@ std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::
 		else
 			loc._allowedRequest.push_back(loc_obj_it->second.getString());
 	}
+	else
+		loc._allowedRequest.push_back("GET");
 	loc_obj_it = loc_obj_map.find(LOC_DIR_LIST_KEY);
 	if (loc_obj_it != loc_obj_map.end())
 		loc._allowDirList = loc_obj_it->second.getBool();

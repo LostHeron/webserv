@@ -6,10 +6,11 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 15:32:26 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/19 16:23:15 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 17:34:00 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdint.h>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -19,7 +20,7 @@
 #include "JsonLexer.hpp"
 #include "JsonObj.hpp"
 #include "ObjSchema.hpp"
-
+#include <iostream>
 HostList::HostList(void)
 {}
 
@@ -82,16 +83,16 @@ HostList    HostList::build(char const* filename)
 	return (host_list);
 }
 
-void	HostList::addHost(std::pair<u_int16_t, VirtualHost> const& vhost, std::map<u_int16_t, std::vector<VirtualHost>>& host_map)
+void	HostList::addHost(std::pair<uint16_t, VirtualHost> const& vhost, std::map<uint16_t, std::vector<VirtualHost> >& host_map)
 {
-	std::map<u_int16_t, std::vector<VirtualHost>>::iterator	host_map_it = host_map.find(vhost.first);
+	std::map<uint16_t, std::vector<VirtualHost> >::iterator	host_map_it = host_map.find(vhost.first);
 
 	if (host_map_it == host_map.end())
 	{
 		std::vector<VirtualHost>	host_vec;
 
 		host_vec.push_back(vhost.second);
-		host_map.insert(std::pair<u_int16_t, std::vector<VirtualHost>>(vhost.first, host_vec));
+		host_map.insert(std::pair<uint16_t, std::vector<VirtualHost> >(vhost.first, host_vec));
 		return ;
 	}
 	for (std::vector<VirtualHost>::const_iterator map_vh_it = host_map_it->second.begin(); map_vh_it != host_map_it->second.end(); ++map_vh_it)
