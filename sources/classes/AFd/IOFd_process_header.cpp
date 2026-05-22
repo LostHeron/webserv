@@ -55,6 +55,8 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 		if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
 		{
 			add_line_headers(last_line, this->header);
+			if (check_header(header) != SUCCESS)
+				return (send_bad_request(this->fd, this->status));
 			last_line.clear();
 		}
 
@@ -73,8 +75,13 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 
 			if (delimPosition == start && last_line.size() == 0)
 			{
+				/*
 				if (check_header(this->header) != SUCCESS)
 					return (send_bad_request(this->fd, this->status));
+				*/
+				// removing this check temporarily, because not sure it 
+				// it necessary, since we check for wrong 
+				// header format after each sent headers
 				this->state++;
 				start = until;
 				return;
@@ -94,6 +101,8 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 	if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
 	{
 		add_line_headers(last_line, this->header);
+		if (check_header(header) != SUCCESS)
+			return (send_bad_request(this->fd, this->status));
 		last_line.clear();
 	}
 }
@@ -117,6 +126,9 @@ static void	no_version(const IOFd& iofd, int& status)
 static int	check_header(const string_map& headers)
 {
 	(void) headers;
+	if (headers.count("host"))
+		if (headers.at("host").size() > 1)
+			return (FAILURE);
 	return (SUCCESS);
 }
 
@@ -146,11 +158,22 @@ static int check_last_line(const std::string& last_line)
 		key_size = colonPosition;
 		value_start = colonPosition + 1;
 		value_end = last_line.find_last_not_of("\r\n");
+		if (value_end < value_start)
+		{
+			value_start = 0;
+			value_end = 0;
+		}
 	}
 
 	std::string key(last_line, 0, key_size);
 	std::string value(last_line, value_start, value_end - value_start);
 
+	if (key.size() > 0 && key[key.size() - 1] == '\n')
+	{
+		key.erase(key.size() - 1, 1);
+		if (key.size() > 0 && key[key.size() - 1] == '\r')
+			key.erase(key.size() - 1, 1);
+	}
 	if (key.find_first_not_of(ALLOWED_CHAR_KEY) != std::string::npos)
 		return (FAILURE);
 	if (value.find_first_not_of(ALLOWED_CHAR_VALUE) != std::string::npos)
@@ -168,6 +191,12 @@ static void add_line_headers(std::string& line,  string_map& headers)
 	if (colonPosition == std::string::npos)
 	{
 		key.append(line, 0, line.size());
+		if (key.size() > 0 && key[key.size() - 1] == '\n')
+		{
+			key.erase(key.size() - 1, 1);
+			if (key.size() > 0 && key[key.size() - 1] == '\r')
+				key.erase(key.size() - 1, 1);
+		}
 		lowering(key);
 		headers[key].push_back("");
 	}
