@@ -9,6 +9,7 @@
 static int	check_header(const string_map& headers);
 static void	no_version(const IOFd& iofd, int& status);
 static int	check_last_line(const std::string& last_line);
+static void add_line_headers(std::string& line,  string_map& headers);
 
 // here depending on the version, it should exepct no header 
 // maybe header should be in key-value pairs ? like:
@@ -82,8 +83,18 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 			{
 				last_line.append(buf, start, until - start);
 			}
-			start = until;
 		}
+		start = until;
+	}
+	if (check_last_line(last_line) != SUCCESS)
+	{
+		return (send_bad_request(this->fd, this->status));
+	}
+
+	if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
+	{
+		add_line_headers(last_line, this->header);
+		last_line.clear();
 	}
 }
 
@@ -103,7 +114,7 @@ static void	no_version(const IOFd& iofd, int& status)
 		return ;
 }
 
-static int	check_header(const std::map<std::string, std::vector<std::string> > headers)
+static int	check_header(const string_map& headers)
 {
 	(void) headers;
 	return (SUCCESS);
@@ -171,6 +182,7 @@ static void add_line_headers(std::string& line,  string_map& headers)
 		else
 			headers[key].push_back(std::string(line, value_begin, value_end - value_begin + 1));
 	}
+	line = "";
 }
 
 void	lowering(std::string& line)

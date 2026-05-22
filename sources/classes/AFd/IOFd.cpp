@@ -409,6 +409,7 @@ std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 		{
 			os << "'" << l->second[i] << "', ";
 		}
+		os << "\n";
 	}
 	os << "----------------------\n";
 	os << "body:\n";
