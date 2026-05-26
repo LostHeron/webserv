@@ -6,18 +6,18 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 15:55:00 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/13 17:41:03 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/07 17:55:31 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __JSONOBJ_HPP__
-# define __JSONOBJ_HPP__
+#ifndef JSONOBJ_HPP
+# define JSONOBJ_HPP
 
-#include <string>
-#include <vector>
-#include <map>
-#include <ostream>
-#include "JsonLexer.hpp"
+# include <string>
+# include <vector>
+# include <map>
+# include <ostream>
+# include "JsonLexer.hpp"
 
 class JsonObj
 {	
@@ -39,10 +39,14 @@ class JsonObj
 	
 		JsonObj&	operator=(JsonObj const& other);
 	
-		e_jsonType			getType(void) const;
-		template <typename T>
-		T const&			getValue(void) const;
-		void				print(std::ostream& out) const;
+		e_jsonType								getType(void) const;
+		int										getInt(void) const;
+		bool									getBool(void) const;
+		std::string const&						getString(void) const;
+		std::vector<JsonObj> const&				getArray(void) const;
+		std::map<std::string, JsonObj> const&	getSubObj(void) const;
+
+		void	print(std::ostream& out) const;
 	
 	private:
 
@@ -56,4 +60,4 @@ class JsonObj
 		JsonObj(void);
 };
 
-#endif
+#endif // JSONOBJ_HPP

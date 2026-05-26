@@ -5,11 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/04 15:20:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/04 15:26:01 by jweber           ###   ########.fr       */
+/*   Created: 2026/05/26 16:01:42 by jweber            #+#    #+#             */
+/*   Updated: 2026/05/26 16:01:49 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "config_file.hpp"
+#include "HostList.hpp"
 #include "Server.hpp"
 #include "RequestFactory.hpp"
 #include "sockets.hpp"
@@ -19,7 +21,7 @@
 
 int run = 1;
 
-int	main(void)
+int	main(int ac, char **av)
 {
 	// some function to read info from config file
 	// that would return a structure containing necessary information
@@ -27,6 +29,21 @@ int	main(void)
 	if (setup_signals() != SUCCESS)
 	{
 		std::cerr << "could not setup signals\n";
+		return (1);
+	}
+
+	if (ac != 2)
+	{
+		std::cerr << "usage: ./webserv config_file\n";
+		return (1);
+	}
+	try
+	{	
+		HostList	host_list(HostList::build(av[1]));	
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Config file error: " << e.what() << std::endl;
 		return (1);
 	}
 
