@@ -12,15 +12,19 @@
 
 #include "Server.hpp"
 #include "AFd.hpp"
+#include "HostList.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
 #include <algorithm>
+#include <stdint.h>
 #include <sys/epoll.h>
 #include <cstdlib>
+#include <iostream>
 
-Server::Server():
+Server::Server(char *config_file):
 	status(SUCCESS),
-	epoll()
+	epoll(),
+	host_list(HostList::build(config_file))
 {
 	if (this->epoll.fail())
 	{
@@ -28,7 +32,12 @@ Server::Server():
 	}
 	else
 	{
-		CreateFd(0, 4343, *this);
+		const std::vector<uint16_t> &ports = this->host_list.getPort();
+		for (size_t i = 0; i < ports.size(); i++)
+		{
+			std::cout << "opening port : " << ports[i] << "\n";
+			CreateFd(ports[i], 0, *this);
+		}
 	}
 };
 

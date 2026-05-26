@@ -22,7 +22,7 @@
 class ListenFd: public AFd
 {
 	public:
-		ListenFd(uint32_t address, uint16_t port, Server& server);
+		ListenFd(uint16_t port, uint32_t address, Server& server);
 		~ListenFd();
 
 		void	process();

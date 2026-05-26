@@ -39,7 +39,16 @@ int	main(int ac, char **av)
 	}
 	try
 	{	
-		HostList	host_list(HostList::build(av[1]));	
+		//HostList	host_list(HostList::build(av[1]));	
+
+		Server server(av[1]);
+		if (server.fail())
+		{
+			std::cerr << "could not launch server\n";
+			return (1);
+		}
+
+		start(server);
 	}
 	catch(const std::exception& e)
 	{
@@ -47,13 +56,5 @@ int	main(int ac, char **av)
 		return (1);
 	}
 
-	Server server;
-	if (server.fail())
-	{
-		std::cerr << "could not launch server\n";
-		return (1);
-	}
-
-	start(server);
 	return (0);
 }

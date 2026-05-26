@@ -26,7 +26,7 @@
 #include <cerrno>
 #include <fcntl.h>
 
-ListenFd::ListenFd(uint32_t address, uint16_t port, Server& server):
+ListenFd::ListenFd(uint16_t port, uint32_t address, Server& server):
 	AFd(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);

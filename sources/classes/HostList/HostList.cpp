@@ -63,7 +63,7 @@ HostList    HostList::build(char const* filename)
 			throw std::logic_error("Key '" + key + "' already exists");
 	}
 
-	ObjSchema	host_schema(HOST_KEY, true, false);
+	ObjSchema	host_schema(HOST_KEY, true, true);
 	
 	host_schema_builder(host_schema);
 	host_schema.validate(obj_map);

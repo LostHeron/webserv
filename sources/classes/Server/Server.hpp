@@ -15,13 +15,14 @@
 
 #include <vector>
 #include "EpollStruct.hpp"
+#include "HostList.hpp"
 
 class AFd;
 
 class Server
 {
 	public:
-		Server();
+		Server(char *config_file);
 		virtual ~Server();
 
 		bool	fail();
@@ -35,6 +36,7 @@ class Server
 	private:
 		// this structure should not be instantiable from
 		// another same structure
+		Server();
 		Server(const Server& other);
 		Server&	operator=(const Server& other);
 
@@ -48,6 +50,8 @@ class Server
 		// initialized with socket + bind + listen;
 		std::vector<AFd*>		sockets;
 
+
+		HostList				host_list;
 		// some kind of structure to remember
 		// if an fd is associated with something
 		// we should do an 'accept' on or a 'read/write' from/to !
