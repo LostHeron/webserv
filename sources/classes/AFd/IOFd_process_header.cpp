@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/26 14:34:34 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/26 14:41:05 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,19 +62,6 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 	static std::string last_line;
 	while (start < buf.size())
 	{
-		if (check_last_line(last_line) != SUCCESS)
-		{
-			return (send_bad_request(this->fd, this->status));
-		}
-
-		if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
-		{
-			add_line_headers(last_line, this->header);
-			if (check_header(header) != SUCCESS)
-				return (send_bad_request(this->fd, this->status));
-			last_line.clear();
-		}
-
 		delimPosition = getDelimPosition(buf, start, delims);
 		if (delimPosition == std::string::npos) // no \r\n
 		{
@@ -100,18 +87,20 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 			}
 		}
 		start = until;
-	}
-	if (check_last_line(last_line) != SUCCESS)
-	{
-		return (send_bad_request(this->fd, this->status));
-	}
 
-	if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
-	{
-		add_line_headers(last_line, this->header);
-		if (check_header(header) != SUCCESS)
+		if (check_last_line(last_line) != SUCCESS)
+		{
 			return (send_bad_request(this->fd, this->status));
-		last_line.clear();
+		}
+
+		if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
+		{
+			add_line_headers(last_line, this->header);
+			if (check_header(header) != SUCCESS)
+				return (send_bad_request(this->fd, this->status));
+			last_line.clear();
+		}
+
 	}
 }
 
