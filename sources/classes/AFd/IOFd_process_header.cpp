@@ -164,7 +164,7 @@ static void add_line_headers(std::string& line, string_map& headers)
 	}
 }
 
-# define ALLOWED_CHAR_KEY   ABNF_ALPHA ABNF_DIGIT "_;.,\\/\"'?!(){}[]@<>=-+*#$&`|~^%"
+# define ALLOWED_CHAR_KEY   ABNF_ALPHA ABNF_DIGIT ":_;.,\\/\"'?!(){}[]@<>=-+*#$&`|~^%"
 # define ALLOWED_CHAR_VALUE ALLOWED_CHAR_KEY " "
 
 // "coucou\r\n" -> valid
