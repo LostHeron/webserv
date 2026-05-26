@@ -15,7 +15,8 @@
 
 # include "AFd.hpp"
 # include "Server.hpp"
-#include <map>
+# include "VirtualHost.hpp"
+# include <map>
 # include <ostream>
 # include <vector>
 # include <string>
@@ -29,7 +30,7 @@ class IOFd: public AFd
 {
 	public:
 		friend std::ostream& operator<<(std::ostream& os, const IOFd& iofd);
-		IOFd(int fd, const struct sockaddr_in& addr, Server& server);
+		IOFd(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
 		
 		~IOFd();
 
@@ -67,7 +68,8 @@ class IOFd: public AFd
 		// used to know which state the program is in
 		int			state;	
 
-		uint16_t	port;
+		uint16_t	local_port;
+		uint16_t	peer_port;
 		uint8_t		addr[4];
 
 		// identify which method the client tries to reach

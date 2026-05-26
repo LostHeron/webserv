@@ -18,6 +18,7 @@
 #include "status.hpp"
 #include <cctype>
 #include <cstddef>
+#include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cwctype>
@@ -33,11 +34,12 @@
 #include <vector>
 
 
-IOFd::IOFd(int fd, const struct sockaddr_in& addr, Server& server):
+IOFd::IOFd(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server):
 	AFd(server),
-	state(0)
+	state(0),
+	local_port(local_port),
+	peer_port(ntohs(addr.sin_port))
 {
-	this->port = ntohs(addr.sin_port);
 	uint32_t addrh = (addr.sin_addr.s_addr);
 	for (int i = 0; i < 4; i++)
 	{
@@ -57,12 +59,11 @@ IOFd::~IOFd()
 {
 }
 
-const std::string										&IOFd::getMethod(void) const { return(this->method); }
-const std::string										&IOFd::getUri(void) const { return(this->uri); }
-const std::string										&IOFd::getVersion(void) const { return(this->version); }
-const std::map< std::string, std::vector<std::string> >	&IOFd::getHeader(void) const { return(this->header); }
-const std::vector<unsigned char>						&IOFd::getBody(void) const { return(this->body); }
-
+const std::string					&IOFd::getMethod(void) const { return(this->method); }
+const std::string					&IOFd::getUri(void) const { return(this->uri); }
+const std::string					&IOFd::getVersion(void) const { return(this->version); }
+const string_map					&IOFd::getHeader(void) const { return(this->header); }
+const std::vector<unsigned char>	&IOFd::getBody(void) const { return(this->body); }
 
 void IOFd::process()
 {
@@ -233,6 +234,7 @@ static void	clear_uri(std::string& uri)
 	bool						end_by_slash;
 	std::vector<std::string>	transformed;
 
+	end_by_slash = false;
 	if (uri[uri.size() - 1] == '/')
 		end_by_slash = true;
 
@@ -396,7 +398,7 @@ std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 		if (i != 3)
 			os << ".";
 	}
-	os << ":" << iofd.port << "; ";
+	os << ":" << iofd.peer_port << "; ";
 	os << "method: '" << iofd.method << "'; ";
 	os << "uri: '" << iofd.uri << "'; ";
 	os << "version: '" << iofd.version << "'; ";

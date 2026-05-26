@@ -43,11 +43,11 @@ void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 	}
 }
 
-void	CreateFd(int fd, const struct sockaddr_in& addr, Server& server)
+void	CreateFd(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server)
 {
 	try
 	{
-		IOFd * new_fd = new IOFd(fd, addr, server);
+		IOFd * new_fd = new IOFd(fd, local_port, addr, server);
 		server.add(new_fd);
 	}
 	catch (std::exception& e)

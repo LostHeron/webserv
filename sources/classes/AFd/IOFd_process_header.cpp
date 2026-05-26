@@ -134,7 +134,6 @@ static void	no_version(const IOFd& iofd, int& status)
 
 static int	check_header(const string_map& headers)
 {
-	(void) headers;
 	if (headers.count("host"))
 		if (headers.at("host").size() > 1)
 			return (FAILURE);

@@ -25,11 +25,12 @@ class Server
 		Server(char *config_file);
 		virtual ~Server();
 
-		bool	fail();
-		void	add(AFd*);
-		void	remove(AFd*);
-		void	setFailure(int value);
-		int		getEfd();
+		bool			fail();
+		void			add(AFd*);
+		void			remove(AFd*);
+		void			setFailure(int value);
+		int				getEfd();
+		const HostList& getHostList() const;
 
 	protected:
 

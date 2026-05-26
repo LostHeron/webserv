@@ -84,7 +84,7 @@ void	ListenFd::process()
 			break;
 		std::cout << "a connection was accepted\n";
 
-		CreateFd(peer_fd, peer_addr, this->server);
+		CreateFd(peer_fd, ntohs(this->addr_data.sin_port), peer_addr, this->server);
 
 		if (this->server.fail())
 		{

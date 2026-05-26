@@ -74,6 +74,8 @@ int	Server::getEfd()
 	return (this->epoll.getFd());
 }
 
+const HostList& Server::getHostList() const {return (this->host_list);};
+
 void	Server::remove(AFd *afd)
 {
 	delete afd;
