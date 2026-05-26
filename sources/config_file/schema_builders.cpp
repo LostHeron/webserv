@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/26 17:17:36 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/26 17:19:47 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ static void	location_schema_builder(ObjSchema& location_schema)
 	StringSchema*	redirections_schema = new StringSchema(LOC_REDIRECTION_KEY, false, true);
 
 	redirections_schema->addValidator(redirection_validator);
+	location_schema.addField(redirections_schema);
 	
 	ObjSchema*	cgi_schema = new ObjSchema(LOC_CGI_KEY, false, true);
 
