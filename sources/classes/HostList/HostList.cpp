@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 15:32:26 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/20 17:34:00 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/22 16:09:37 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include "JsonLexer.hpp"
 #include "JsonObj.hpp"
 #include "ObjSchema.hpp"
-#include <iostream>
+
 HostList::HostList(void)
 {}
 
@@ -81,6 +81,39 @@ HostList    HostList::build(char const* filename)
 	else
 		addHost(VirtualHost::build(obj_map_it->second.getSubObj()), host_list._map);
 	return (host_list);
+}
+
+std::vector<uint16_t>	HostList::getPort(void) const
+{
+	std::vector<uint16_t>	port_vec;
+	
+	for (std::map<uint16_t, std::vector<VirtualHost> >::const_iterator it = this->_map.begin(); it != this->_map.end(); ++it)
+	{
+		port_vec.push_back(it->first);
+	}
+	return (port_vec);
+}
+
+VirtualHost const&	HostList::getHost(uint16_t port, std::string const& name) const
+{
+	std::map<uint16_t, std::vector<VirtualHost> >::const_iterator	host_list_it = this->_map.find(port);
+
+	if (host_list_it == this->_map.end())
+	{
+		std::stringstream	stream;
+
+		stream << port;
+		throw std::runtime_error("No match for port " + stream.str());
+	}
+	for (std::vector<VirtualHost>::const_iterator vhost_it = host_list_it->second.begin(); vhost_it != host_list_it->second.end(); ++vhost_it)
+	{
+		for (std::vector<std::string>::const_iterator name_it = vhost_it->getName().begin(); name_it != vhost_it->getName().end(); ++name_it)
+		{
+			if (*name_it == name)
+				return (*vhost_it);
+		}
+	}
+	return (*(host_list_it->second.begin()));
 }
 
 void	HostList::addHost(std::pair<uint16_t, VirtualHost> const& vhost, std::map<uint16_t, std::vector<VirtualHost> >& host_map)

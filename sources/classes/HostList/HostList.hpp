@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 14:39:05 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/20 14:30:20 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/22 15:59:48 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ class HostList
 		~HostList();
 
 		static HostList	build(char const* filename);
+
+		std::vector<uint16_t>	getPort(void) const;
+		VirtualHost const&		getHost(uint16_t port, std::string const& name) const;
 
 	private:
 
