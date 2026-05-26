@@ -1,15 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   IOFd_process_header.cpp                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
+/*   Updated: 2026/05/26 14:34:34 by jweber           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "IOFd.hpp"
+#include "abnf.hpp"
 #include "status.hpp"
+#include <cctype>
 #include <cctype>
 #include <map>
 #include <string>
 #include <vector>
-#include <cctype>
 
 static int	check_header(const string_map& headers);
 static void	no_version(const IOFd& iofd, int& status);
-static int	check_last_line(const std::string& last_line);
+static int	check_last_line(std::string last_line);
 static void add_line_headers(std::string& line,  string_map& headers);
+static void	lowering(std::string& line);
+static void	remove_trailing_new_line(std::string& line);
 
 // here depending on the version, it should exepct no header 
 // maybe header should be in key-value pairs ? like:
@@ -75,13 +90,6 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 
 			if (delimPosition == start && last_line.size() == 0)
 			{
-				/*
-				if (check_header(this->header) != SUCCESS)
-					return (send_bad_request(this->fd, this->status));
-				*/
-				// removing this check temporarily, because not sure it 
-				// it necessary, since we check for wrong 
-				// header format after each sent headers
 				this->state++;
 				start = until;
 				return;
@@ -132,78 +140,21 @@ static int	check_header(const string_map& headers)
 	return (SUCCESS);
 }
 
-#include "abnf.hpp"
-
-# define ALLOWED_CHAR_KEY   ABNF_ALPHA ABNF_DIGIT "_;.,\\/\"'?!(){}[]@<>=-+*#$&`|~^%"
-# define ALLOWED_CHAR_VALUE ABNF_ALPHA ABNF_DIGIT "_;.,\\/\"'?!(){}[]@<>=-+*#$&`|~^%" " "
-
-// "coucou\r\n" -> valid
-// coucou\r:\r\n -> invalid
-// coucou:yo\ryo\r\n -> invalid
-static int check_last_line(const std::string& last_line)
-{
-	size_t	colonPosition = last_line.find(":");
-	size_t	key_size;
-	size_t	value_start;
-	size_t	value_end;
-	
-	if (colonPosition == std::string::npos)
-	{
-		key_size = last_line.size();
-		value_start = 0;
-		value_end = 0;
-	}
-	else
-	{
-		key_size = colonPosition;
-		value_start = colonPosition + 1;
-		value_end = last_line.find_last_not_of("\r\n");
-		if (value_end < value_start)
-		{
-			value_start = 0;
-			value_end = 0;
-		}
-	}
-
-	std::string key(last_line, 0, key_size);
-	std::string value(last_line, value_start, value_end - value_start);
-
-	if (key.size() > 0 && key[key.size() - 1] == '\n')
-	{
-		key.erase(key.size() - 1, 1);
-		if (key.size() > 0 && key[key.size() - 1] == '\r')
-			key.erase(key.size() - 1, 1);
-	}
-	if (key.find_first_not_of(ALLOWED_CHAR_KEY) != std::string::npos)
-		return (FAILURE);
-	if (value.find_first_not_of(ALLOWED_CHAR_VALUE) != std::string::npos)
-		return (FAILURE);
-	return (SUCCESS);
-}
-
-void	lowering(std::string& line);
-
-static void add_line_headers(std::string& line,  string_map& headers)
+static void add_line_headers(std::string& line, string_map& headers)
 {
 	size_t		colonPosition = line.find(":");
 	std::string	key;
 
+	remove_trailing_new_line(line);
 	if (colonPosition == std::string::npos)
 	{
-		key.append(line, 0, line.size());
-		if (key.size() > 0 && key[key.size() - 1] == '\n')
-		{
-			key.erase(key.size() - 1, 1);
-			if (key.size() > 0 && key[key.size() - 1] == '\r')
-				key.erase(key.size() - 1, 1);
-		}
 		lowering(key);
 		headers[key].push_back("");
 	}
 	else
 	{
-		size_t	value_begin = line.find_first_not_of(" \r\n", colonPosition + 1);
-		size_t	value_end = line.find_last_not_of(" \r\n");
+		size_t	value_begin = line.find_first_not_of(" ", colonPosition + 1);
+		size_t	value_end = line.find_last_not_of(" ");
 		key.append(line, 0, colonPosition);
 		lowering(key);
 		if (value_end == std::string::npos || value_begin == std::string::npos)
@@ -211,10 +162,52 @@ static void add_line_headers(std::string& line,  string_map& headers)
 		else
 			headers[key].push_back(std::string(line, value_begin, value_end - value_begin + 1));
 	}
-	line = "";
 }
 
-void	lowering(std::string& line)
+# define ALLOWED_CHAR_KEY   ABNF_ALPHA ABNF_DIGIT "_;.,\\/\"'?!(){}[]@<>=-+*#$&`|~^%"
+# define ALLOWED_CHAR_VALUE ALLOWED_CHAR_KEY " "
+
+// "coucou\r\n" -> valid
+// coucou\r:\r\n -> invalid
+// coucou:yo\ryo\r\n -> invalid
+static int check_last_line(std::string last_line)
+{
+	size_t	colonPosition = last_line.find(":");
+
+	remove_trailing_new_line(last_line);
+	if (colonPosition == std::string::npos)
+	{
+		if (last_line.find_first_not_of(ALLOWED_CHAR_KEY) != std::string::npos)
+			return (FAILURE);
+	}
+	else
+	{
+		size_t	value_begin = colonPosition + 1;
+
+		std::string	key(last_line, 0, colonPosition);
+		if (key.find_first_not_of(ALLOWED_CHAR_KEY) != std::string::npos)
+			return (FAILURE);
+		if (value_begin < last_line.size()) // for line that look like : 'host:' to avoid checking forbidden character in non existing value
+		{
+			std::string	value(last_line, value_begin, last_line.size() - value_begin);
+			if (value.find_first_not_of(ALLOWED_CHAR_VALUE) != std::string::npos)
+				return (FAILURE);
+		}
+	}
+	return (SUCCESS);
+}
+
+static void	remove_trailing_new_line(std::string& line)
+{
+	if (line.size() > 0 && line[line.size() - 1] == '\n')
+	{
+		line.erase(line.size() - 1, 1);
+		while (line.size() > 0 && line[line.size() - 1] == '\r')
+			line.erase(line.size() - 1, 1);
+	}
+}
+
+static void	lowering(std::string& line)
 {
 	for (size_t i = 0; i < line.size(); i++)
 	{
