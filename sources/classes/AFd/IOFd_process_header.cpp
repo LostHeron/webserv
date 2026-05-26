@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/26 14:41:05 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/26 15:09:20 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ static int	check_last_line(std::string last_line);
 static void add_line_headers(std::string& line,  string_map& headers);
 static void	lowering(std::string& line);
 static void	remove_trailing_new_line(std::string& line);
+static int fill_last_line(const std::string &buf, std::string &last_line, size_t &start, int &state);
 
 // here depending on the version, it should exepct no header 
 // maybe header should be in key-value pairs ? like:
@@ -45,13 +46,7 @@ static void	remove_trailing_new_line(std::string& line);
 void	IOFd::process_header(std::string& buf, size_t& start)
 {
 	// std::cout << "in process header\n";
-	std::vector<std::string> delims;
-	size_t	delimPosition;
-	size_t	until;
 
-	delims.reserve(2);
-	delims.push_back("\n");
-	delims.push_back("\r\n");
 
 	if (this->version == "")
 	{
@@ -62,31 +57,8 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 	static std::string last_line;
 	while (start < buf.size())
 	{
-		delimPosition = getDelimPosition(buf, start, delims);
-		if (delimPosition == std::string::npos) // no \r\n
-		{
-			until = buf.size();
-			last_line.append(buf, start, until - start);
-		}
-		else 
-		{
-			if (buf[delimPosition] == '\r')
-				until = delimPosition + 2;
-			else
-				until = delimPosition + 1;
-
-			if (delimPosition == start && last_line.size() == 0)
-			{
-				this->state++;
-				start = until;
-				return;
-			}
-			else
-			{
-				last_line.append(buf, start, until - start);
-			}
-		}
-		start = until;
+		if (fill_last_line(buf, last_line, start, this->state) == STOP)
+			break;
 
 		if (check_last_line(last_line) != SUCCESS)
 		{
@@ -102,6 +74,46 @@ void	IOFd::process_header(std::string& buf, size_t& start)
 		}
 
 	}
+}
+
+static int fill_last_line(const std::string &buf, std::string &last_line, size_t &start, int &state)
+{
+	static std::vector<std::string> delims;
+	if (delims.size() == 0)
+	{
+		delims.reserve(2);
+		delims.push_back("\n");
+		delims.push_back("\r\n");
+	}
+	size_t	delimPosition;
+	size_t	until;
+
+	delimPosition = getDelimPosition(buf, start, delims);
+	if (delimPosition == std::string::npos) // no \r\n
+	{
+		until = buf.size();
+		last_line.append(buf, start, until - start);
+	}
+	else 
+	{
+		if (buf[delimPosition] == '\r')
+			until = delimPosition + 2;
+		else
+			until = delimPosition + 1;
+
+		if (delimPosition == start && last_line.size() == 0)
+		{
+			state++;
+			start = until;
+			return (STOP);
+		}
+		else
+		{
+			last_line.append(buf, start, until - start);
+		}
+	}
+	start = until;
+	return (CONTINUE);
 }
 
 static void	no_version(const IOFd& iofd, int& status)
@@ -137,8 +149,8 @@ static void add_line_headers(std::string& line, string_map& headers)
 	remove_trailing_new_line(line);
 	if (colonPosition == std::string::npos)
 	{
-		lowering(key);
-		headers[key].push_back("");
+		lowering(line);
+		headers[line].push_back("");
 	}
 	else
 	{
