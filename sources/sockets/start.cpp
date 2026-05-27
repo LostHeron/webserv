@@ -12,9 +12,6 @@
 
 #include "sockets.hpp"
 #include "ASocket.hpp"
-#include "Response.hpp"
-#include "InputSocket.hpp"
-#include "RequestFactory.hpp"
 #include "status.hpp"
 #include <cstring>
 #include <sys/epoll.h>

@@ -112,6 +112,7 @@ class InputSocket: public ASocket
 		// if there's still data to process after having retrieved the entire
 		// body, server should close the connection with a bad request response
 		void						process_skip_sp(std::string&, size_t& pos);
+		void						process_request(std::string&, size_t& pos);
 };
 
 void		send_bad_request(int fd, int& status);

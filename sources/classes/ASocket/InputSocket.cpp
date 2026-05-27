@@ -12,7 +12,9 @@
 
 #include "InputSocket.hpp"
 #include "ASocket.hpp"
+#include "RequestFactory.hpp"
 #include "Server.hpp"
+#include "VirtualHost.hpp"
 #include "abnf.hpp"
 #include "default_pages.hpp"
 #include "status.hpp"
@@ -52,7 +54,8 @@ InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& 
 	InputSocket::process_functions[3] = &InputSocket::process_skip_sp;
 	InputSocket::process_functions[4] = &InputSocket::process_version;
 	InputSocket::process_functions[5] = &InputSocket::process_header;
-	InputSocket::process_functions[6] = &InputSocket::process_body;
+	InputSocket::process_functions[6] = &InputSocket::process_request;
+	InputSocket::process_functions[7] = &InputSocket::process_body;
 }
 
 InputSocket::~InputSocket()
@@ -338,6 +341,30 @@ static int	check_version(const std::string& method, const std::string& version)
 	// TODO return 505 version not handled by the server
 
 	return (SUCCESS);
+}
+
+void	InputSocket::process_request(std::string& str, size_t& pos)
+{
+	(void) str;
+	(void) pos;
+	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
+	/*
+	this->local_port;
+	this->host;
+	VirtualHost& vhost;
+	vhost.getPerm(uri, method) ->
+	this->server.getHostList().getHost(port, vhost).;
+		*/
+	RequestFactory facto(*this);//, VirtualHost &vhost;
+	ARequest *req = facto.createElement();
+
+	// ach: execute request building response metadata, then Jules will handle the Client transmission
+	Response resp = req->execute();
+
+	delete req;
+	
+	if (resp.getResourceFd() != -1)
+		close(resp.getResourceFd());
 }
 
 
