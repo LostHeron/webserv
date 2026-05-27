@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ListenFd.cpp                                       :+:      :+:    :+:   */
+/*   ListenSocket.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ListenFd.hpp"
+#include "ListenSocket.hpp"
 #include "ASocket.hpp"
 #include "Server.hpp"
 #include "sockets.hpp"
@@ -26,7 +26,7 @@
 #include <cerrno>
 #include <fcntl.h>
 
-ListenFd::ListenFd(uint16_t port, uint32_t address, Server& server):
+ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
 	ASocket(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -59,11 +59,11 @@ ListenFd::ListenFd(uint16_t port, uint32_t address, Server& server):
 	this->addr_data.sin_port = htons(port);
 }
 
-ListenFd::~ListenFd()
+ListenSocket::~ListenSocket()
 {
 }
 
-void	ListenFd::process()
+void	ListenSocket::process()
 {
 	// ok and here should do stuff with the fd,
 	// and read data and start parsing request
@@ -96,7 +96,7 @@ void	ListenFd::process()
 	return ;
 }
 
-void	ListenFd::activate()
+void	ListenSocket::activate()
 {
 	int	ret;
 

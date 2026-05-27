@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "sockets.hpp"
-#include "ListenFd.hpp"
+#include "ListenSocket.hpp"
 #include "InputSocket.hpp"
 #include "Server.hpp"
 #include "status.hpp"
@@ -24,7 +24,7 @@ void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 {
 	try
 	{
-		ListenFd* fd = new ListenFd(port, addr, server);
+		ListenSocket* fd = new ListenSocket(port, addr, server);
 		fd->activate();
 		if (fd->fail())
 		{

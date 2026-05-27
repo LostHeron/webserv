@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ListenFd.hpp                                       :+:      :+:    :+:   */
+/*   ListenSocket.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LISTENFD_HPP
-# define LISTENFD_HPP
+#ifndef LISTENSOCKET_HPP
+# define LISTENSOCKET_HPP
 
 #include "ASocket.hpp"
 #include "Server.hpp"
@@ -19,11 +19,11 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-class ListenFd: public ASocket
+class ListenSocket: public ASocket
 {
 	public:
-		ListenFd(uint16_t port, uint32_t address, Server& server);
-		~ListenFd();
+		ListenSocket(uint16_t port, uint32_t address, Server& server);
+		~ListenSocket();
 
 		void	process();
 		void	activate();
@@ -31,9 +31,9 @@ class ListenFd: public ASocket
 	protected:
 
 	private:
-		ListenFd();
-		ListenFd(const ListenFd& other);
-		ListenFd& operator=(const ListenFd& other);
+		ListenSocket();
+		ListenSocket(const ListenSocket& other);
+		ListenSocket& operator=(const ListenSocket& other);
 
 		struct sockaddr_in	addr_data;
 };

@@ -45,7 +45,7 @@ class ASocket
 		int		status;
 
 		// a reference to the server, used to create new instances
-		// of InputSocket (which inherits from ASocket), when ListenFDs processes
+		// of InputSocket (which inherits from ASocket), when ListenSockets processes
 		// incomming connections (with the process function)
 		Server&	server;
 
