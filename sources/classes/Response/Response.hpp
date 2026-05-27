@@ -14,7 +14,7 @@
 # define	__RESPONSE_HPP__
 
 # include "AMessage.hpp"
-# include "stdint.h"
+# include <stdint.h>
 
 class	Response: public AMessage
 {
@@ -25,10 +25,11 @@ class	Response: public AMessage
 
 		Response		&operator=(const Response &assign);
 
-		// void	send(void); // remove, metadata to store and then to be processed (queue) by epoll
-		//
-
 		const uint16_t	&getStatus(void) const;
+		const int		&getResourceFd(void) const;
+
+		void			setStatus(const uint16_t &status);
+		void			setResourceFd(const int &resourceFd);
 
 	protected:
 		// metadata

@@ -1,35 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   GETReq.cpp                                         :+:      :+:    :+:   */
+/*   UNKNOWNReq.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/13 17:39:13 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/04/13 17:38:59 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "GETReq.hpp"
+#include "UNKNOWNReq.hpp"
 
 // Constructors/Destructor =====================================================
-// GETReq::GETReq(void):
+// UNKNOWNReq::UNKNOWNReq(const std::string &type, const std::string &header, const std::string &body):
 // 	ARequest(type, header, body) {}
 
-GETReq::GETReq(const ARequest &cpy):
+UNKNOWNReq::UNKNOWNReq(const ARequest &cpy):
 	ARequest(cpy) {}
 
-GETReq::GETReq(const GETReq &cpy):
+UNKNOWNReq::UNKNOWNReq(const UNKNOWNReq &cpy):
 	ARequest(cpy) {}
 
-GETReq::~GETReq(void) {}
+UNKNOWNReq::~UNKNOWNReq(void) {}
 
 // Member functions ============================================================
-Response	GETReq::execute(void)
+Response	UNKNOWNReq::execute(void)
 {
 	Response resp(this->_fd);
 
-	std::cout << "I AM A GET REQUEST!" << std::endl;
+	std::cout << "I AM A UNKNOWN REQUEST!" << std::endl;
 
 	return (resp);
 }

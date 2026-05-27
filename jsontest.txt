@@ -1,6 +1,16 @@
 
 "host":{
-    "listen":8080,
+    "listen": 8080,
     "name": "test",
-    "root":"/"
+    "root": "/",
+	"location": [
+		{
+			"name":"/",
+			"root":"/home/abetemps/"
+		},
+		{
+			"name":"/media",
+			"root":"/home/abetemps/Pictures"
+		}
+	]
 }

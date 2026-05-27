@@ -14,6 +14,9 @@
 # define	__GETREQ_HPP__
 
 # include "ARequest.hpp"
+# include <dirent.h>
+# include <errno.h>
+# include <sys/types.h>
 
 class	GETReq: public ARequest // only GET ?
 {
@@ -27,6 +30,11 @@ class	GETReq: public ARequest // only GET ?
 		// GETReq		&operator=(const GETReq &assign);
 
 		Response		execute(void);
+
+	private:
+		int		_displayDir(DIR *dir) const;
+		DIR		*_tryOpenDirectory(const char *path) const;
+		int		_tryOpenFile(const char *path) const;
 };
 
 #endif
