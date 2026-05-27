@@ -6,12 +6,12 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:25:51 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:06:21 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
-#include "AFd.hpp"
+#include "ASocket.hpp"
 #include "HostList.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
@@ -62,8 +62,8 @@ void	Server::setFailure(int value)
 	this->status = value;
 }
 
-// function used to add the AFd pointer 
-void	Server::add(AFd* fd)
+// function used to add the ASocket pointer 
+void	Server::add(ASocket* fd)
 {
 	this->epoll.add(fd);
 	this->sockets.push_back(fd);
@@ -76,7 +76,7 @@ int	Server::getEfd()
 
 const HostList& Server::getHostList() const {return (this->host_list);};
 
-void	Server::remove(AFd *afd)
+void	Server::remove(ASocket *afd)
 {
 	delete afd;
 	this->sockets.erase(

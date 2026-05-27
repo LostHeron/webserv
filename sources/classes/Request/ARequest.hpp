@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 21:19:10 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/05/27 17:02:06 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef		__AREQUEST_HPP__
@@ -14,7 +14,7 @@
 
 # include "AMessage.hpp"
 # include "Response.hpp"
-# include "IOFd.hpp"
+# include "InputSocket.hpp"
 # include <vector>
 # include <unistd.h>
 # include <fcntl.h>
@@ -26,7 +26,7 @@
 class	ARequest: public AMessage
 {
 	public:
-		ARequest(const IOFd &IOMessage);
+		ARequest(const InputSocket &IOMessage);
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 

@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/01 21:51:42 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/05/27 17:01:50 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "AFactory.hpp"
 # include "ARequest.hpp"
 
-# include "IOFd.hpp"
+# include "InputSocket.hpp"
 
 # include "GETReq.hpp"
 # include "POSTReq.hpp"
@@ -28,7 +28,7 @@ class	RequestFactory:
 	public AFactory<ARequest>
 {
 	public:
-		RequestFactory(const IOFd &IOMessage);
+		RequestFactory(const InputSocket &IOMessage);
 		RequestFactory(const RequestFactory &cpy);
 		~RequestFactory(void);
 

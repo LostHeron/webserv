@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:54:45 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 10:47:20 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:05:54 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "EpollStruct.hpp"
 #include "HostList.hpp"
 
-class AFd;
+class ASocket;
 
 class Server
 {
@@ -26,8 +26,8 @@ class Server
 		virtual ~Server();
 
 		bool			fail();
-		void			add(AFd*);
-		void			remove(AFd*);
+		void			add(ASocket*);
+		void			remove(ASocket*);
 		void			setFailure(int value);
 		int				getEfd();
 		const HostList& getHostList() const;
@@ -49,14 +49,14 @@ class Server
 
 		// vectors of fds (sockets) associated with all listening ports
 		// initialized with socket + bind + listen;
-		std::vector<AFd*>		sockets;
+		std::vector<ASocket*>		sockets;
 
 
 		HostList				host_list;
 		// some kind of structure to remember
 		// if an fd is associated with something
 		// we should do an 'accept' on or a 'read/write' from/to !
-		//std::map<int, AFd*>		fds;
+		//std::map<int, ASocket*>		fds;
 };
 
 #endif

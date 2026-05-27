@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/27 13:41:49 by jweber           ###   ########.fr        #
+#    Updated: 2026/05/27 17:09:10 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFD_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
@@ -80,11 +80,11 @@ POSTREQ_FILES := 	POSTReq.cpp \
 UNKNOWNREQ_DIR := 	UNKNOWNReq/
 UNKNOWNREQ_FILES := UNKNOWNReq.cpp \
 
-AFD_DIR := 		AFd/
-AFD_FILES := 	AFd.cpp \
-				ListenFd.cpp \
-				IOFd.cpp \
-				IOFd_process_header.cpp \
+ASOCKET_DIR := 	ASocket/
+ASOCKET_FILES := 	ASocket.cpp \
+					ListenFd.cpp \
+					InputSocket.cpp \
+					InputSocket_process_header.cpp \
 
 EPOLLSTRUCT_DIR := EpollStruct/
 EPOLLSTRUCT_FILES := EpollStruct.cpp \
@@ -124,7 +124,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
 				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
-				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
+				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
 				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \

@@ -6,12 +6,12 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:31 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:36:20 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:07:15 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ListenFd.hpp"
-#include "AFd.hpp"
+#include "ASocket.hpp"
 #include "Server.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
@@ -27,7 +27,7 @@
 #include <fcntl.h>
 
 ListenFd::ListenFd(uint16_t port, uint32_t address, Server& server):
-	AFd(server)
+	ASocket(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 

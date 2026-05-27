@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IOFd.hpp                                           :+:      :+:    :+:   */
+/*   InputSocket.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:31:25 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:09:36 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef IOFD_HPP
-# define IOFD_HPP
+#ifndef INPUTSOCKET_HPP
+# define INPUTSOCKET_HPP
 
-# include "AFd.hpp"
+# include "ASocket.hpp"
 # include "Server.hpp"
 # include "VirtualHost.hpp"
 # include <map>
@@ -26,13 +26,13 @@
 
 typedef std::map<std::string, std::vector<std::string> > string_map;
 
-class IOFd: public AFd
+class InputSocket: public ASocket
 {
 	public:
-		friend std::ostream& operator<<(std::ostream& os, const IOFd& iofd);
-		IOFd(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
+		friend std::ostream& operator<<(std::ostream& os, const InputSocket& iofd);
+		InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
 		
-		~IOFd();
+		~InputSocket();
 
 		const std::string					&getMethod(void) const;
 		const std::string					&getUri(void) const;
@@ -45,8 +45,8 @@ class IOFd: public AFd
 	protected:
 
 	private:
-		IOFd(const IOFd& other);
-		IOFd& operator=(const IOFd& other);
+		InputSocket(const InputSocket& other);
+		InputSocket& operator=(const InputSocket& other);
 
 		// enum used to know in which state the fd is in
 		// at start it is in 'METHOD' state, whiche means
@@ -63,7 +63,7 @@ class IOFd: public AFd
 			DISCARD,
 		};
 
-		void (IOFd::*process_functions[10])(std::string& buf, size_t& pos);
+		void (InputSocket::*process_functions[10])(std::string& buf, size_t& pos);
 
 		// used to know which state the program is in
 		int			state;	
@@ -96,6 +96,17 @@ class IOFd: public AFd
 		// also in here do we store the data send ? or do we wait until
 		// we know what to do with the request ...
 		std::vector<unsigned char>	body;
+		// maybe change this into a 'buffer', that will be used to communicate
+		// with the buffer of the OutputSocket
+		// then when we get to the 'process_body', it should read from
+		// the socket of the peer end if the 'body' is empty
+		// put the stuff in the buffer and that's all,
+		// then the AAAAH no, the body part has no link with the response
+		// but the body should be read and passed to a pipe which should be 
+		// returned to the sub process in case of a POST request
+		// hmm but about the response,
+		// the ResponseSocket struct should have the same fd to send data to
+		// and it should have a 
 		void						process_body(std::string&, size_t& pos);
 
 		// if there's still data to process after having retrieved the entire
