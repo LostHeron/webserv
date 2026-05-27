@@ -25,9 +25,6 @@ class	Response: public AMessage
 
 		Response		&operator=(const Response &assign);
 
-		// void	send(void); // remove, metadata to store and then to be processed (queue) by epoll
-		//
-
 		const uint16_t	&getStatus(void) const;
 		const int		&getResourceFd(void) const;
 

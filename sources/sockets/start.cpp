@@ -65,7 +65,8 @@ void	start(Server& server)
 
 					delete req;
 					
-					close(resp.getResourceFd());
+					if (resp.getResourceFd() != -1)
+						close(resp.getResourceFd());
 				}
 				
 				// here someking of code like :

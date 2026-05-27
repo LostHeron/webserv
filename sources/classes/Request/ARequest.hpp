@@ -53,8 +53,8 @@ class	ARequest: public AMessage
 			INFO = 100,
 			SUCCESS = 200,
 			REDIR = 300,
-			C_ERROR = 400
-			S_ERROR = 500
+			C_ERR = 400,
+			S_ERR = 500
 		};
 
 		enum				e_reqStatusInfo
@@ -76,7 +76,7 @@ class	ARequest: public AMessage
 			PARTIAL_CONTENT,
 			MULTI_STATUS,
 			ALREADY_REPORTED,
-			IM_USED
+			IM_USED = 26
 		};
 
 		enum				e_reqStatusRedir
@@ -112,16 +112,16 @@ class	ARequest: public AMessage
 			RANGE_NOT_SATISFIABLE,
 			EXPECTATION_FAILED,
 			TEAPOT,
-			MISDIRECTED_REQ,
+			MISDIRECTED_REQ = 21,
 			UNPROCESSABLE_CONTENT,
 			LOCKED,
 			FAILED_DEP,
 			TOO_EARLY,
 			UPGRADE_REQUIRED,
-			PRECONDITION_REQUIRED,
+			PRECONDITION_REQUIRED = 28,
 			TOO_MANY_REQUEST,
-			TOO_LARGE_HDR_FIELDS,
-			LEGAL
+			TOO_LARGE_HDR_FIELDS = 31,
+			LEGAL = 51
 		};
 
 		enum				e_reqStatusServerError
@@ -134,11 +134,13 @@ class	ARequest: public AMessage
 			VARIANT_ALSO_NEGOTIATE,
 			INSUFFICENT_STORAGE,
 			LOOP_DETECTED,
-			NOT_EXTENDED,
+			NOT_EXTENDED = 10,
 			NETWORK_AUTH_REQUIRED
 		};
 
 	protected:
+		// virtual uint16_t					_defineStatus(void) const = 0; // build status from context, using below enums 
+		//
 		const std::string				  	_method;
 		const std::string				  	_uri;
 		const std::string				  	_version;

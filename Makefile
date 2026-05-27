@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/05/04 15:22:00 by jweber            #+#    #+#              #
-#    Updated: 2026/05/04 15:25:45 by jweber           ###   ########.fr        #
+#    Created: 2026/04/01 16:54:22 by jweber            #+#    #+#              #
+#    Updated: 2026/05/25 15:48:41 by abetemps         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,8 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SERVER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFD_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
@@ -30,17 +32,27 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONLEXER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONOBJ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(ASCHEMA_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(BOOL_SCHEMA_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INT_SCHEMA_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJ_SCHEMA_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STR_SCHEMA_DIR)
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(BOOLSCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INTSCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJSCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR)
 
 SCHEMA_DIR :=		Schemas/
+
 ASCHEMA_DIR :=		ASchema/
-BOOL_SCHEMA_DIR :=	BoolSchema/
-INT_SCHEMA_DIR :=	IntSchema/
-OBJ_SCHEMA_DIR :=	ObjSchema/
-STR_SCHEMA_DIR :=	StringSchema/
+ASCHEMA_FILES := 	ASchema.cpp
+
+BOOLSCHEMA_DIR :=	BoolSchema/
+BOOLSCHEMA_FILES := BoolSchema.cpp
+
+INTSCHEMA_DIR :=	IntSchema/
+INTSCHEMA_FILES := IntSchema.cpp
+
+OBJSCHEMA_DIR :=	ObjSchema/
+OBJSCHEMA_FILES := ObjSchema.cpp
+
+STRINGSCHEMA_DIR :=	StringSchema/
+STRINGSCHEMA_FILES := StringSchema.cpp
 					
 
 AMESSAGE_DIR := 	AMessage/
@@ -73,7 +85,6 @@ AFD_FILES := 	AFd.cpp \
 				ListenFd.cpp \
 				IOFd.cpp \
 
-
 EPOLLSTRUCT_DIR := EpollStruct/
 EPOLLSTRUCT_FILES := EpollStruct.cpp \
 
@@ -90,37 +101,54 @@ JSONLEXER_FILES := JsonLexer.cpp
 JSONOBJ_DIR := JsonObj/
 JSONOBJ_FILES := JsonObj.cpp
 
-CLASSES_DIR := classes/
-CLASSES_FILES :=	$(addprefix $(AMESSAGE_DIR), $(AMESSAGE_FILES)) \
-					$(addprefix $(RESPONSE_DIR), $(RESPONSE_FILES)) \
-					$(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
-					$(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
-					$(addprefix $(REQUEST_DIR)$(GETREQ_DIR), $(GETREQ_FILES)) \
-					$(addprefix $(REQUEST_DIR)$(POSTREQ_DIR), $(POSTREQ_FILES)) \
-					$(addprefix $(REQUEST_DIR)$(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
-					$(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
-					$(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
-					$(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
-					$(addprefix $(AFD_DIR), $(AFD_FILES)) \
-					# $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
-					# $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
+HOSTLIST_DIR := HostList/
+HOSTLIST_FILES := HostList.cpp
 
-SIGNALS_HANDLING_DIR := signals/
-SIGNALS_HANDLING_FILES := setup_signals.cpp \
+VIRTUALHOST_DIR := VirtualHost/
+VIRTUALHOST_FILES := VirtualHost.cpp
+
+
+
+CLASSES_DIR := classes/
+CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
+				 $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
+				 $(addprefix $(AMESSAGE_DIR), $(AMESSAGE_FILES)) \
+				 $(addprefix $(RESPONSE_DIR), $(RESPONSE_FILES)) \
+				 $(addprefix $(REQUEST_DIR), $(REQUEST_FILES)) \
+				 $(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
+				 $(addprefix $(REQUEST_DIR)$(GETREQ_DIR), $(GETREQ_FILES)) \
+				 $(addprefix $(REQUEST_DIR)$(POSTREQ_DIR), $(POSTREQ_FILES)) \
+				 $(addprefix $(REQUEST_DIR)$(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
+				 $(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
+				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
+				 $(addprefix $(AFD_DIR), $(AFD_FILES)) \
+				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
+				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
+				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \
+				 $(addprefix $(VIRTUALHOST_DIR), $(VIRTUALHOST_FILES)) \
+				 $(addprefix $(SCHEMA_DIR)$(ASCHEMA_DIR), $(ASCHEMA_FILES)) \
+				 $(addprefix $(SCHEMA_DIR)$(BOOLSCHEMA_DIR), $(BOOLSCHEMA_FILES)) \
+				 $(addprefix $(SCHEMA_DIR)$(INTSCHEMA_DIR), $(INTSCHEMA_FILES)) \
+				 $(addprefix $(SCHEMA_DIR)$(STRINGSCHEMA_DIR), $(STRINGSCHEMA_FILES)) \
+				 $(addprefix $(SCHEMA_DIR)$(OBJSCHEMA_DIR), $(OBJSCHEMA_FILES)) \
 
 SOCKETS_DIR := sockets/
 SOCKETS_FILES := CreateFd.cpp \
 				 start.cpp \
 
+SIGNALS_HANDLING_DIR := signals/
+SIGNALS_HANDLING_FILES := setup_signals.cpp \
+
 CONFIGFILE_DIR := config_file/
-CONFIGFILE_FILES := setup.cpp \
+CONFIGFILE_FILES := schema_builders.cpp \
+					string_validators.cpp \
 
 SRCS_DIR := sources/
 SRCS_FILES := webserv.cpp \
 			  $(addprefix $(SOCKETS_DIR), $(SOCKETS_FILES)) \
 			  $(addprefix $(SIGNALS_HANDLING_DIR), $(SIGNALS_HANDLING_FILES)) \
-			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES))
-			  # $(addprefix $(CONFIGFILE_DIR), $(CONFIGFILE_FILES)) \
+			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES))	\
+			  $(addprefix $(CONFIGFILE_DIR), $(CONFIGFILE_FILES)) \
 
 SRCS_FILES := $(addprefix $(SRCS_DIR), $(SRCS_FILES))
 

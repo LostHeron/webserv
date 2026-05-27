@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 20:36:35 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/11 15:44:29 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 17:33:48 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,13 @@ void	ASchema::validate(std::map<std::string, JsonObj> const& obj_map) const
 {
 	std::map<std::string, JsonObj>::const_iterator obj_it = obj_map.find(this->_name);
 
-	if (obj_it == obj_map.end())
-		throw std::logic_error("Object '" + this->_name + "' is required and missing");
+	if (obj_it == obj_map.end() || (obj_it->second.getType() == JsonObj::ARRAY && obj_it->second.getArray().empty()))
+	{
+		if (this->_isRequired)
+			throw std::logic_error("Object '" + this->_name + "' is required and missing");
+		else
+			return ;
+	}
 	if (obj_it->second.getType() == JsonObj::ARRAY && this->_allowMultiple == true)
 	{
 		for (std::vector<JsonObj>::const_iterator arr_it = obj_it->second.getArray().begin(); arr_it != obj_it->second.getArray().end(); ++arr_it)
@@ -47,7 +52,7 @@ void	ASchema::validate(std::map<std::string, JsonObj> const& obj_map) const
 
 void	ASchema::checkType(JsonObj const& object) const
 {
-	if (object.getType() == this->_type)
+	if (object.getType() != this->_type)
 		throw std::domain_error("Object '" + this->_name + "' doesn't have the right type");
 }
 

@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 17:25:08 by cviel             #+#    #+#             */
-/*   Updated: 2026/04/20 14:56:27 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/20 17:40:39 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,13 +79,13 @@ JsonLexer::JsonLexer(std::string const& input)
 				if (input.compare(i, 4, "true") == 0)
 				{
 					new_token.type = BOOL_TRUE;
-					i += 4;
+					i += 3;
 					break ;
 				}
 				if (input.compare(i, 5, "false") == 0)
 				{
 					new_token.type = BOOL_FALSE;
-					i += 5;
+					i += 4;
 					break ;
 				}
 				new_token.type = INT;
@@ -96,6 +96,7 @@ JsonLexer::JsonLexer(std::string const& input)
 				}
 				if (new_token.value.empty())
 					throw std::invalid_argument("Invalid argument : unrecognized sequence of characters at \"" + input.substr(i, 10) + "...\"");
+				--i;
 			}
 		}
 		this->_tokenQueue.push(new_token);
@@ -130,7 +131,7 @@ JsonLexer::e_tokenType	JsonLexer::peekType(void) const
 	return (this->_tokenQueue.front().type);
 }
 
-std::string const&	JsonLexer::popToken(void)
+std::string	JsonLexer::popToken(void)
 {
 	if (this->_tokenQueue.empty())
 		throw std::range_error("Lexer is empty : trying to access non-existant element");
