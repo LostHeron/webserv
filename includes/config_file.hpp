@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:25:38 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/20 14:33:17 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/27 14:58:09 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 # define ERROR_CODE_KEY "code"
 # define ERROR_PAGE_KEY "link"
 # define LOC_NAME_KEY "name"
-# define LOC_ROOT_KEY "root"
+# define LOC_ALIAS_KEY "alias"
 # define LOC_INDEX_KEY "index"
 # define LOC_DIR_LIST_KEY "directory listing"
 # define LOC_ALLOWED_REQUEST_KEY "reqeusts"
@@ -42,7 +42,6 @@
 # include "VirtualHost.hpp"
 # include "ObjSchema.hpp"
 
-void	host_setup(char const* filename, std::map<uint16_t, VirtualHost> host_map);
 void	host_schema_builder(ObjSchema& server_schema);
 void	interface_validator(std::string const& interface);
 void	request_validator(std::string const& request);

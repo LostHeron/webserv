@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/20 17:12:10 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/27 15:34:11 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,15 +180,15 @@ uint32_t	VirtualHost::buildInterface(std::string const& interface)
 
 	for (unsigned int i = 0; i < 4; ++i)
 	{
-		uint8_t	interface_part;
+		uint32_t	interface_part;
 		
 		interface_stream >> interface_part;
 		if (i < 3)
 		{
 			interface_bits <<= 8;
-			interface_bits += interface_part;
 			interface_stream.ignore();
 		}
+		interface_bits += interface_part;
 	}
 	return (interface_bits);
 }
@@ -235,7 +235,7 @@ VirtualHost::Location::~Location()
 std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::map<std::string, JsonObj> const& loc_obj_map)
 {
 	Location	loc;
-	std::map<std::string, JsonObj>::const_iterator	loc_obj_it = loc_obj_map.find(LOC_ROOT_KEY);
+	std::map<std::string, JsonObj>::const_iterator	loc_obj_it = loc_obj_map.find(LOC_ALIAS_KEY);
 
 	loc._root = loc_obj_it->second.getString();
 	loc_obj_it = loc_obj_map.find(LOC_INDEX_KEY);
