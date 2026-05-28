@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:00:51 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 11:22:53 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,10 @@ void	InputSocket::process_header(std::string& buf, size_t& start)
 	while (start < buf.size())
 	{
 		if (fill_last_line(buf, last_line, start, this->state) == STOP)
+		{
+			(this->*process_functions[this->state])(buf, start);
 			break;
+		}
 
 		if (check_last_line(last_line) != SUCCESS)
 		{

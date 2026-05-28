@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:06:21 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 16:10:49 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,10 @@ void	Server::setFailure(int value)
 }
 
 // function used to add the ASocket pointer 
-void	Server::add(ASocket* fd)
+void	Server::add(ASocket* abstract_socket, int event_flags)
 {
-	this->epoll.add(fd);
-	this->sockets.push_back(fd);
+	this->epoll.add(abstract_socket, event_flags);
+	this->sockets.push_back(abstract_socket);
 }
 
 int	Server::getEfd()
@@ -76,10 +76,11 @@ int	Server::getEfd()
 
 const HostList& Server::getHostList() const {return (this->host_list);};
 
-void	Server::remove(ASocket *afd)
+void	Server::remove(ASocket *asocket)
 {
-	delete afd;
+	this->epoll.remove(asocket);
 	this->sockets.erase(
-		std::find(this->sockets.begin(), this->sockets.end(), afd)
+		std::find(this->sockets.begin(), this->sockets.end(), asocket)
 	);
+	delete asocket;
 }

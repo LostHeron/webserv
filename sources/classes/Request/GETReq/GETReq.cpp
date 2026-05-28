@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/13 17:39:13 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/05/28 11:53:24 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ GETReq::~GETReq(void) {}
 // tempp!!!!
 void send_file(int fd, int client)
 {
+	/*
 	int rv = 0;
 	char buf[1024 + 1];
 	do
@@ -41,6 +42,9 @@ void send_file(int fd, int client)
 		write(client, buf, rv);
 		rv = read(fd, buf, 1024);
 	} while (rv);
+	*/
+	(void) fd;
+	(void) client;
 }
 // tempp!!!!
 
@@ -117,6 +121,7 @@ Response	GETReq::execute(void)
 			case (ENOTDIR):
 				if ((resourceFd = this->_tryOpenFile(path.c_str())) >= 0)
 					break;
+				break;
 			case (EACCES):
 				status = C_ERR + FORBIDDEN;
 				break;

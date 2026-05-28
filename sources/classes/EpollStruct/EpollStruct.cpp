@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 11:29:57 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:07:05 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 15:18:24 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,25 @@ bool	EpollStruct::fail()
 		return (true);
 }
 
-void	EpollStruct::add(ASocket *fd)
+void	EpollStruct::add(ASocket *abstract_socket, int event_flags)
 {
 	struct epoll_event	event;
 	int					ret;
 
-	event.data.ptr = fd;
-	event.events = EPOLLIN;
-	ret = epoll_ctl(this->fd, EPOLL_CTL_ADD, fd->getFd(), &event);
+	event.data.ptr = abstract_socket;
+	event.events = event_flags;
+	ret = epoll_ctl(this->fd, EPOLL_CTL_ADD, abstract_socket->getFd(), &event);
+	if (ret < 0)
+		this->status = FAILURE;
+}
+
+void	EpollStruct::remove(ASocket *fd)
+{
+	struct epoll_event	event;
+	int					ret;
+
+	memset(&event, 0, sizeof(event));
+	ret = epoll_ctl(this->fd, EPOLL_CTL_DEL, fd->getFd(), &event);
 	if (ret < 0)
 		this->status = FAILURE;
 }

@@ -6,12 +6,13 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:06:32 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 17:52:27 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "InputSocket.hpp"
 #include "ASocket.hpp"
+#include "OutputSocket.hpp"
 #include "RequestFactory.hpp"
 #include "Server.hpp"
 #include "VirtualHost.hpp"
@@ -34,7 +35,6 @@
 #include <string>
 #include <iostream>
 #include <vector>
-
 
 InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server):
 	ASocket(server),
@@ -347,24 +347,47 @@ void	InputSocket::process_request(std::string& str, size_t& pos)
 {
 	(void) str;
 	(void) pos;
+	std::string requested_server_name;
 	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
-	/*
-	this->local_port;
-	this->host;
-	VirtualHost& vhost;
-	vhost.getPerm(uri, method) ->
-	this->server.getHostList().getHost(port, vhost).;
-		*/
-	RequestFactory facto(*this);//, VirtualHost &vhost;
+	if (this->header.count("host"))
+	{
+		if (this->header["host"].size() > 0)
+			requested_server_name = this->header["host"].at(0);
+		else
+			requested_server_name = "";
+	}
+	else
+		requested_server_name = "";
+	const VirtualHost& vhost = this->server.getHostList().getHost(this->local_port, requested_server_name);
+	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
 	ARequest *req = facto.createElement();
 
 	// ach: execute request building response metadata, then Jules will handle the Client transmission
 	Response resp = req->execute();
 
+	// this function of OutputSocket should
+	// set the ressource fd to the correct output
+	// set the status code to correct stuff
+	// and then when the ASocket corresponding to that OutputSocket
+	// is processed, it should, check if some flag saying processing 
+	// is ok it should process the request, in other case, just go away
+	// when processing, it should send headers in the first place,
+	// and then read from the ressource fd if it is set to a value greater
+	// than 1.
+	// and when this is done, hm, what should we do ?
+	// and what about cgi, because in this model, we have not yet created
+	// process the body, and before processing de ressourceFd, the body should've 
+	// been passed to the underlying process, so ...
+	static_cast<OutputSocket*>(this->associatedSocket)->setup(resp);
+
 	delete req;
 	
+	/*
 	if (resp.getResourceFd() != -1)
 		close(resp.getResourceFd());
+	*/
+	this->state++;
+	return ;
 }
 
 

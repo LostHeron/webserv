@@ -6,11 +6,12 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/05/27 17:01:42 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 11:48:11 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RequestFactory.hpp"
+#include "VirtualHost.hpp"
 
 // Static init =================================================================
 const AFactory<ARequest>::_constructor	RequestFactory::_constructorsArray[] =
@@ -22,8 +23,8 @@ const AFactory<ARequest>::_constructor	RequestFactory::_constructorsArray[] =
 };
 
 // Constructors/Destructor =====================================================
-RequestFactory::RequestFactory(const InputSocket &IOMessage):
-	ARequest(IOMessage),
+RequestFactory::RequestFactory(const InputSocket &IOMessage, const VirtualHost& vhost):
+	ARequest(IOMessage, vhost),
 	AFactory<ARequest>() {}
 
 RequestFactory::RequestFactory(const RequestFactory &cpy):

@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:05:41 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 14:57:03 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	start(Server& server)
 	while (run != 0)
 	{
 		int nb_events = epoll_wait(server.getEfd(), events, EVENT_SIZE, -1);
+		sleep(1); // just to slow down server for debugging purposes
 		if (nb_events < 0)
 		{
 			std::string error_msg(strerror(errno));

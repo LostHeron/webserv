@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:21:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:05:12 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 17:49:08 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ class ASocket
 
 		virtual void	process() = 0;
 		virtual	bool	fail();
+		
+		void	setAssociatedSocket(ASocket *ptr);
 
 	protected:
 
@@ -44,6 +46,7 @@ class ASocket
 		// non nul indicating a problem
 		int		status;
 
+		ASocket	*associatedSocket;
 		// a reference to the server, used to create new instances
 		// of InputSocket (which inherits from ASocket), when ListenSockets processes
 		// incomming connections (with the process function)

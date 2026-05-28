@@ -26,7 +26,7 @@ class Server
 		virtual ~Server();
 
 		bool			fail();
-		void			add(ASocket*);
+		void			add(ASocket*, int event_flags);
 		void			remove(ASocket*);
 		void			setFailure(int value);
 		int				getEfd();

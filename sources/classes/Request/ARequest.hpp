@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/05/27 17:02:06 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 11:47:03 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef		__AREQUEST_HPP__
@@ -15,18 +15,19 @@
 # include "AMessage.hpp"
 # include "Response.hpp"
 # include "InputSocket.hpp"
+#include "VirtualHost.hpp"
 # include <vector>
 # include <unistd.h>
 # include <fcntl.h>
 
 
-# define TEMP_ROOT "/home/abetemps/temp_webserv_root"
+# define TEMP_ROOT "/home/goinfre/tmp"
 
 
 class	ARequest: public AMessage
 {
 	public:
-		ARequest(const InputSocket &IOMessage);
+		ARequest(const InputSocket &IOMessage, const VirtualHost& vhost);
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 
@@ -140,6 +141,7 @@ class	ARequest: public AMessage
 		};
 
 	protected:
+		const VirtualHost					&_vhost;
 		const std::string					_method;
 		const std::string				  	_uri;
 		const std::string				  	_version;

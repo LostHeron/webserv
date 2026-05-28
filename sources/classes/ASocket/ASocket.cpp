@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 17:01:33 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:05:22 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/28 18:14:00 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ ASocket::ASocket(Server& server):
 	fd(-1),
 	memoryUsage(0),
 	status(SUCCESS),
+	associatedSocket(NULL),	
 	server(server)
 {
 }
@@ -26,6 +27,11 @@ ASocket::ASocket(Server& server):
 ASocket::~ASocket()
 {
 	close(this->fd);
+	if (this->associatedSocket != NULL)
+	{
+		this->associatedSocket->associatedSocket = NULL;
+		server.remove(this->associatedSocket);
+	}
 }
 
 int	ASocket::getFd() const
@@ -39,4 +45,9 @@ bool	ASocket::fail()
 		return (true);
 	else
 		return (false);
+}
+
+void	ASocket::setAssociatedSocket(ASocket *ptr)
+{
+	this->associatedSocket = ptr;
 }
