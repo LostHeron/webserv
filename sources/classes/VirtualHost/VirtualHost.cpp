@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 15:34:11 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/28 14:46:49 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,11 +122,11 @@ std::pair<uint16_t, VirtualHost>	VirtualHost::build(std::map<std::string, JsonOb
 		{
 			for (std::vector<JsonObj>::const_iterator it = obj_it->second.getArray().begin(); it != obj_it->second.getArray().end(); ++it)
 			{
-				VirtualHost::addLocation(it->getSubObj(), host._location);
+				VirtualHost::addLocation(it->getSubObj(), host._location, host._allowedRequest);
 			}
 		}
 		else
-			VirtualHost::addLocation(obj_it->second.getSubObj(), host._location);
+			VirtualHost::addLocation(obj_it->second.getSubObj(), host._location, host._allowedRequest);
 	}
 	obj_it = obj_map.find(HOST_CGI_KEY);
 	if (obj_it != obj_map.end())
@@ -199,9 +199,9 @@ void	VirtualHost::addErrorPage(std::map<std::string, JsonObj> const& error, std:
 		throw std::logic_error("Error code duplicate");
 }
 
-void	VirtualHost::addLocation(std::map<std::string, JsonObj> const& location, std::map<std::string, VirtualHost::Location>& host_location)
+void	VirtualHost::addLocation(std::map<std::string, JsonObj> const& location, std::map<std::string, VirtualHost::Location>& host_location, std::vector<std::string> const& host_allowed_request)
 {
-	if (host_location.insert(VirtualHost::Location::build(location)).second == false)
+	if (host_location.insert(VirtualHost::Location::build(location, host_allowed_request)).second == false)
 		throw std::logic_error("Location duplicate");
 }
 
@@ -221,7 +221,7 @@ VirtualHost::Location::Location(void) :
 {}
 
 VirtualHost::Location::Location(Location const& other) :
-	_root(other._root),
+	_alias(other._alias),
 	_index(other._index),
 	_allowedRequest(other._allowedRequest),
 	_allowDirList(other._allowDirList),
@@ -232,12 +232,12 @@ VirtualHost::Location::Location(Location const& other) :
 VirtualHost::Location::~Location()
 {}
 
-std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::map<std::string, JsonObj> const& loc_obj_map)
+std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::map<std::string, JsonObj> const& loc_obj_map, std::vector<std::string> const& host_allowed_request)
 {
-	Location	loc;
+	Location										loc;
 	std::map<std::string, JsonObj>::const_iterator	loc_obj_it = loc_obj_map.find(LOC_ALIAS_KEY);
 
-	loc._root = loc_obj_it->second.getString();
+	loc._alias = loc_obj_it->second.getString();
 	loc_obj_it = loc_obj_map.find(LOC_INDEX_KEY);
 	if (loc_obj_it != loc_obj_map.end())
 		loc._index = loc_obj_it->second.getString();
@@ -257,7 +257,7 @@ std::pair<std::string, VirtualHost::Location>	VirtualHost::Location::build(std::
 			loc._allowedRequest.push_back(loc_obj_it->second.getString());
 	}
 	else
-		loc._allowedRequest.push_back("GET");
+		loc._allowedRequest = host_allowed_request;
 	loc_obj_it = loc_obj_map.find(LOC_DIR_LIST_KEY);
 	if (loc_obj_it != loc_obj_map.end())
 		loc._allowDirList = loc_obj_it->second.getBool();

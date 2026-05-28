@@ -3,14 +3,9 @@
     "listen": 8080,
     "name": "test",
     "root": "/",
-	"location": [
+	"location": 
 		{
 			"name":"/",
-			"root":"/home/abetemps/"
-		},
-		{
-			"name":"/media",
-			"root":"/home/abetemps/Pictures"
+			"alias":"/home/abetemps/"
 		}
-	]
 }
