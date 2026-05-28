@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/10 17:37:33 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/05/27 17:02:23 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <vector>
 
 // Construction/Destruction ====================================================
-ARequest::ARequest(const IOFd &IOMessage):
+ARequest::ARequest(const InputSocket &IOMessage):
 	AMessage(IOMessage.getFd()),
 	_method(IOMessage.getMethod()),
 	_uri(IOMessage.getUri()),

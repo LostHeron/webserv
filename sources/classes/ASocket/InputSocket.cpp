@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IOFd.cpp                                           :+:      :+:    :+:   */
+/*   InputSocket.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:36:34 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:06:32 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "IOFd.hpp"
-#include "AFd.hpp"
+#include "InputSocket.hpp"
+#include "ASocket.hpp"
+#include "RequestFactory.hpp"
 #include "Server.hpp"
+#include "VirtualHost.hpp"
 #include "abnf.hpp"
 #include "default_pages.hpp"
 #include "status.hpp"
 #include <cctype>
 #include <cstddef>
+#include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cwctype>
@@ -33,38 +36,39 @@
 #include <vector>
 
 
-IOFd::IOFd(int fd, const struct sockaddr_in& addr, Server& server):
-	AFd(server),
-	state(0)
+InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server):
+	ASocket(server),
+	state(0),
+	local_port(local_port),
+	peer_port(ntohs(addr.sin_port))
 {
-	this->port = ntohs(addr.sin_port);
 	uint32_t addrh = (addr.sin_addr.s_addr);
 	for (int i = 0; i < 4; i++)
 	{
 		this->addr[i] = ( reinterpret_cast<uint8_t *>(&addrh) )[i];
 	}
 	this->fd = fd;
-	IOFd::process_functions[0] = &IOFd::process_method;
-	IOFd::process_functions[1] = &IOFd::process_skip_sp;
-	IOFd::process_functions[2] = &IOFd::process_uri;
-	IOFd::process_functions[3] = &IOFd::process_skip_sp;
-	IOFd::process_functions[4] = &IOFd::process_version;
-	IOFd::process_functions[5] = &IOFd::process_header;
-	IOFd::process_functions[6] = &IOFd::process_body;
+	InputSocket::process_functions[0] = &InputSocket::process_method;
+	InputSocket::process_functions[1] = &InputSocket::process_skip_sp;
+	InputSocket::process_functions[2] = &InputSocket::process_uri;
+	InputSocket::process_functions[3] = &InputSocket::process_skip_sp;
+	InputSocket::process_functions[4] = &InputSocket::process_version;
+	InputSocket::process_functions[5] = &InputSocket::process_header;
+	InputSocket::process_functions[6] = &InputSocket::process_request;
+	InputSocket::process_functions[7] = &InputSocket::process_body;
 }
 
-IOFd::~IOFd()
+InputSocket::~InputSocket()
 {
 }
 
-const std::string										&IOFd::getMethod(void) const { return(this->method); }
-const std::string										&IOFd::getUri(void) const { return(this->uri); }
-const std::string										&IOFd::getVersion(void) const { return(this->version); }
-const std::map< std::string, std::vector<std::string> >	&IOFd::getHeader(void) const { return(this->header); }
-const std::vector<unsigned char>						&IOFd::getBody(void) const { return(this->body); }
+const std::string					&InputSocket::getMethod(void) const { return(this->method); }
+const std::string					&InputSocket::getUri(void) const { return(this->uri); }
+const std::string					&InputSocket::getVersion(void) const { return(this->version); }
+const string_map					&InputSocket::getHeader(void) const { return(this->header); }
+const std::vector<unsigned char>	&InputSocket::getBody(void) const { return(this->body); }
 
-
-void IOFd::process()
+void InputSocket::process()
 {
 	char buf[BUFSIZ];
 	// ok maybe add a check here before to read, if the buffer is empty,
@@ -90,7 +94,7 @@ void IOFd::process()
 		// creating string from buffer
 		std::string str(buf, nb_read);
 
-		// processing buffer based on current state of IOFd;
+		// processing buffer based on current state of InputSocket;
 		size_t	pos = 0;
 		while (pos < str.size())
 		{
@@ -115,7 +119,7 @@ void	send_bad_request(int fd, int& status)
 
 static int	check_method(std::string& method);
 
-void	IOFd::process_method(std::string& str, size_t& pos)
+void	InputSocket::process_method(std::string& str, size_t& pos)
 { 
 	size_t space_pos = str.find(' ', 0);
 	if (space_pos == str.npos)
@@ -158,7 +162,7 @@ static void	clear_uri(std::string& uri);
 // - should also remove .. and . for the URI before going to next step
 // ?? do we treat url encoding and decoding ? like '/hi%20you.html' should
 // be transformed to '/hi 20yo.html' that's some question we need to ask
-void	IOFd::process_uri(std::string& str, size_t& pos)
+void	InputSocket::process_uri(std::string& str, size_t& pos)
 {
 	// std::cout << "in process uri\n";
 	size_t space_pos = str.find(' ', pos);
@@ -233,6 +237,7 @@ static void	clear_uri(std::string& uri)
 	bool						end_by_slash;
 	std::vector<std::string>	transformed;
 
+	end_by_slash = false;
 	if (uri[uri.size() - 1] == '/')
 		end_by_slash = true;
 
@@ -267,7 +272,7 @@ static int	check_version(const std::string& method, const std::string& version);
 //	- version field greater than 2048 char (arbitrary size)
 //	- version number not supported ?
 //	- 
-void	IOFd::process_version(std::string& str, size_t& pos)
+void	InputSocket::process_version(std::string& str, size_t& pos)
 {
 	// std::cout << "in process version\n";
 	size_t	crlf = str.find("\r\n", pos);
@@ -338,8 +343,32 @@ static int	check_version(const std::string& method, const std::string& version)
 	return (SUCCESS);
 }
 
+void	InputSocket::process_request(std::string& str, size_t& pos)
+{
+	(void) str;
+	(void) pos;
+	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
+	/*
+	this->local_port;
+	this->host;
+	VirtualHost& vhost;
+	vhost.getPerm(uri, method) ->
+	this->server.getHostList().getHost(port, vhost).;
+		*/
+	RequestFactory facto(*this);//, VirtualHost &vhost;
+	ARequest *req = facto.createElement();
 
-void	IOFd::process_body(std::string& str, size_t& pos)
+	// ach: execute request building response metadata, then Jules will handle the Client transmission
+	Response resp = req->execute();
+
+	delete req;
+	
+	if (resp.getResourceFd() != -1)
+		close(resp.getResourceFd());
+}
+
+
+void	InputSocket::process_body(std::string& str, size_t& pos)
 {
 	// std::cout << "in process body\n";
 	// should reserve size of body right here because it should be known !
@@ -349,7 +378,7 @@ void	IOFd::process_body(std::string& str, size_t& pos)
 	pos = str.size();
 }
 
-void	IOFd::process_skip_sp(std::string& str, size_t& pos)
+void	InputSocket::process_skip_sp(std::string& str, size_t& pos)
 {
 	// std::cout << "in process skip spaces\n";
 	size_t	non_sp_pos = str.find_first_not_of(" ", pos);
@@ -387,7 +416,7 @@ std::ostream& operator<<(std::ostream& os, std::vector<unsigned char> data)
 	return (os);
 }
 
-std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
+std::ostream& operator<<(std::ostream& os, const InputSocket& iofd)
 {
 	os << "connection: ";
 	for (int i = 0; i < 4; i++)
@@ -396,7 +425,7 @@ std::ostream& operator<<(std::ostream& os, const IOFd& iofd)
 		if (i != 3)
 			os << ".";
 	}
-	os << ":" << iofd.port << "; ";
+	os << ":" << iofd.peer_port << "; ";
 	os << "method: '" << iofd.method << "'; ";
 	os << "uri: '" << iofd.uri << "'; ";
 	os << "version: '" << iofd.version << "'; ";

@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ListenFd.cpp                                       :+:      :+:    :+:   */
+/*   ListenSocket.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:31 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:36:20 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:07:15 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ListenFd.hpp"
-#include "AFd.hpp"
+#include "ListenSocket.hpp"
+#include "ASocket.hpp"
 #include "Server.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
@@ -26,8 +26,8 @@
 #include <cerrno>
 #include <fcntl.h>
 
-ListenFd::ListenFd(uint16_t port, uint32_t address, Server& server):
-	AFd(server)
+ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
+	ASocket(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -59,11 +59,11 @@ ListenFd::ListenFd(uint16_t port, uint32_t address, Server& server):
 	this->addr_data.sin_port = htons(port);
 }
 
-ListenFd::~ListenFd()
+ListenSocket::~ListenSocket()
 {
 }
 
-void	ListenFd::process()
+void	ListenSocket::process()
 {
 	// ok and here should do stuff with the fd,
 	// and read data and start parsing request
@@ -84,7 +84,7 @@ void	ListenFd::process()
 			break;
 		std::cout << "a connection was accepted\n";
 
-		CreateFd(peer_fd, peer_addr, this->server);
+		CreateFd(peer_fd, ntohs(this->addr_data.sin_port), peer_addr, this->server);
 
 		if (this->server.fail())
 		{
@@ -96,7 +96,7 @@ void	ListenFd::process()
 	return ;
 }
 
-void	ListenFd::activate()
+void	ListenSocket::activate()
 {
 	int	ret;
 

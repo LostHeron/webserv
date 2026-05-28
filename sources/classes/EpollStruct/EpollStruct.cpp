@@ -6,11 +6,11 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 11:29:57 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 15:23:28 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:07:05 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "AFd.hpp"
+#include "ASocket.hpp"
 #include "EpollStruct.hpp"
 #include <cstring>
 #include <sys/epoll.h>
@@ -45,7 +45,7 @@ bool	EpollStruct::fail()
 		return (true);
 }
 
-void	EpollStruct::add(AFd *fd)
+void	EpollStruct::add(ASocket *fd)
 {
 	struct epoll_event	event;
 	int					ret;

@@ -1,26 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   AFd.hpp                                            :+:      :+:    :+:   */
+/*   ASocket.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:21:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:37:35 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:05:12 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef AFD_HPP
-# define AFD_HPP
+#ifndef ASOCKET_HPP
+# define ASOCKET_HPP
 
 #include "Server.hpp"
 #include <cstddef>
 
-class AFd
+class ASocket
 {
 	public:
-		AFd(Server& server);
-		virtual ~AFd();
+		ASocket(Server& server);
+		virtual ~ASocket();
 
 		int	getFd() const;
 
@@ -45,13 +45,13 @@ class AFd
 		int		status;
 
 		// a reference to the server, used to create new instances
-		// of IOFd (which inherits from AFd), when ListenFDs processes
+		// of InputSocket (which inherits from ASocket), when ListenSockets processes
 		// incomming connections (with the process function)
 		Server&	server;
 
 	private:
-		AFd(const AFd& other);
-		AFd& operator=(const AFd& other);
+		ASocket(const ASocket& other);
+		ASocket& operator=(const ASocket& other);
 };
 
 #endif

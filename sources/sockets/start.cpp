@@ -6,15 +6,12 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:39:04 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:05:41 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sockets.hpp"
-#include "AFd.hpp"
-#include "Response.hpp"
-#include "IOFd.hpp"
-#include "RequestFactory.hpp"
+#include "ASocket.hpp"
 #include "status.hpp"
 #include <cstring>
 #include <sys/epoll.h>
@@ -45,7 +42,7 @@ void	start(Server& server)
 			std::cout << nb_events << " event where received in the epoll_wait function\n";
 			for (int i = 0; i < nb_events; i++)
 			{
-				AFd* event = static_cast<AFd*>(events[i].data.ptr);
+				ASocket* event = static_cast<ASocket*>(events[i].data.ptr);
 				event->process();
 				if (event->fail())
 					server.remove(event);
@@ -53,22 +50,21 @@ void	start(Server& server)
 				else
 				{
 					// ach: processes only iofds
-					if (!dynamic_cast<IOFd *>(event))
+					if (!dynamic_cast<InputSocket *>(event))
 						continue;
-					IOFd *io = dynamic_cast<IOFd *>(event);
+					InputSocket *io = dynamic_cast<InputSocket *>(event);
 
 					// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
-					RequestFactory facto = RequestFactory(*io);
+					RequestFactory facto(*io);
 					ARequest *req = facto.createElement();
 
-					// ach: execute request and build response
+					// ach: execute request building response metadata, then Jules will handle the Client transmission
 					Response resp = req->execute();
-
 
 					delete req;
 					
-					// ach: send resp -> deported inside event queue
-					// resp->send();
+					if (resp.getResourceFd() != -1)
+						close(resp.getResourceFd());
 				}
 				*/
 				

@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ListenFd.hpp                                       :+:      :+:    :+:   */
+/*   ListenSocket.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:35 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:37:01 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:07:47 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LISTENFD_HPP
-# define LISTENFD_HPP
+#ifndef LISTENSOCKET_HPP
+# define LISTENSOCKET_HPP
 
-#include "AFd.hpp"
+#include "ASocket.hpp"
 #include "Server.hpp"
 #include <cstring>
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-class ListenFd: public AFd
+class ListenSocket: public ASocket
 {
 	public:
-		ListenFd(uint16_t port, uint32_t address, Server& server);
-		~ListenFd();
+		ListenSocket(uint16_t port, uint32_t address, Server& server);
+		~ListenSocket();
 
 		void	process();
 		void	activate();
@@ -31,9 +31,9 @@ class ListenFd: public AFd
 	protected:
 
 	private:
-		ListenFd();
-		ListenFd(const ListenFd& other);
-		ListenFd& operator=(const ListenFd& other);
+		ListenSocket();
+		ListenSocket(const ListenSocket& other);
+		ListenSocket& operator=(const ListenSocket& other);
 
 		struct sockaddr_in	addr_data;
 };

@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/13 18:47:27 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/05/27 17:01:42 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,12 @@ const AFactory<ARequest>::_constructor	RequestFactory::_constructorsArray[] =
 {
 	&RequestFactory::_newElement<GETReq>,
 	&RequestFactory::_newElement<POSTReq>,
-	&RequestFactory::_newElement<DELETEReq>
+	&RequestFactory::_newElement<DELETEReq>,
+	&RequestFactory::_newElement<UNKNOWNReq>
 };
 
 // Constructors/Destructor =====================================================
-RequestFactory::RequestFactory(const IOFd &IOMessage):
+RequestFactory::RequestFactory(const InputSocket &IOMessage):
 	ARequest(IOMessage),
 	AFactory<ARequest>() {}
 
@@ -74,7 +75,7 @@ int8_t			RequestFactory::_determineElement(void) const
 	else if (this->_method == "DELETE")
 		return (ARequest::DELETE);
 	else
-		return (ERROR);
+		return (UNKNOWN);
 }
 
 

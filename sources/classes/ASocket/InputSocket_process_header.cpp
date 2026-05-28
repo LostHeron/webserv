@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   IOFd_process_header.cpp                            :+:      :+:    :+:   */
+/*   InputSocket_process_header.cpp                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/26 15:09:20 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:00:51 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "IOFd.hpp"
+#include "InputSocket.hpp"
 #include "abnf.hpp"
 #include "status.hpp"
 #include <cctype>
@@ -20,7 +20,7 @@
 #include <vector>
 
 static int	check_header(const string_map& headers);
-static void	no_version(const IOFd& iofd, int& status);
+static void	no_version(const InputSocket& iofd, int& status);
 static int	check_last_line(std::string last_line);
 static void add_line_headers(std::string& line,  string_map& headers);
 static void	lowering(std::string& line);
@@ -43,7 +43,7 @@ static int fill_last_line(const std::string &buf, std::string &last_line, size_t
 // be processed using only method and uri, then closed and all other
 // ressources send should be ignored
 
-void	IOFd::process_header(std::string& buf, size_t& start)
+void	InputSocket::process_header(std::string& buf, size_t& start)
 {
 	// std::cout << "in process header\n";
 
@@ -116,7 +116,7 @@ static int fill_last_line(const std::string &buf, std::string &last_line, size_t
 	return (CONTINUE);
 }
 
-static void	no_version(const IOFd& iofd, int& status)
+static void	no_version(const InputSocket& iofd, int& status)
 {
 		if (iofd.getMethod() == "GET")
 		{
@@ -134,7 +134,6 @@ static void	no_version(const IOFd& iofd, int& status)
 
 static int	check_header(const string_map& headers)
 {
-	(void) headers;
 	if (headers.count("host"))
 		if (headers.at("host").size() > 1)
 			return (FAILURE);

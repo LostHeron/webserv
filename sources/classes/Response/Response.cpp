@@ -16,10 +16,7 @@
 Response::Response(const int &fd):
 	AMessage(fd),
 	_status(0),
-	_resourceFd(-1)
-{
-	std::cout << "fd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
-}
+	_resourceFd(-1) {}
 
 Response::Response(const Response &cpy):
 	AMessage(cpy._fd),
@@ -32,7 +29,21 @@ Response::~Response(void) {}
 // Ops overloading =============================================================
 Response			&Response::operator=(const Response &assign){ (void) assign; return (*this); }
 
-// // Setters =====================================================================
+// Setters =====================================================================
+void				Response::setStatus(const uint16_t &status)
+{
+	// maybe try if already set
+	this->_status = status;
+	std::cout << "==> STATUS SET\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
+}
 
+void				Response::setResourceFd(const int &resourceFd)
+{
+	// maybe try if already set
+	this->_resourceFd = resourceFd;
+	std::cout << "==> RESOURCEFD SET\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
+}
 
-// // Getters =====================================================================
+// Getters =====================================================================
+const uint16_t		&Response::getStatus(void) const {	return (this->_status); }
+const int			&Response::getResourceFd(void) const {	return (this->_resourceFd); }

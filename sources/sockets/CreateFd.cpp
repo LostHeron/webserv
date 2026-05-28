@@ -6,13 +6,13 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:14:12 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/15 18:36:46 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:01:20 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sockets.hpp"
-#include "ListenFd.hpp"
-#include "IOFd.hpp"
+#include "ListenSocket.hpp"
+#include "InputSocket.hpp"
 #include "Server.hpp"
 #include "status.hpp"
 #include <netinet/in.h>
@@ -24,7 +24,7 @@ void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 {
 	try
 	{
-		ListenFd* fd = new ListenFd(port, addr, server);
+		ListenSocket* fd = new ListenSocket(port, addr, server);
 		fd->activate();
 		if (fd->fail())
 		{
@@ -43,11 +43,11 @@ void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 	}
 }
 
-void	CreateFd(int fd, const struct sockaddr_in& addr, Server& server)
+void	CreateFd(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server)
 {
 	try
 	{
-		IOFd * new_fd = new IOFd(fd, addr, server);
+		InputSocket * new_fd = new InputSocket(fd, local_port, addr, server);
 		server.add(new_fd);
 	}
 	catch (std::exception& e)

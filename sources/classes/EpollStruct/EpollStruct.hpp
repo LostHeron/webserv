@@ -6,14 +6,14 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 11:30:39 by jweber            #+#    #+#             */
-/*   Updated: 2026/04/13 15:23:14 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/27 17:06:49 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EPOLLSTRUCT_HPP
 # define EPOLLSTRUCT_HPP
 
-class AFd;
+class ASocket;
 
 class EpollStruct
 {
@@ -22,7 +22,7 @@ class EpollStruct
 		~EpollStruct();
 
 		bool	fail();
-		void	add(AFd *fd);
+		void	add(ASocket *fd);
 		int		getFd();
 
 	protected:
