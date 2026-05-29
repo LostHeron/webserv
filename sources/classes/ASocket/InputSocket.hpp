@@ -37,7 +37,6 @@ class InputSocket: public ASocket
 		const std::string					&getUri(void) const;
 		const std::string					&getVersion(void) const;
 		const string_map					&getHeaders(void) const;
-		const std::vector<unsigned char>	&getBody(void) const;
 
 		void	process();
 		
@@ -75,26 +74,8 @@ class InputSocket: public ASocket
 		string_map					headers;
 		void						process_headers(std::string&, size_t& pos);
 
-		// body of the request, must be sur a 'content length' is present
-		// in the request to know how much data to store in the body !
-		// also in here do we store the data send ? or do we wait until
-		// we know what to do with the request ...
-		std::vector<unsigned char>	body;
-		// maybe change this into a 'buffer', that will be used to communicate
-		// with the buffer of the OutputSocket
-		// then when we get to the 'process_body', it should read from
-		// the socket of the peer end if the 'body' is empty
-		// put the stuff in the buffer and that's all,
-		// then the AAAAH no, the body part has no link with the response
-		// but the body should be read and passed to a pipe which should be 
-		// returned to the sub process in case of a POST request
-		// hmm but about the response,
-		// the ResponseSocket struct should have the same fd to send data to
-		// and it should have a 
 		void						process_body(std::string&, size_t& pos);
 
-		// if there's still data to process after having retrieved the entire
-		// body, server should close the connection with a bad request response
 		void						process_skip_sp(std::string&, size_t& pos);
 		void						process_request(std::string&, size_t& pos);
 };

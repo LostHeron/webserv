@@ -21,8 +21,7 @@ ARequest::ARequest(const InputSocket &IOMessage, const VirtualHost& vhost):
 	_method(IOMessage.getMethod()),
 	_uri(IOMessage.getUri()),
 	_version(IOMessage.getVersion()),
-	_header(IOMessage.getHeaders()),
-	_body(IOMessage.getBody()) {}
+	_header(IOMessage.getHeaders()) {}
 
 ARequest::ARequest(const ARequest &cpy):
 	AMessage(cpy._fd),
@@ -30,8 +29,7 @@ ARequest::ARequest(const ARequest &cpy):
 	_method(cpy._method),
 	_uri(cpy._uri),
 	_version(cpy._version),
-	_header(cpy._header),
-	_body(cpy._body) {}
+	_header(cpy._header) {}
 
 ARequest::~ARequest(void) {}
 
@@ -50,4 +48,3 @@ const std::string										&ARequest::getMethod(void) const { return(this->_meth
 const std::string										&ARequest::getUri(void) const { return(this->_uri); }
 const std::string										&ARequest::getVersion(void) const { return(this->_version); }
 const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void) const { return(this->_header); }
-const std::vector<unsigned char>						&ARequest::getBody(void) const { return(this->_body); }

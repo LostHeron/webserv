@@ -39,7 +39,6 @@ class	ARequest: public AMessage
 		const std::string										&getUri(void) const;
 		const std::string										&getVersion(void) const;
 		const std::map< std::string, std::vector<std::string> >	&getHeader(void) const;
-		const std::vector<unsigned char>						&getBody(void) const;
 
 		enum				e_reqType
 		{
@@ -146,7 +145,6 @@ class	ARequest: public AMessage
 		const std::string				  	_uri;
 		const std::string				  	_version;
 		const string_map					_header;
-		const std::vector<unsigned char>	_body;
 };
 
 #endif

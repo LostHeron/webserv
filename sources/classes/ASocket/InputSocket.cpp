@@ -66,7 +66,6 @@ const std::string					&InputSocket::getMethod(void) const { return(this->method)
 const std::string					&InputSocket::getUri(void) const { return(this->uri); }
 const std::string					&InputSocket::getVersion(void) const { return(this->version); }
 const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
-const std::vector<unsigned char>	&InputSocket::getBody(void) const { return(this->body); }
 
 void InputSocket::process()
 {
@@ -393,12 +392,7 @@ void	InputSocket::process_request(std::string& str, size_t& pos)
 
 void	InputSocket::process_body(std::string& str, size_t& pos)
 {
-	// std::cout << "in process body\n";
-	// should reserve size of body right here because it should be known !
-	// this->body.push_back(str.data(), pos, str.size() - pos);
-	if (pos < str.size())
-		this->body.insert(this->body.end(), str.begin() + pos, str.end());
-	pos = str.size();
+	(void) str; (void) pos;
 }
 
 void	InputSocket::process_skip_sp(std::string& str, size_t& pos)
@@ -464,9 +458,11 @@ std::ostream& operator<<(std::ostream& os, const InputSocket& iofd)
 		os << "\n";
 	}
 	os << "----------------------\n";
+	/*
 	os << "body:\n";
 	os << iofd.body;
 	os << "\n";
+	*/
 	return (os);
 }
 
