@@ -21,7 +21,7 @@ ARequest::ARequest(const InputSocket &IOMessage, const VirtualHost& vhost):
 	_method(IOMessage.getMethod()),
 	_uri(IOMessage.getUri()),
 	_version(IOMessage.getVersion()),
-	_header(IOMessage.getHeader()),
+	_header(IOMessage.getHeaders()),
 	_body(IOMessage.getBody()) {}
 
 ARequest::ARequest(const ARequest &cpy):

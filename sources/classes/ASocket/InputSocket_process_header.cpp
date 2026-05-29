@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-static int	check_header(const string_map& headers);
+static int	check_headers(const string_map& headers);
 static void	no_version(const InputSocket& iofd, int& status);
 static int	check_last_line(std::string last_line);
 static void add_line_headers(std::string& line,  string_map& headers);
@@ -43,7 +43,7 @@ static int fill_last_line(const std::string &buf, std::string &last_line, size_t
 // be processed using only method and uri, then closed and all other
 // ressources send should be ignored
 
-void	InputSocket::process_header(std::string& buf, size_t& start)
+void	InputSocket::process_headers(std::string& buf, size_t& start)
 {
 	// std::cout << "in process header\n";
 
@@ -70,8 +70,8 @@ void	InputSocket::process_header(std::string& buf, size_t& start)
 
 		if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
 		{
-			add_line_headers(last_line, this->header);
-			if (check_header(header) != SUCCESS)
+			add_line_headers(last_line, this->headers);
+			if (check_headers(this->headers) != SUCCESS)
 				return (send_bad_request(this->fd, this->status));
 			last_line.clear();
 		}
@@ -135,7 +135,7 @@ static void	no_version(const InputSocket& iofd, int& status)
 		return ;
 }
 
-static int	check_header(const string_map& headers)
+static int	check_headers(const string_map& headers)
 {
 	if (headers.count("host"))
 		if (headers.at("host").size() > 1)

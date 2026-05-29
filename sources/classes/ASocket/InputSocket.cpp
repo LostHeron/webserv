@@ -53,7 +53,7 @@ InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& 
 	InputSocket::process_functions[2] = &InputSocket::process_uri;
 	InputSocket::process_functions[3] = &InputSocket::process_skip_sp;
 	InputSocket::process_functions[4] = &InputSocket::process_version;
-	InputSocket::process_functions[5] = &InputSocket::process_header;
+	InputSocket::process_functions[5] = &InputSocket::process_headers;
 	InputSocket::process_functions[6] = &InputSocket::process_request;
 	InputSocket::process_functions[7] = &InputSocket::process_body;
 }
@@ -65,7 +65,7 @@ InputSocket::~InputSocket()
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
 const std::string					&InputSocket::getUri(void) const { return(this->uri); }
 const std::string					&InputSocket::getVersion(void) const { return(this->version); }
-const string_map					&InputSocket::getHeader(void) const { return(this->header); }
+const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
 const std::vector<unsigned char>	&InputSocket::getBody(void) const { return(this->body); }
 
 void InputSocket::process()
@@ -349,10 +349,10 @@ void	InputSocket::process_request(std::string& str, size_t& pos)
 	(void) pos;
 	std::string requested_server_name;
 	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
-	if (this->header.count("host"))
+	if (this->headers.count("host"))
 	{
-		if (this->header["host"].size() > 0)
-			requested_server_name = this->header["host"].at(0);
+		if (this->headers["host"].size() > 0)
+			requested_server_name = this->headers["host"].at(0);
 		else
 			requested_server_name = "";
 	}
@@ -453,8 +453,8 @@ std::ostream& operator<<(std::ostream& os, const InputSocket& iofd)
 	os << "uri: '" << iofd.uri << "'; ";
 	os << "version: '" << iofd.version << "'; ";
 	os << "\n----------------------\n";
-	os << "headerlines: (nb headerlines: " << iofd.header.size() << ")\n";
-	for (string_map::const_iterator l = iofd.header.begin(); l != iofd.header.end(); l++)
+	os << "headerlines: (nb headerlines: " << iofd.headers.size() << ")\n";
+	for (string_map::const_iterator l = iofd.headers.begin(); l != iofd.headers.end(); l++)
 	{
 		os << l->first << ": ";
 		for (size_t i = 0; i < l->second.size(); i++)

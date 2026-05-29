@@ -36,7 +36,7 @@ class InputSocket: public ASocket
 		const std::string					&getMethod(void) const;
 		const std::string					&getUri(void) const;
 		const std::string					&getVersion(void) const;
-		const string_map					&getHeader(void) const;
+		const string_map					&getHeaders(void) const;
 		const std::vector<unsigned char>	&getBody(void) const;
 
 		void	process();
@@ -72,8 +72,8 @@ class InputSocket: public ASocket
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
 		//std::vector< std::string >					header;
-		string_map					header;
-		void						process_header(std::string&, size_t& pos);
+		string_map					headers;
+		void						process_headers(std::string&, size_t& pos);
 
 		// body of the request, must be sur a 'content length' is present
 		// in the request to know how much data to store in the body !
