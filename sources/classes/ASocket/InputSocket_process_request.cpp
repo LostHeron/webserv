@@ -52,6 +52,12 @@ void	InputSocket::process_request(size_t& pos)
 	// this should be if no cgi :
 	static_cast<OutputSocket*>(this->associatedSocket)->setup(resp);
 	// and here if it is cgi, then setup the InputCgi and OutputCgi
+	
+	bool iscgi = false;
+	if (iscgi == true)
+	{
+		;//this->prepareCGI();
+	}
 
 	delete req;
 	

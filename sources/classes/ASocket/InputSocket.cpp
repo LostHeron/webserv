@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/29 18:16:21 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/29 19:03:45 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Server.hpp"
 #include "default_pages.hpp"
 #include "status.hpp"
+#include "error.hpp"
 #include <cctype>
 #include <cstddef>
 #include <stdint.h>
@@ -126,6 +127,56 @@ void	InputSocket::process_body(size_t& pos)
 	return ;
 }
 
+void	InputSocket::prepareCGI()
+{
+	int fd[2];
+	if (pipe(fd) < 0)
+	{
+		logerror();
+		this->status = FAILURE;
+		return ;
+	}
+
+	/*
+
+	int pid = fork();
+	if (pid < 0)
+	{
+		logerror();
+		this->status = FAILURE;
+		return ;
+	}
+
+	if (pid == 0)
+	{
+		here is the child !
+
+		// but is there a chance where some request get handled by this process ??
+
+
+		char **env = create_env_from_input_socket(*this);
+		execve(const char *path, char *const *argv, char *const *envp)
+		should we throw here if not possible to create child process, so
+		that 
+		throw something, but do not know what yet ...
+		throw something like children_process, whiche is children_process : public std::exception
+	}
+
+
+	*/
+	
+	//CreateInCGI
+	//this one will take an fd being fd[1] to send data to the process using buffered data in InputSocket
+
+
+
+	//CreateOutCGI
+	//This one wille take an fd being fd[0] to read data from the cgi stdout,
+	//it will parse headers, then store remaining body data in a buffer
+	//then the response will 
+	return ;
+}
+
 void	InputSocket::process_skip_sp(size_t& pos)
 {
 	// std::cout << "in process skip spaces\n";
@@ -150,20 +201,6 @@ size_t		getDelimPosition(const std::string& str, size_t start, const std::vector
 			res = tmp;
 	}
 	return (res);
-}
-
-std::ostream& operator<<(std::ostream& os, std::vector<unsigned char> data)
-{
-	for (size_t	i = 0; i < data.size(); i++)
-	{
-		char c;
-		if (std::isprint(data.at(i)) )//|| std::iswspace(data.at(i)))
-			c = static_cast<char>(data.at(i));
-		else
-			c = '.';
-		os << c;
-	}
-	return (os);
 }
 
 std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)

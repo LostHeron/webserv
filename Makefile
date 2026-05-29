@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/29 18:11:01 by jweber           ###   ########.fr        #
+#    Updated: 2026/05/29 18:48:46 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -117,6 +117,9 @@ VIRTUALHOST_FILES := VirtualHost.cpp
 SIGNALS_HANDLING_DIR := signals/
 SIGNALS_HANDLING_FILES := setup_signals.cpp \
 
+ERROR_DIR := error/
+ERROR_FILES := logerror.cpp \
+
 CLASSES_DIR := classes/
 CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(LISTEN_DIR), $(LISTEN_FILES)) \
@@ -155,6 +158,7 @@ SRCS_DIR := sources/
 SRCS_FILES := webserv.cpp \
 			  $(addprefix $(SOCKETS_DIR), $(SOCKETS_FILES)) \
 			  $(addprefix $(SIGNALS_HANDLING_DIR), $(SIGNALS_HANDLING_FILES)) \
+			  $(addprefix $(ERROR_DIR), $(ERROR_FILES)) \
 			  $(addprefix $(CLASSES_DIR), $(CLASSES_FILES))	\
 			  $(addprefix $(CONFIGFILE_DIR), $(CONFIGFILE_FILES)) \
 

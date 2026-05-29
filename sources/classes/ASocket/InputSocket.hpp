@@ -79,6 +79,7 @@ class InputSocket: public ASocket
 
 		void						process_skip_sp(size_t& pos);
 		void						process_request(size_t& pos);
+		void						prepareCGI();
 };
 
 void		send_bad_request(int fd, int& status);
