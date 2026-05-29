@@ -23,8 +23,8 @@
 EpollStruct::EpollStruct()
 {
 	this->status = SUCCESS;
-	this->fd = epoll_create(42);
-	if (this->fd < 0)
+	this->epfd = epoll_create(42);
+	if (this->epfd < 0)
 	{
 		std::string error_msg(strerror(errno));
 		std::cerr << "epoll_create: " << error_msg << "\n";
@@ -34,7 +34,7 @@ EpollStruct::EpollStruct()
 
 EpollStruct::~EpollStruct()
 {
-	close(this->fd);
+	close(this->epfd);
 }
 
 bool	EpollStruct::fail()
@@ -52,23 +52,23 @@ void	EpollStruct::add(ASocket *abstract_socket, int event_flags)
 
 	event.data.ptr = abstract_socket;
 	event.events = event_flags;
-	ret = epoll_ctl(this->fd, EPOLL_CTL_ADD, abstract_socket->getFd(), &event);
+	ret = epoll_ctl(this->epfd, EPOLL_CTL_ADD, abstract_socket->getFd(), &event);
 	if (ret < 0)
 		this->status = FAILURE;
 }
 
-void	EpollStruct::remove(ASocket *fd)
+void	EpollStruct::remove(ASocket *abstractSocket)
 {
 	struct epoll_event	event;
 	int					ret;
 
 	memset(&event, 0, sizeof(event));
-	ret = epoll_ctl(this->fd, EPOLL_CTL_DEL, fd->getFd(), &event);
+	ret = epoll_ctl(this->epfd, EPOLL_CTL_DEL, abstractSocket->getFd(), &event);
 	if (ret < 0)
 		this->status = FAILURE;
 }
 
 int		EpollStruct::getFd()
 {
-	return (this->fd);
+	return (this->epfd);
 }

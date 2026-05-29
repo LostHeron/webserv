@@ -6,13 +6,12 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/29 18:12:29 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/29 18:16:21 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "InputSocket.hpp"
 #include "ASocket.hpp"
-#include "OutputSocket.hpp"
 #include "Server.hpp"
 #include "default_pages.hpp"
 #include "status.hpp"

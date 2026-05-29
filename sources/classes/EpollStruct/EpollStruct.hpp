@@ -29,7 +29,7 @@ class EpollStruct
 	protected:
 
 	private:
-		int	fd;
+		int	epfd;
 		int	status;
 		EpollStruct(const EpollStruct& other);
 		EpollStruct& operator=(const EpollStruct& other);
