@@ -67,78 +67,88 @@ const std::string					&InputSocket::getUri(void) const { return(this->uri); }
 const std::string					&InputSocket::getVersion(void) const { return(this->version); }
 const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
 
+void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
+
 void InputSocket::process()
 {
-	char buf[BUFSIZ];
-	// ok maybe add a check here before to read, if the buffer is empty,
-	// and by buffer i mean the 'str' variable down below that
-	// should be then made static so it can be accessed over different calls
-	ssize_t nb_read = recv(this->fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
-	if (nb_read < 0)
-	{
-		// error happened
-		std::string error_msg(strerror(errno));
-		std::cerr << "read: " << error_msg << "\n";
-		this->status = FAILURE;
-	}
-	else if (nb_read == 0)
-	{
-		// other end closed the connection
-		this->status = FAILURE;
-	}
-	else
-	{
-		// nomal behaviour
+	updateInputBuffer(this->input_buffer, this->fd, this->status);
+	if (this->status != SUCCESS)
+		return ;
 
-		// creating string from buffer
-		std::string str(buf, nb_read);
-
-		// processing buffer based on current state of InputSocket;
-		size_t	pos = 0;
-		while (pos < str.size())
-		{
-			(this->*process_functions[this->state])(str, pos);
-			if (this->fail())
-				return ;
-		}
-
-	}
+	size_t	position = 0;
+	(this->*process_functions[this->state])(position);
+	if (this->fail())
+		return ;
+	if (position >= this->input_buffer.size())
+		this->input_buffer.clear();
 	std::cout << *this << "\n";
 }
+
+void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
+{
+	if (input_buffer == "")
+	{
+		char buf[BUFSIZ];
+		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
+		if (nb_read < 0)
+		{
+			// error happened
+			std::string error_msg(strerror(errno));
+			std::cerr << "read: " << error_msg << "\n";
+			status = FAILURE;
+			return ;
+		}
+		else if (nb_read == 0)
+		{
+			status = FAILURE; 
+			// rename this, it is not failure, but
+			//	is used to make server clear ressources associated 
+			//	with this InputSocket request and associated OutputSocket
+			return ;
+		}
+		else
+		{
+			input_buffer = std::string(buf, nb_read);
+		}
+	}
+}
+
 
 void	send_bad_request(int fd, int& status)
 {
 	int ret = send(fd, ERROR_PAGE_400, sizeof(ERROR_PAGE_400), MSG_DONTWAIT | MSG_NOSIGNAL);
 	if (ret < 0)
 	{
-		std::cout << "error while sending error page back to client\n";
+		std::cerr << "error while sending error page back to client\n";
 	}
 	status = FAILURE;
 }
 
 static int	check_method(std::string& method);
 
-void	InputSocket::process_method(std::string& str, size_t& pos)
+void	InputSocket::process_method(size_t& pos)
 { 
-	size_t space_pos = str.find(' ', 0);
-	if (space_pos == str.npos)
+	size_t space_pos = this->input_buffer.find(' ', 0);
+	if (space_pos == std::string::npos)
 	{
 		// no space found: add everything in the 'method' field
-		this->method.append(str);
+		this->method.append(this->input_buffer);
 		if (check_method(this->method) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
-		pos = str.size();
+		pos = this->input_buffer.size();
+		return ;
 	}
 	else
 	{
-		this->method.append(str, pos, space_pos - pos);
+		this->method.append(this->input_buffer, pos, space_pos - pos);
 		if (check_method(this->method) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
 		else
 		{
 			this->state++;
-			//(this->*process_functions[this->state])(str, space_pos + 1);
 			pos = space_pos + 1;
+			if (pos < this->input_buffer.size())
+				(this->*process_functions[this->state])(pos);
 			return ;
 		}
 	}
@@ -161,29 +171,31 @@ static void	clear_uri(std::string& uri);
 // - should also remove .. and . for the URI before going to next step
 // ?? do we treat url encoding and decoding ? like '/hi%20you.html' should
 // be transformed to '/hi 20yo.html' that's some question we need to ask
-void	InputSocket::process_uri(std::string& str, size_t& pos)
+void	InputSocket::process_uri(size_t& pos)
 {
 	// std::cout << "in process uri\n";
-	size_t space_pos = str.find(' ', pos);
-	size_t crlf = str.find("\r\n", pos);
-	size_t lf = str.find("\n", pos);
+	size_t space_pos = this->input_buffer.find(' ', pos);
+	size_t crlf = this->input_buffer.find("\r\n", pos);
+	size_t lf = this->input_buffer.find("\n", pos);
 	size_t delim = std::min(space_pos, std::min(crlf, lf));
 	if (delim == std::string::npos)
 	{
-		this->uri.append(str, pos, str.size() - pos);
+		this->uri.append(this->input_buffer, pos, this->input_buffer.size() - pos);
 		if (check_uri(this->uri) != SUCCESS)
 			return (send_bad_request(this->fd, this->status));
-		pos = str.size();
+		pos = this->input_buffer.size();
 	}
 	else
 	{
 		if (delim > pos)
-			this->uri.append(str, pos, delim - pos);
+			this->uri.append(this->input_buffer, pos, delim - pos);
 		if (check_uri(this->uri) || this->uri == "")
 			return (send_bad_request(this->fd, this->status));
 		clear_uri(this->uri);
 		this->state++;
 		pos = delim;
+		if (pos < this->input_buffer.size())
+			(this->*process_functions[this->state])(pos);
 	}
 	return ;
 }
@@ -271,27 +283,27 @@ static int	check_version(const std::string& method, const std::string& version);
 //	- version field greater than 2048 char (arbitrary size)
 //	- version number not supported ?
 //	- 
-void	InputSocket::process_version(std::string& str, size_t& pos)
+void	InputSocket::process_version(size_t& pos)
 {
 	// std::cout << "in process version\n";
-	size_t	crlf = str.find("\r\n", pos);
-	size_t	lf = str.find("\n", pos);
+	size_t	crlf = this->input_buffer.find("\r\n", pos);
+	size_t	lf = this->input_buffer.find("\n", pos);
 	size_t	delim = std::min(crlf, lf);
-	if (delim == str.npos)
+	if (delim == std::string::npos)
 	{
-		this->version.append(str, pos, str.size() - pos);
+		this->version.append(this->input_buffer, pos, this->input_buffer.size() - pos);
 		if (this->version.size() > IOFD_MAX_SIZE)
 			return (send_bad_request(this->fd, this->status));
-		pos = str.size();
+		pos = this->input_buffer.size();
 	}
 	else
 	{
 		size_t	until;
-		if (str[delim] == '\r')
+		if (this->input_buffer[delim] == '\r')
 			until = delim + 2;
 		else
 			until = delim + 1;
-		this->version.append(str, pos, delim - pos);
+		this->version.append(this->input_buffer, pos, delim - pos);
 
 		size_t	trailing_space_pos = this->version.find_last_not_of(" ") + 1;
 		this->version.erase(trailing_space_pos, version.size() - trailing_space_pos);
@@ -300,6 +312,8 @@ void	InputSocket::process_version(std::string& str, size_t& pos)
 			return (send_bad_request(this->fd, this->status));
 		this->state++;
 		pos = until;
+		if (pos < this->input_buffer.size())
+			(this->*process_functions[this->state])(pos);
 	}
 }
 
@@ -342,10 +356,8 @@ static int	check_version(const std::string& method, const std::string& version)
 	return (SUCCESS);
 }
 
-void	InputSocket::process_request(std::string& str, size_t& pos)
+void	InputSocket::process_request(size_t& pos)
 {
-	(void) str;
-	(void) pos;
 	std::string requested_server_name;
 	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
 	if (this->headers.count("host"))
@@ -377,6 +389,7 @@ void	InputSocket::process_request(std::string& str, size_t& pos)
 	// and what about cgi, because in this model, we have not yet created
 	// process the body, and before processing de ressourceFd, the body should've 
 	// been passed to the underlying process, so ...
+
 	static_cast<OutputSocket*>(this->associatedSocket)->setup(resp);
 
 	delete req;
@@ -386,23 +399,29 @@ void	InputSocket::process_request(std::string& str, size_t& pos)
 		close(resp.getResourceFd());
 	*/
 	this->state++;
+	if (pos < this->input_buffer.size())
+		(this->*process_functions[this->state])(pos);
 	return ;
 }
 
 
-void	InputSocket::process_body(std::string& str, size_t& pos)
+void	InputSocket::process_body(size_t& pos)
 {
-	(void) str; (void) pos;
+	if (pos != 0)
+		this->input_buffer = std::string(this->input_buffer, pos);
+	return ;
 }
 
-void	InputSocket::process_skip_sp(std::string& str, size_t& pos)
+void	InputSocket::process_skip_sp(size_t& pos)
 {
 	// std::cout << "in process skip spaces\n";
-	size_t	non_sp_pos = str.find_first_not_of(" ", pos);
-	if (non_sp_pos == str.npos)
+	size_t	non_sp_pos = this->input_buffer.find_first_not_of(" ", pos);
+	if (non_sp_pos == this->input_buffer.npos)
 		return ;
 	this->state++;
 	pos = non_sp_pos;
+	if (pos < this->input_buffer.size())
+		(this->*process_functions[this->state])(pos);
 	return ;
 }
 
@@ -433,22 +452,23 @@ std::ostream& operator<<(std::ostream& os, std::vector<unsigned char> data)
 	return (os);
 }
 
-std::ostream& operator<<(std::ostream& os, const InputSocket& iofd)
+std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)
 {
 	os << "connection: ";
 	for (int i = 0; i < 4; i++)
 	{
-		os << static_cast<int>(iofd.addr[i]);
+		os << static_cast<int>(inputSocket.addr[i]);
 		if (i != 3)
 			os << ".";
 	}
-	os << ":" << iofd.peer_port << "; ";
-	os << "method: '" << iofd.method << "'; ";
-	os << "uri: '" << iofd.uri << "'; ";
-	os << "version: '" << iofd.version << "'; ";
+	os << ":" << inputSocket.peer_port << ";\n";
+	os << "current buffer contains: '" << inputSocket.input_buffer << "'\n";
+	os << "method: '" << inputSocket.method << "'; ";
+	os << "uri: '" << inputSocket.uri << "'; ";
+	os << "version: '" << inputSocket.version << "'; ";
 	os << "\n----------------------\n";
-	os << "headerlines: (nb headerlines: " << iofd.headers.size() << ")\n";
-	for (string_map::const_iterator l = iofd.headers.begin(); l != iofd.headers.end(); l++)
+	os << "headerlines: (nb headerlines: " << inputSocket.headers.size() << ")\n";
+	for (string_map::const_iterator l = inputSocket.headers.begin(); l != inputSocket.headers.end(); l++)
 	{
 		os << l->first << ": ";
 		for (size_t i = 0; i < l->second.size(); i++)
@@ -460,7 +480,7 @@ std::ostream& operator<<(std::ostream& os, const InputSocket& iofd)
 	os << "----------------------\n";
 	/*
 	os << "body:\n";
-	os << iofd.body;
+	os << inputSocket.body;
 	os << "\n";
 	*/
 	return (os);

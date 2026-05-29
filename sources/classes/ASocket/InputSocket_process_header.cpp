@@ -43,7 +43,7 @@ static int fill_last_line(const std::string &buf, std::string &last_line, size_t
 // be processed using only method and uri, then closed and all other
 // ressources send should be ignored
 
-void	InputSocket::process_headers(std::string& buf, size_t& start)
+void	InputSocket::process_headers(size_t& start)
 {
 	// std::cout << "in process header\n";
 
@@ -55,11 +55,11 @@ void	InputSocket::process_headers(std::string& buf, size_t& start)
 
 	// goal, fill in the map
 	static std::string last_line;
-	while (start < buf.size())
+	while (start < this->input_buffer.size())
 	{
-		if (fill_last_line(buf, last_line, start, this->state) == STOP)
+		if (fill_last_line(this->input_buffer, last_line, start, this->state) == STOP)
 		{
-			(this->*process_functions[this->state])(buf, start);
+			(this->*process_functions[this->state])(start);
 			break;
 		}
 

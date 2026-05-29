@@ -46,9 +46,10 @@ class InputSocket: public ASocket
 		InputSocket(const InputSocket& other);
 		InputSocket& operator=(const InputSocket& other);
 
-		void (InputSocket::*process_functions[10])(std::string& buf, size_t& pos);
+		void (InputSocket::*process_functions[10])(size_t& pos);
 
 		// used to know which state the program is in
+		std::string			input_buffer;
 		int					state;	
 
 		uint16_t			local_port;
@@ -57,27 +58,27 @@ class InputSocket: public ASocket
 
 		// identify which method the client tries to reach
 		std::string					method;
-		void						process_method(std::string&, size_t& pos);
+		void						process_method(size_t& pos);
 
 		// identify which uri the client tries to reach
 		std::string					uri;
-		void						process_uri(std::string&, size_t& pos);
+		void						process_uri(size_t& pos);
 
 		// identify which version of HTTP the client tries to reach
 		std::string					version;
-		void						process_version(std::string&, size_t& pos);
+		void						process_version(size_t& pos);
 
 		// vector of vector of char, where vector of char
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
 		//std::vector< std::string >					header;
 		string_map					headers;
-		void						process_headers(std::string&, size_t& pos);
+		void						process_headers(size_t& pos);
 
-		void						process_body(std::string&, size_t& pos);
+		void						process_body(size_t& pos);
 
-		void						process_skip_sp(std::string&, size_t& pos);
-		void						process_request(std::string&, size_t& pos);
+		void						process_skip_sp(size_t& pos);
+		void						process_request(size_t& pos);
 };
 
 void		send_bad_request(int fd, int& status);
