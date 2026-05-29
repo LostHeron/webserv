@@ -56,7 +56,7 @@ void	InputSocket::process_uri(size_t& pos)
 // if it contains other than allowed characters
 static int	check_uri(std::string& uri)
 {
-	if (uri.size() > IOFD_MAX_SIZE ||
+	if (uri.size() > INPUTSOCKET_MAX_SIZE ||
 		uri.find_first_not_of(ABNF_PATH_ABEMPTY "[]{}<>?#") != std::string::npos
 	)
 		return (FAILURE);

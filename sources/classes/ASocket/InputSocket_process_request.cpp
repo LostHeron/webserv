@@ -18,7 +18,7 @@
 void	InputSocket::process_request(size_t& pos)
 {
 	std::string requested_server_name;
-	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
+	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled inputsocket 
 	if (this->headers.count("host"))
 	{
 		if (this->headers["host"].size() > 0)

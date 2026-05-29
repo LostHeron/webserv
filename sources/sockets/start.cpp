@@ -47,27 +47,6 @@ void	start(Server& server)
 				event->process();
 				if (event->fail())
 					server.remove(event);
-				/*
-				else
-				{
-					// ach: processes only iofds
-					if (!dynamic_cast<InputSocket *>(event))
-						continue;
-					InputSocket *io = dynamic_cast<InputSocket *>(event);
-
-					// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled iofd
-					RequestFactory facto(*io);
-					ARequest *req = facto.createElement();
-
-					// ach: execute request building response metadata, then Jules will handle the Client transmission
-					Response resp = req->execute();
-
-					delete req;
-					
-					if (resp.getResourceFd() != -1)
-						close(resp.getResourceFd());
-				}
-				*/
 				
 				// here someking of code like :
 				/* try

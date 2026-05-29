@@ -47,7 +47,7 @@ void	InputSocket::process_method(size_t& pos)
 static int	check_method(std::string& method)
 {
 	if (method == "" ||
-		method.size() > IOFD_MAX_SIZE ||
+		method.size() > INPUTSOCKET_MAX_SIZE ||
 		method.find_first_not_of(ABNF_UPPER) != std::string::npos)
 		return (FAILURE);
 	return (SUCCESS);

@@ -34,7 +34,7 @@ void	InputSocket::process_version(size_t& pos)
 	if (delim == std::string::npos)
 	{
 		this->version.append(this->input_buffer, pos, this->input_buffer.size() - pos);
-		if (this->version.size() > IOFD_MAX_SIZE)
+		if (this->version.size() > INPUTSOCKET_MAX_SIZE)
 			return (send_bad_request(this->fd, this->status));
 		pos = this->input_buffer.size();
 	}
@@ -64,7 +64,7 @@ void	InputSocket::process_version(size_t& pos)
 // or should be empty with a 'GET' method
 static int	check_version(const std::string& method, const std::string& version)
 {
-	if (version.size() > IOFD_MAX_SIZE)
+	if (version.size() > INPUTSOCKET_MAX_SIZE)
 		return (FAILURE);
 
 	if (version == "")

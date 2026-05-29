@@ -20,7 +20,7 @@
 #include <vector>
 
 static int	check_headers(const string_map& headers);
-static void	no_version(const InputSocket& iofd, int& status);
+static void	no_version(const InputSocket& inputSocket, int& status);
 static int	check_last_line(std::string last_line);
 static void add_line_headers(std::string& line,  string_map& headers);
 static void	lowering(std::string& line);
@@ -119,9 +119,9 @@ static int fill_last_line(const std::string &buf, std::string &last_line, size_t
 	return (CONTINUE);
 }
 
-static void	no_version(const InputSocket& iofd, int& status)
+static void	no_version(const InputSocket& inputSocket, int& status)
 {
-		if (iofd.getMethod() == "GET")
+		if (inputSocket.getMethod() == "GET")
 		{
 			// do stuff to stop parsing incoming data,
 			// and process the request using only information
@@ -130,7 +130,7 @@ static void	no_version(const InputSocket& iofd, int& status)
 		}
 		else
 		{
-			return (send_bad_request(iofd.getFd(), status));
+			return (send_bad_request(inputSocket.getFd(), status));
 		}
 		return ;
 }

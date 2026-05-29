@@ -21,14 +21,14 @@
 # include <string>
 # include <stdint.h>
 
-# define IOFD_MAX_SIZE 5000
+# define INPUTSOCKET_MAX_SIZE 5000
 
 typedef std::map<std::string, std::vector<std::string> > string_map;
 
 class InputSocket: public ASocket
 {
 	public:
-		friend std::ostream& operator<<(std::ostream& os, const InputSocket& iofd);
+		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
 		InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
 		
 		~InputSocket();
