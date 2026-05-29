@@ -47,21 +47,6 @@ class InputSocket: public ASocket
 		InputSocket(const InputSocket& other);
 		InputSocket& operator=(const InputSocket& other);
 
-		// enum used to know in which state the fd is in
-		// at start it is in 'METHOD' state, whiche means
-		// incoming information will be used to fill in 
-		// method until white space are encoutered
-		enum States {
-			METHOD,
-			SKIP_SP1,
-			URI,
-			SKIP_SP2,
-			VERSION,
-			HEADER,
-			BODY,
-			DISCARD,
-		};
-
 		void (InputSocket::*process_functions[10])(std::string& buf, size_t& pos);
 
 		// used to know which state the program is in
