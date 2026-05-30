@@ -18,6 +18,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SERVER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
@@ -91,15 +92,15 @@ ASOCKET_FILES := 	ASocket.cpp \
 					InputSocket_process_request.cpp \
 					OutputSocket.cpp \
 
-EPOLLSTRUCT_DIR := EpollStruct/
-EPOLLSTRUCT_FILES := EpollStruct.cpp \
+
+EXCEPTIONS_DIR := Exceptions/
+EXCEPTIONS_FILES := IsChildren.cpp \
 
 SERVER_DIR := Server/
 SERVER_FILES := Server.cpp \
 
 EPOLLSTRUCT_DIR := EpollStruct/
 EPOLLSTRUCT_FILES := EpollStruct.cpp \
-
 
 JSONLEXER_DIR := JsonLexer/
 JSONLEXER_FILES := JsonLexer.cpp
@@ -132,6 +133,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
 				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
+				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
