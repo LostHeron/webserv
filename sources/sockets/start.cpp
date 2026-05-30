@@ -52,7 +52,10 @@ void	start(Server& server)
 					{
 						event->process();
 						if (event->fail())
+						{
 							server.remove(event);
+							break;
+						}
 					}
 					catch (IsChildren& e)
 					{

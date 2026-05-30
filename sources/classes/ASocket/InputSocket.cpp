@@ -6,12 +6,15 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/30 12:45:56 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/30 14:28:34 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "InputSocket.hpp"
 #include "ASocket.hpp"
+#include "InCGI.hpp"
+#include "IsChildren.hpp"
+#include "OutCGI.hpp"
 #include "Pipe.hpp"
 #include "Server.hpp"
 #include "default_pages.hpp"
@@ -19,12 +22,14 @@
 #include "error.hpp"
 #include <cctype>
 #include <cstddef>
+#include <fstream>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cwctype>
 #include <netinet/in.h>
 #include <ostream>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -38,7 +43,9 @@ InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& 
 	ASocket(server),
 	state(0),
 	local_port(local_port),
-	peer_port(ntohs(addr.sin_port))
+	peer_port(ntohs(addr.sin_port)),
+	associatedInCgi(NULL),
+	associatedOutCgi(NULL)
 {
 	uint32_t addrh = (addr.sin_addr.s_addr);
 	for (int i = 0; i < 4; i++)
@@ -58,6 +65,12 @@ InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& 
 
 InputSocket::~InputSocket()
 {
+	if (associatedInCgi != NULL)
+		this->server.remove(this->associatedInCgi);
+	this->associatedInCgi = NULL;
+	if (associatedOutCgi != NULL)
+		this->server.remove(this->associatedOutCgi);
+	this->associatedOutCgi = NULL;
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
@@ -88,6 +101,7 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	{
 		char buf[BUFSIZ];
 		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
+		std::cout << "-->ACTION: InputSocket read " << nb_read << "bytes\n";
 		if (nb_read < 0)
 		{
 			// error happened
@@ -109,6 +123,10 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 			input_buffer = std::string(buf, nb_read);
 		}
 	}
+	else
+	{
+		std::cout << "-->ACTION: InputSocket does not read anything, buffer not empty\n";
+	}
 }
 
 void	send_bad_request(int fd, int& status)
@@ -128,16 +146,64 @@ void	InputSocket::process_body(size_t& pos)
 	return ;
 }
 
+
 void	InputSocket::prepareCGI()
 {
-	//std::string command_name = getCommandName();
+	std::string script_name = "/home/jweber/goinfre/test.sh";
+	std::ifstream file;
+	file.open(script_name.c_str());
+	if (file.fail())
+	{
+		std::cerr << "could not open script '" << script_name << "'\n";
+		this->status = FAILURE;
+		return ;
+	}
+
+	std::string line;
+	std::getline(file, line);
+	if (file.fail())
+	{
+		std::cerr << "could not read first line of script '" << script_name << "'\n";
+		this->status = FAILURE;
+		return ;
+	}
+
+	std::string path;
+	std::vector<char *> args;
+	if (std::strncmp(line.c_str(), "#!", 2) == 0)
+	{
+		path = std::string(line, 2);
+
+		char *tmp;
+
+		tmp = new char[path.size() + 1];
+		std::memcpy(tmp, path.data(), path.size());
+		tmp[path.size()] = '\0';
+		args.push_back(tmp);
+
+		tmp = new char[script_name.size() + 1];
+		std::memcpy(tmp, script_name.data(), script_name.size());
+		tmp[script_name.size()] = '\0';
+		args.push_back(tmp);
+
+		args.push_back(NULL);
+	}
+	else
+	{
+		path = script_name;
+
+		char *tmp;
+
+		tmp = new char[path.size() + 1];
+		std::memcpy(tmp, path.data(), path.size());
+		tmp[path.size()] = '\0';
+		args.push_back(tmp);
+
+		args.push_back(NULL);
+	}
 
 	Pipe toCGI;
 	Pipe fromCGI;
-
-
-
-	/*
 
 	int pid = fork();
 	if (pid < 0)
@@ -149,32 +215,106 @@ void	InputSocket::prepareCGI()
 
 	if (pid == 0)
 	{
-		here is the child !
+		//here is the child !
+		try
+		{
+			toCGI.closeWriteEnd();
+			fromCGI.closeReadEnd();
+			if (dup2(toCGI.getReadEnd(), STDIN_FILENO) < 0)
+			{
+				// handle error here
+			}
+			if (dup2(fromCGI.getWriteEnd(), STDOUT_FILENO) < 0)
+			{
+				// handle error here
+			}
+			fromCGI.closeWriteEnd();
+			toCGI.closeReadEnd();
 
-		// but is there a chance where some request get handled by this process ??
+			std::vector<std::string>	vec_envp;
+			this->updateCgiEnvp(vec_envp);
+
+			std::vector< char * > formatted_envp;
+			formatted_envp.reserve(vec_envp.size() + 1);
+			for (size_t i = 0; i < vec_envp.size(); i++)
+			{
+				char *tmp = new char[vec_envp.at(i).size() + 1];
+				std::memcpy(tmp, vec_envp.at(i).data(), vec_envp.at(i).size());
+				tmp[vec_envp.at(i).size()] = '\0';
+				formatted_envp.push_back(tmp);
+			}
+			formatted_envp.push_back(NULL);
 
 
-		char **env = create_env_from_input_socket(*this);
-		execve(const char *path, char *const *argv, char *const *envp)
-		should we throw here if not possible to create child process, so
-		that 
-		throw something, but do not know what yet ...
-		throw something like children_process, whiche is children_process : public std::exception
+			char **envp = static_cast<char **>(formatted_envp.data());
+			for (size_t i = 0; envp[i] != NULL; i++)
+			{
+				std::cerr << envp << "\n";
+			}
+
+			execve(path.c_str(), args.data(), envp);
+			logerror();
+			for (size_t i = 0; i < formatted_envp.size(); i++)
+			{
+				delete [] formatted_envp.at(i);
+			}
+			for (size_t i = 0; i < args.size(); i++)
+			{
+				delete [] args.at(i);
+			}
+		}
+		catch (...)
+		{
+			throw IsChildren();
+		}
+		throw IsChildren();
+	}
+	else
+	{
+		for (size_t i = 0; i < args.size(); i++)
+		{
+			delete [] args.at(i);
+		}
+		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), this->input_buffer, this->server);
+		this->associatedInCgi = incgi;
+		this->server.add(incgi, EPOLLOUT);
+
+		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), this->server);
+		this->associatedOutCgi = outcgi;
+		this->server.add(outcgi, EPOLLIN);
+	}
+	return ;
+}
+
+void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp)
+{
+	std::string str;
+
+	str = "GATEWAY_INTERFACE=CGI/1.1";
+	vec_envp.push_back(str);
+
+	str = "REQUEST_METHOD=";
+	str += this->method;
+	vec_envp.push_back(str);
+
+	if (this->headers.count("content-length"))
+	{
+		str = "CONTENT_LENGTH=";
+		str += this->headers["content-length"].at(0);
+		vec_envp.push_back(str);
 	}
 
-
-	*/
-	
-	//CreateInCGI
-	//this one will take an fd being fd[1] to send data to the process using buffered data in InputSocket
-
-
-
-	//CreateOutCGI
-	//This one wille take an fd being fd[0] to read data from the cgi stdout,
-	//it will parse headers, then store remaining body data in a buffer
-	//then the response will 
-	return ;
+	if (this->headers.count("content-type"))
+	{
+		str = "CONTENT-TYPE=";
+		for (size_t i = 0; i < this->headers["content-type"].size(); i++)
+		{
+			if (i > 0)
+				str += ", ";
+			str += this->headers["content-type"].at(i);
+		}
+		vec_envp.push_back(str);
+	}
 }
 
 void	InputSocket::process_skip_sp(size_t& pos)

@@ -6,11 +6,13 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 12:39:01 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/30 12:45:51 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/30 14:30:05 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Pipe.hpp"
+#include "error.hpp"
+#include <unistd.h>
 
 Pipe::Pipe()
 {
@@ -18,17 +20,15 @@ Pipe::Pipe()
 	this->fd[1] = -1;
 	if (pipe(this->fd) < 0)
 	{
+		logerror();
 		throw Pipe::PipeFailure();
 	}
 }
 
 Pipe::~Pipe()
 {
-	if (this->fd[0] >= 0)
-		close(fd[0]);
-
-	if (this->fd[1] >= 0)
-		close(fd[1]);
+	this->closeReadEnd();
+	this->closeWriteEnd();
 }
 
 int	Pipe::getWriteEnd() const

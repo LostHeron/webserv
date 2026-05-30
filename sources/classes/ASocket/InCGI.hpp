@@ -27,6 +27,7 @@ class InCGI: public ASocket
 	protected:
 
 	private:
+		InCGI();
 		InCGI(const InCGI& other);
 		const InCGI&	operator=(const InCGI&other);
 

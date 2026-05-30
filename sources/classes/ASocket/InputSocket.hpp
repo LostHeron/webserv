@@ -14,6 +14,8 @@
 # define INPUTSOCKET_HPP
 
 # include "ASocket.hpp"
+#include "InCGI.hpp"
+#include "OutCGI.hpp"
 # include "Server.hpp"
 # include <map>
 # include <ostream>
@@ -80,6 +82,10 @@ class InputSocket: public ASocket
 
 		void						process_skip_sp(size_t& pos);
 		void						process_request(size_t& pos);
+
+		InCGI						*associatedInCgi;
+		OutCGI						*associatedOutCgi;
+		void						updateCgiEnvp(std::vector<std::string>&);
 		void						prepareCGI();
 };
 

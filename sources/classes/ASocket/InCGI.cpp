@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 11:24:47 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/30 11:42:27 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/30 14:32:03 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,24 @@
 #include "Server.hpp"
 #include "status.hpp"
 #include <fcntl.h>
+#include <iostream>
 #include <unistd.h>
 
 InCGI::InCGI(int fd, std::string& input_buffer, Server& server):
 	ASocket(server),
 	input_buffer(input_buffer)
 {
-	this->fd = fd;
+	this->fd = dup(fd); 
+	if (this->fd < 0)
+	{
+		// TODO DANGER, what happens if dup fails ?
+		// throw an error ?
+	}
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 		this->status = FAILURE;
 }
+
+#include "error.hpp"
 
 void	InCGI::process()
 {
@@ -32,9 +40,16 @@ void	InCGI::process()
 	{
 		ssize_t nb_write = write(this->fd, this->input_buffer.data(), this->input_buffer.size());
 		if (nb_write < 0)
+		{
+			logerror();
+			std::cerr << "InCgi could not wrote to process\n";
 			return;
+		}
 		else
+		{
+			std::cout << "-->ACTION: InCgi wrote " << nb_write << " byte to pipe\n";
 			this->input_buffer = std::string(this->input_buffer, nb_write);
+		}
 	}
 }
 

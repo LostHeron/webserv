@@ -36,25 +36,4 @@ class OutCGI: public ASocket
 };
 
 
-OutCGI::OutCGI(int fd, Server& server):
-	ASocket(server)
-{
-	this->fd = fd;
-}
-
-OutCGI::~OutCGI()
-{
-}
-
-void OutCGI::process()
-{
-	if (cgi_out_buffer == "")
-	{
-		// here we should then read data from fd
-		// else do nothing while buffer has not been clear 
-		// from another process
-	}
-	return ;
-}
-
 #endif // !OUTCGI_HPP

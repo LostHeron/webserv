@@ -50,16 +50,17 @@ void	InputSocket::process_request(size_t& pos)
 	// been passed to the underlying process, so ...
 
 	// this should be if no cgi :
-	static_cast<OutputSocket*>(this->associatedSocket)->setup(resp);
 	// and here if it is cgi, then setup the InputCgi and OutputCgi
-	
-	bool iscgi = false;
-	if (iscgi == true)
-	{
-		;//this->prepareCGI();
-	}
 
 	delete req;
+	
+	bool iscgi = true;
+	if (iscgi == true)
+	{
+		this->prepareCGI();
+	}
+	else
+		static_cast<OutputSocket*>(this->associatedSocket)->setup(resp);
 	
 	/*
 	if (resp.getResourceFd() != -1)

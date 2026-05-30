@@ -11,20 +11,40 @@
 /* ************************************************************************** */
 
 #include <csignal>
+#include <cstdio>
 #include <cstring>
 #include "status.hpp"
 
 static void	change_run_status(int sig);
 static int setup_sigint();
+static int setup_sigpipe();
 
 int	setup_signals()
 {
+	if (setup_sigpipe() != SUCCESS)
+		return (FAILURE);
 	if (setup_sigint() != SUCCESS)
 		return (FAILURE);
 	// TODO ALSO CATCH SIGPIPE to avoid the server from
 	// crashing when peer end closes its end
 	// or use sendto with flag asking it to not send
 	// signals in case of other end closed.
+	return (SUCCESS);
+}
+
+
+static int setup_sigpipe()
+{
+	struct sigaction	s;
+	int					ret;
+
+	std::memset(&s, 0, sizeof(s));
+	s.sa_handler = SIG_IGN;
+	ret = sigaction(SIGPIPE, &s, NULL);
+	if (ret < 0)
+	{
+		return (FAILURE);
+	}
 	return (SUCCESS);
 }
 
