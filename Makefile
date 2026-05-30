@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/29 18:48:46 by jweber           ###   ########.fr        #
+#    Updated: 2026/05/30 12:53:31 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SERVER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(PIPE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
@@ -92,6 +93,8 @@ ASOCKET_FILES := 	ASocket.cpp \
 					InputSocket_process_request.cpp \
 					OutputSocket.cpp \
 
+PIPE_DIR := Pipe/
+PIPE_FILES := Pipe.cpp \
 
 EXCEPTIONS_DIR := Exceptions/
 EXCEPTIONS_FILES := IsChildren.cpp \
@@ -133,6 +136,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
 				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
+				 $(addprefix $(PIPE_DIR), $(PIPE_FILES)) \
 				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
