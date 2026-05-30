@@ -54,26 +54,25 @@ void	InputSocket::process_headers(size_t& start)
 	}
 
 	// goal, fill in the map
-	static std::string last_line;
 	while (start < this->input_buffer.size())
 	{
-		if (fill_last_line(this->input_buffer, last_line, start, this->state) == STOP)
+		if (fill_last_line(this->input_buffer, this->last_line, start, this->state) == STOP)
 		{
 			(this->*process_functions[this->state])(start);
 			break;
 		}
 
-		if (check_last_line(last_line) != SUCCESS)
+		if (check_last_line(this->last_line) != SUCCESS)
 		{
 			return (send_bad_request(this->fd, this->status));
 		}
 
-		if (last_line.size() > 0 && last_line[last_line.size() - 1] == '\n')
+		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
 		{
-			add_line_headers(last_line, this->headers);
+			add_line_headers(this->last_line, this->headers);
 			if (check_headers(this->headers) != SUCCESS)
 				return (send_bad_request(this->fd, this->status));
-			last_line.clear();
+			this->last_line.clear();
 		}
 
 	}

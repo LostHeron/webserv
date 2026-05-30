@@ -72,6 +72,7 @@ class InputSocket: public ASocket
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
 		//std::vector< std::string >					header;
+		std::string					last_line;
 		string_map					headers;
 		void						process_headers(size_t& pos);
 
