@@ -91,6 +91,8 @@ ASOCKET_FILES := 	ASocket.cpp \
 					InputSocket_process_version.cpp \
 					InputSocket_process_header.cpp \
 					InputSocket_process_request.cpp \
+					InCGI.cpp \
+					OutCGI.cpp \
 					OutputSocket.cpp \
 
 PIPE_DIR := Pipe/
