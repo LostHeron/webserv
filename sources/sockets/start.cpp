@@ -6,14 +6,16 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 14:57:03 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/30 13:01:06 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "IsChildren.hpp"
 #include "sockets.hpp"
 #include "ASocket.hpp"
 #include "status.hpp"
 #include <cstring>
+#include <exception>
 #include <sys/epoll.h>
 #include <string>
 #include <cerrno>
@@ -41,25 +43,51 @@ void	start(Server& server)
 		else
 		{
 			std::cout << nb_events << " event where received in the epoll_wait function\n";
-			for (int i = 0; i < nb_events; i++)
+			try
 			{
-				ASocket* event = static_cast<ASocket*>(events[i].data.ptr);
-				event->process();
-				if (event->fail())
-					server.remove(event);
-				
-				// here someking of code like :
-				/* try
-				 * {
-				 *		event->process
-				 * }
-				 * catch (std::exception& e)
-				 * {
-				 *		server.free_space() // (some function that would \
-				 *		search for the more consumming process, terminate the  \
-				 *		connection and removed all ressources associated with the process) \
-				 * }
-				*/
+				for (int i = 0; i < nb_events; i++)
+				{
+					ASocket* event = static_cast<ASocket*>(events[i].data.ptr);
+					try
+					{
+						event->process();
+						if (event->fail())
+							server.remove(event);
+					}
+					catch (IsChildren& e)
+					{
+						throw;
+					}
+					catch (std::exception& e)
+					{
+						std::cerr << e.what() << "\n";
+					}
+					catch (...)
+					{
+						std::cerr << "an error occured\n";
+					}
+					
+					// here someking of code like :
+					/* try
+					 * {
+					 *		event->process
+					 * }
+					 * catch (std::exception& e)
+					 * {
+					 *		server.free_space() // (some function that would \
+					 *		search for the more consumming process, terminate the  \
+					 *		connection and removed all ressources associated with the process) \
+					 * }
+					*/
+				}
+			}
+			catch (IsChildren& e)
+			{
+				std::cout << e.what() << "\n";
+				std::cout << "this catch is used in case of execve failure, "
+					"so that the children can exit the program cleanly!\n"
+					"it might not work with only that throw though, to be checked\n";
+				break;
 			}
 		}
 	}

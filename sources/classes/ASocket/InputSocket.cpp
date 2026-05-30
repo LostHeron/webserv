@@ -6,12 +6,13 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/29 19:03:45 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/30 12:45:56 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "InputSocket.hpp"
 #include "ASocket.hpp"
+#include "Pipe.hpp"
 #include "Server.hpp"
 #include "default_pages.hpp"
 #include "status.hpp"
@@ -129,13 +130,12 @@ void	InputSocket::process_body(size_t& pos)
 
 void	InputSocket::prepareCGI()
 {
-	int fd[2];
-	if (pipe(fd) < 0)
-	{
-		logerror();
-		this->status = FAILURE;
-		return ;
-	}
+	//std::string command_name = getCommandName();
+
+	Pipe toCGI;
+	Pipe fromCGI;
+
+
 
 	/*
 
