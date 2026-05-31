@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:21:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/19 16:46:01 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/27 15:14:56 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void	ip_validator(std::string const& ip_address)
 		if (byte >= 256)
 			throw std::invalid_argument("IP address is invalid");
 
-		if (i < 3 - 1)
+		if (i < 3)
 		{
 			c = ip_stream.get();
 			if (ip_stream.eof() || c != '.')

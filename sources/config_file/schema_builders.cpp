@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/26 17:19:47 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/28 14:47:01 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,10 +98,10 @@ static void	location_schema_builder(ObjSchema& location_schema)
 	name_schema->addValidator(non_empty_validator);
 	location_schema.addField(name_schema);
 
-	StringSchema*	root_schema = new StringSchema(LOC_ROOT_KEY, true, false);
+	StringSchema*	alias_schema = new StringSchema(LOC_ALIAS_KEY, true, false);
 
-	root_schema->addValidator(non_empty_validator);
-	location_schema.addField(root_schema);
+	alias_schema->addValidator(non_empty_validator);
+	location_schema.addField(alias_schema);
 
 	StringSchema*	index_schema = new StringSchema(LOC_INDEX_KEY, false, false);
 

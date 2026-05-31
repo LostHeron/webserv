@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/20 14:37:15 by cviel            ###   ########.fr       */
+/*   Updated: 2026/05/29 19:55:52 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ class VirtualHost
 		static std::pair<uint16_t, VirtualHost>	build(std::map<std::string, JsonObj> obj_map);
 
 		std::vector<std::string> const&	getName(void) const;
+		std::pair<std::string, bool>	getPathReq(std::string const& uri, std::string const& req) const;
+		std::pair<bool, std::string> 	getError(int err_code) const;
 		
 		// void	log(bool success);
 		
@@ -69,7 +71,7 @@ class VirtualHost
 				Location(Location const& other);
 				~Location();
 
-				static std::pair<std::string, Location>	build(std::map<std::string, JsonObj> const& loc_obj);
+				static std::pair<std::string, Location>	build(std::map<std::string, JsonObj> const& loc_obj, std::vector<std::string> const& host_allowed_request);
 			
 			private:
 			
@@ -81,7 +83,7 @@ class VirtualHost
 					bool	operator==(struct s_redir const& other) const {return (this->from == other.from);}
 				};
 				
-				std::string							_root;
+				std::string							_alias;
 				std::string							_index;
 				std::vector<std::string>			_allowedRequest;
 				bool								_allowDirList;
@@ -119,13 +121,13 @@ class VirtualHost
 		static VirtualHost::s_ip_range	buildInterfaceRange(std::string const& interfaces);
 		static uint32_t					buildInterface(std::string const& interface);
 		static void						addErrorPage(std::map<std::string, JsonObj> const& error, std::map<int, std::string>& host_error);
-		static void						addLocation(std::map<std::string, JsonObj> const& location, std::map<std::string, VirtualHost::Location>& host_location);
+		static void						addLocation(std::map<std::string, JsonObj> const& location, std::map<std::string, VirtualHost::Location>& host_location, std::vector<std::string> const& host_allowed_request);
 		static void						addCgi(std::map<std::string, JsonObj> const& cgi, std::map<std::string, std::string>& host_cgi);		
 		
 		// StreambufNull					_streambufNull;
 		// std::ostream						_streamNull;
 		// std::ostream*					_successLogs;
 		// std::ostream*					_errorLogs;
-	};
+};
 		
-#endif // VIRUTALHOST_HPP
+#endif // VIRTUALHOST_HPP
