@@ -40,7 +40,7 @@ void ToOutSocket::process()
 		{
 			char buf[BUFSIZ];
 			ssize_t nb_read = read(this->fd, buf, BUFSIZ);
-			std::cout << "ToOutSocket read %i " << nb_read << " bytes\n";
+			std::cout << "ToOutSocket read " << nb_read << " bytes\n";
 			if (nb_read < 0)
 			{
 				logerror();
@@ -52,7 +52,7 @@ void ToOutSocket::process()
 			else
 			{
 				this->outputBuffer = std::string(buf, nb_read);
-				std::cout << "buffer = '" << this->outputBuffer << "'\n";
+				//std::cout << "buffer = '" << this->outputBuffer << "'\n";
 			}
 		}
 	}

@@ -15,6 +15,8 @@
 #include <errno.h>
 #include <dirent.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <utility>
 
 // Constructors/Destructor =====================================================
 // GETReq::GETReq(void):
@@ -53,7 +55,8 @@ int	GETReq::_displayDir(DIR *dir) const
 	const std::string htmlHeader = "<html>\n<head><title>Index of /</title></head>\n<body>\n<h1>Index of /</h1><hr><pre>\n";
 	const std::string htmlFooter = "</pre><hr></body>\n</html>";
 	const std::string htmlHrefStart = "<a href=\"";
-	const std::string htmlHrefEnd = "\">../</a>\n";
+	const std::string htmlHrefMid = "\">";
+	const std::string htmlHrefEnd =	"</a>\n";
 	struct dirent	*entry = readdir(dir);
 	int				fds[2];
 
@@ -65,6 +68,12 @@ int	GETReq::_displayDir(DIR *dir) const
 	{
 		write(fds[1], htmlHrefStart.c_str(), htmlHrefStart.length());
 		write(fds[1], entry->d_name, std::strlen(entry->d_name));
+		// to add following line if entry is a directory
+		// write(fds[1], "/", 1);
+		write(fds[1], htmlHrefMid.c_str(), htmlHrefMid.length());
+		write(fds[1], entry->d_name, std::strlen(entry->d_name));
+		// to add following line if entry is a directory
+		// write(fds[1], "/", 1);
 		write(fds[1], htmlHrefEnd.c_str(), htmlHrefEnd.length());
 		entry = readdir(dir);
 	}
@@ -99,8 +108,9 @@ Response	GETReq::execute(void)
 	uint16_t	status = SUCCESS + OK;
 
 	// TEMP DEBUG
-	
-	const std::string path = TEMP_ROOT + this->_uri;
+
+	std::pair<std::string, bool> permission = _vhost.getPathReq(this->_uri, this->_method);
+	const std::string path = permission.first;
 	std::cout << "URI to fetch: " << this->_uri 
 		<< " for full path: " << path
 		<< std::endl;
