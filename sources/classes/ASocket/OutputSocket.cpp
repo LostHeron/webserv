@@ -6,35 +6,33 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 14:13:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 17:24:26 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/31 17:20:07 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "OutputSocket.hpp"
 #include "ASocket.hpp"
-#include "Response.hpp"
 #include "Server.hpp"
 #include "status.hpp"
 #include <cstdio>
 #include <stdint.h>
 #include <iostream>
-#include <sstream>
 #include <sys/socket.h>
 #include <unistd.h>
 
 OutputSocket::OutputSocket(int socket_fd, Server& server):
 	ASocket(server),
-	ready(false),
-	send_headers(true),
-	ressourceFd(-1)
-	//socketFd(dup(socket_fd))
+	isLastBuffer(false)
 {
 	this->fd = dup(socket_fd);
 	if (this->fd < 0)
+	{
 		std::cerr << "could not duplicate socket_fd\n";
+		this->status = FAILURE;
+		// throw ??
+	}
 	else
 		std::cout << "successfully duplicated socket_fd\n";
-	//std::cout << "OutputSocket socketFd = " << socketFd << "\n";
 }
 
 OutputSocket::~OutputSocket()
@@ -43,44 +41,49 @@ OutputSocket::~OutputSocket()
 
 void	OutputSocket::process()
 {
-	if (ready == false)
+	std::cout << "in OutputSocket process()\n";
+	if (this->outputBuffer.size() > 0)
 	{
-		std::cout << "OutputSocket not yet ready to process\n";
-		return ;
-	}
-	else
-	{
-		std::cout << "OutputSocket READY to process\n";
-		if (send_headers == true)
-		{
-			if (send(this->fd, this->buf.data(), this->buf.size(), MSG_DONTWAIT | MSG_NOSIGNAL) < 0)
-				std::cerr << "An error occured while sending data to server\n";
-			else
-				send_headers = false;
-		}
-		if (ressourceFd >= 0)
-		{
-			char	buffer[BUFSIZ];
-			ssize_t nb_read;
-			nb_read = read(this->ressourceFd, buffer, BUFSIZ);
-			std::cout << "we read " << nb_read << " characters from the server\n";
-			if (nb_read < 0)
-				std::cerr << "An error occured while reading data from ressourceFd\n";
-			else if (nb_read == 0)
-					this->status = FAILURE;// here should then close the connection
-			else
-			{
-				if (send(this->fd, buffer, nb_read, MSG_DONTWAIT | MSG_NOSIGNAL) < 0)
-					std::cerr << "An error occured while sending data to server\n";
-			}
-		}
+		ssize_t nb_send = send(this->fd, this->outputBuffer.data(), this->outputBuffer.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
+		if (nb_send < 0)
+			std::cerr << "An error occured while sending data to server\n";
 		else
 		{
-			this->status = FAILURE;// should close the connection
+			// used to transform this->buf = "salut toi le boss", 
+			// whith nb_send = 2 to this->buf = "lut toi le boss"
+			this->outputBuffer = std::string(this->outputBuffer, nb_send);
 		}
-		return ;
+	}
+	if (this->outputBuffer.size() == 0 && this->isLastBuffer == true)
+	{
+		// TODO : this status set to FAILURE is
+		// used to clean ressources associated with the ressource,
+		// change name for better understanding of the meaning
+		// like TERMINATE instead of FAILURE or something
+		this->status = FAILURE; 
 	}
 }
+
+std::string& OutputSocket::getOutputBuffer()
+{
+	return (this->outputBuffer);
+}
+
+bool&			OutputSocket::getIsLastBuffer()
+{
+	return (this->isLastBuffer);
+}
+
+void			OutputSocket::end()
+{
+	this->isLastBuffer = true;
+}
+
+/*
+
+#include "ARequest.hpp"
+#include "Response.hpp"
+#include <sstream>
 
 static std::string status_phrase(uint16_t status_code);
 
@@ -121,4 +124,4 @@ static std::string status_phrase(uint16_t status_code)
 		default: return "";
 	}
 }
-
+*/

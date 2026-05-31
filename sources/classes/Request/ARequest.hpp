@@ -21,7 +21,7 @@
 # include <fcntl.h>
 
 
-# define TEMP_ROOT "/home/goinfre/tmp"
+# define TEMP_ROOT "/home/jweber/goinfre/tmp"
 
 
 class	ARequest: public AMessage

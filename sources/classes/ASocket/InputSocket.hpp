@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 17:47:18 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/31 17:08:18 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 # define INPUTSOCKET_HPP
 
 # include "ASocket.hpp"
-#include "InCGI.hpp"
-#include "OutCGI.hpp"
+# include "InCGI.hpp"
+# include "OutCGI.hpp"
 # include "Server.hpp"
+# include "ToOutSocket.hpp"
 # include <map>
 # include <ostream>
 # include <vector>
@@ -85,6 +86,7 @@ class InputSocket: public ASocket
 
 		InCGI						*associatedInCgi;
 		OutCGI						*associatedOutCgi;
+		ToOutSocket					*associatedToOutSocket;
 		void						updateCgiEnvp(std::vector<std::string>&);
 		void						prepareCGI();
 };

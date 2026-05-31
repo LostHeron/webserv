@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/30 14:28:34 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/31 17:17:59 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& 
 	local_port(local_port),
 	peer_port(ntohs(addr.sin_port)),
 	associatedInCgi(NULL),
-	associatedOutCgi(NULL)
+	associatedOutCgi(NULL),
+	associatedToOutSocket(NULL)
 {
 	uint32_t addrh = (addr.sin_addr.s_addr);
 	for (int i = 0; i < 4; i++)
@@ -71,6 +72,9 @@ InputSocket::~InputSocket()
 	if (associatedOutCgi != NULL)
 		this->server.remove(this->associatedOutCgi);
 	this->associatedOutCgi = NULL;
+	if (associatedToOutSocket != NULL)
+		this->server.remove(this->associatedToOutSocket);
+	this->associatedToOutSocket = NULL;
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
@@ -82,6 +86,7 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
 
 void InputSocket::process()
 {
+	std::cout << "in InputSocket process()\n";
 	updateInputBuffer(this->input_buffer, this->fd, this->status);
 	if (this->status != SUCCESS)
 		return ;

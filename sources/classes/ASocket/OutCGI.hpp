@@ -32,7 +32,7 @@ class OutCGI: public ASocket
 		OutCGI(const OutCGI& other);
 		const OutCGI& operator=(const OutCGI& other);
 
-		const std::string cgi_out_buffer;
+		std::string cgi_out_buffer;
 };
 
 

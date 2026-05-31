@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ListenSocket.cpp                                       :+:      :+:    :+:   */
+/*   ListenSocket.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:31 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:07:15 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/31 17:18:16 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ ListenSocket::~ListenSocket()
 
 void	ListenSocket::process()
 {
+	std::cout << "in ListenSocket process()\n";
 	// ok and here should do stuff with the fd,
 	// and read data and start parsing request
 	int						peer_fd;

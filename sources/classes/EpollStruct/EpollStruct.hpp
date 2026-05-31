@@ -22,7 +22,7 @@ class EpollStruct
 		~EpollStruct();
 
 		bool	fail();
-		void	add(ASocket *fd, int event);
+		int		add(ASocket *fd, int event);
 		void	remove(ASocket *fd);
 		int		getFd();
 

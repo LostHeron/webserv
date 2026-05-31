@@ -32,6 +32,8 @@ class Server
 		int				getEfd();
 		const HostList& getHostList() const;
 
+		std::vector<ASocket*>&	getNonBlockingsFds();
+
 	protected:
 
 	private:
@@ -50,6 +52,8 @@ class Server
 		// vectors of fds (sockets) associated with all listening ports
 		// initialized with socket + bind + listen;
 		std::vector<ASocket*>		sockets;
+
+		std::vector<ASocket*>		nonBlockingsFds;
 
 
 		HostList				host_list;

@@ -47,8 +47,9 @@ void OutCGI::process()
 		}
 		else
 		{
+			this->cgi_out_buffer = std::string(buf, nb_read);
 			std::cout << "OutCgi read " << nb_read << " bytes\n";
-			std::cout << "OutCgi buffer = '" << std::string(buf, nb_read) << "'\n";
+			std::cout << "OutCgi buffer = '" << cgi_out_buffer << "'\n";
 		}
 	}
 	return ;

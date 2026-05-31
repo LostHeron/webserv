@@ -45,7 +45,7 @@ bool	EpollStruct::fail()
 		return (true);
 }
 
-void	EpollStruct::add(ASocket *abstract_socket, int event_flags)
+int	EpollStruct::add(ASocket *abstract_socket, int event_flags)
 {
 	struct epoll_event	event;
 	int					ret;
@@ -54,7 +54,12 @@ void	EpollStruct::add(ASocket *abstract_socket, int event_flags)
 	event.events = event_flags;
 	ret = epoll_ctl(this->epfd, EPOLL_CTL_ADD, abstract_socket->getFd(), &event);
 	if (ret < 0)
+	{
 		this->status = FAILURE;
+		std::cerr << "COULD NOT ADD FD TO EPFD INSTANCE!\n";
+		return (FAILURE);
+	}
+	return (SUCCESS);
 }
 
 void	EpollStruct::remove(ASocket *abstractSocket)

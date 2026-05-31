@@ -20,6 +20,7 @@
 #include <sys/epoll.h>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
 Server::Server(char *config_file):
 	status(SUCCESS),
@@ -65,8 +66,12 @@ void	Server::setFailure(int value)
 // function used to add the ASocket pointer 
 void	Server::add(ASocket* abstract_socket, int event_flags)
 {
-	this->epoll.add(abstract_socket, event_flags);
-	this->sockets.push_back(abstract_socket);
+	if (this->epoll.add(abstract_socket, event_flags) != SUCCESS)
+	{
+		this->nonBlockingsFds.push_back(abstract_socket);
+	}
+	else
+		this->sockets.push_back(abstract_socket);
 }
 
 int	Server::getEfd()
@@ -79,8 +84,20 @@ const HostList& Server::getHostList() const {return (this->host_list);};
 void	Server::remove(ASocket *asocket)
 {
 	this->epoll.remove(asocket);
-	this->sockets.erase(
-		std::find(this->sockets.begin(), this->sockets.end(), asocket)
-	);
+	std::vector<ASocket *>::iterator it;
+
+	it = std::find(this->sockets.begin(), this->sockets.end(), asocket);
+	if (it != this->sockets.end())
+		this->sockets.erase(it);
+
+	it = std::find(this->nonBlockingsFds.begin(), this->nonBlockingsFds.end(), asocket);
+	if (it != this->nonBlockingsFds.end())
+		this->nonBlockingsFds.erase(it);
+
 	delete asocket;
+}
+
+std::vector<ASocket*>&	Server::getNonBlockingsFds()
+{
+	return (this->nonBlockingsFds);
 }

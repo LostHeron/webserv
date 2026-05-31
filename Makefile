@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/30 12:53:31 by jweber           ###   ########.fr        #
+#    Updated: 2026/05/31 16:53:53 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -94,6 +94,7 @@ ASOCKET_FILES := 	ASocket.cpp \
 					InCGI.cpp \
 					OutCGI.cpp \
 					OutputSocket.cpp \
+					ToOutSocket.cpp \
 
 PIPE_DIR := Pipe/
 PIPE_FILES := Pipe.cpp \

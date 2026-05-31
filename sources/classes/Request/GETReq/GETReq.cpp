@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/05/28 11:53:24 by jweber           ###   ########.fr       */
+/*   Updated: 2026/05/31 17:14:34 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ int	GETReq::_displayDir(DIR *dir) const
 	write(fds[1], htmlFooter.c_str(), htmlFooter.length());
 
 	closedir(dir);
+	close(fds[1]);
 	return (fds[0]);
 }
 
@@ -98,8 +99,9 @@ Response	GETReq::execute(void)
 	uint16_t	status = SUCCESS + OK;
 
 	// TEMP DEBUG
+	
 	const std::string path = TEMP_ROOT + this->_uri;
-	std::cout	<< "URI to fetch: " << this->_uri 
+	std::cout << "URI to fetch: " << this->_uri 
 		<< " for full path: " << path
 		<< std::endl;
 	// TEMP DEBUG
