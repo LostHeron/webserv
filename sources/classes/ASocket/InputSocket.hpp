@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:08:18 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/01 15:40:37 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,13 @@
 # include "OutCGI.hpp"
 # include "Server.hpp"
 # include "ToOutSocket.hpp"
-# include <map>
+# include "typedef.hpp"
 # include <ostream>
 # include <vector>
 # include <string>
 # include <stdint.h>
 
 # define INPUTSOCKET_MAX_SIZE 5000
-
-typedef std::map<std::string, std::vector<std::string> > string_map;
 
 class InputSocket: public ASocket
 {
@@ -92,6 +90,5 @@ class InputSocket: public ASocket
 };
 
 void		send_bad_request(int fd, int& status);
-size_t		getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims);
 
 #endif

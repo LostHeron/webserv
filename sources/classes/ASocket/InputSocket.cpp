@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:17:59 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/01 15:39:53 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,12 +106,10 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	{
 		char buf[BUFSIZ];
 		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
-		std::cout << "-->ACTION: InputSocket read " << nb_read << "bytes\n";
 		if (nb_read < 0)
 		{
 			// error happened
-			std::string error_msg(strerror(errno));
-			std::cerr << "read: " << error_msg << "\n";
+			logerror();
 			status = FAILURE;
 			return ;
 		}
@@ -333,19 +331,6 @@ void	InputSocket::process_skip_sp(size_t& pos)
 	if (pos < this->input_buffer.size())
 		(this->*process_functions[this->state])(pos);
 	return ;
-}
-
-size_t		getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims)
-{
-	size_t res = std::string::npos;
-
-	for (size_t i = 0; i < delims.size(); i++)
-	{
-		size_t	tmp = str.find(delims.at(i), start);
-		if (tmp < res)
-			res = tmp;
-	}
-	return (res);
 }
 
 std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)
