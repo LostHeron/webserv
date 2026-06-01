@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/29 19:55:52 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/01 16:04:42 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,8 @@ class VirtualHost
 		VirtualHost(void);
 
 		VirtualHost&	operator=(VirtualHost const& other);
+
+		friend class VHostBuilder;
 
 		template <typename T>
 		static bool	checkDuplicates(T const& val, std::vector<T> const& vec);
