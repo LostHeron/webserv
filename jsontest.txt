@@ -6,6 +6,7 @@
 	"location": 
 		{
 			"name":"/",
-			"alias":"/home/abetemps/"
+			"alias":"/home/abetemps/",
+			"allowed_methods":["GET"]
 		}
 }

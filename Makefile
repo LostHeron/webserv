@@ -6,8 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/31 16:53:53 by jweber           ###   ########.fr        #
-#                                                                              #
+#    Updated: 2026/05/31 16:53:53 by jweber           ###   ########.fr        # #
 # **************************************************************************** #
 
 NAME := webserv
@@ -18,6 +17,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SERVER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HTTPSTATUS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(PIPE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
@@ -38,6 +38,9 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INTSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR)
+
+HTTPSTATUS_DIR :=	HTTPStatus/
+HTTPSTATUS_FILES :=	HTTPStatus.cpp
 
 SCHEMA_DIR :=		Schemas/
 
@@ -144,6 +147,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
+				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \
 				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \
 				 $(addprefix $(VIRTUALHOST_DIR), $(VIRTUALHOST_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(ASCHEMA_DIR), $(ASCHEMA_FILES)) \
