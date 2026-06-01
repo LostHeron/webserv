@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 15:40:37 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/01 22:05:42 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@
 class InputSocket: public ASocket
 {
 	public:
-		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
 		InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
-		
 		~InputSocket();
+
+		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
 
 		const std::string					&getMethod(void) const;
 		const std::string					&getUri(void) const;
