@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 21:55:35 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 22:50:42 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/01 22:55:49 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,20 @@ class Connection
 // own ressources instead of a ASocket keeping track of its linked connection.
 //
 // might be cleaner like that.
+//
+// so now, ASocket should keep track more of the Connection rather than the server,
+// and maybe the connection should keep a reference of the Server class.
+//
+// That's some things that can be done twomomrrow. Hm maybe, lets see
+//
+// 1) a function which setup OutputSocket, and set a flags on InputSocket so that
+// program stop enter 'process' function of InputSocket;
+//
+// nb: should buffered be kept in the connection class ?
+// nb: how to setup the data in outputBuffer of the OutputSocket, 
+// inputSocket keep tracks of its outputSocket ?? raaah that's still annoying
+//
+// 2) The connection class.
 
 Connection::Connection(int fd, uint16_t localport, struct sockaddr_in& addr, Server& server):
 	inputSocket(fd, localport, addr, server),
