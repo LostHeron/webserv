@@ -74,6 +74,7 @@ Response	GETReq::execute(void)
 			case (ENOTDIR):
 				if ((resourceFd = this->_tryOpenFile(path.c_str())) >= 0)
 					break;
+				__attribute__((fallthrough));
 			case (EACCES):
 				status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
 				break;

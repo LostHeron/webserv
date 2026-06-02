@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:17:59 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 17:38:19 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,16 @@
 #include "InCGI.hpp"
 #include "IsChildren.hpp"
 #include "OutCGI.hpp"
+#include "OutputSocket.hpp"
 #include "Pipe.hpp"
+#include "HeadersBuilder.hpp"
 #include "Server.hpp"
 #include "default_pages.hpp"
 #include "status.hpp"
 #include "error.hpp"
 #include <cctype>
 #include <cstddef>
+#include <fcntl.h>
 #include <fstream>
 #include <stdint.h>
 #include <cstdio>
@@ -86,6 +89,8 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
 
 void InputSocket::process()
 {
+	if (this->status != SUCCESS)
+		return ;
 	std::cout << "in InputSocket process()\n";
 	updateInputBuffer(this->input_buffer, this->fd, this->status);
 	if (this->status != SUCCESS)
@@ -106,12 +111,10 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	{
 		char buf[BUFSIZ];
 		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
-		std::cout << "-->ACTION: InputSocket read " << nb_read << "bytes\n";
 		if (nb_read < 0)
 		{
-			// error happened
-			std::string error_msg(strerror(errno));
-			std::cerr << "read: " << error_msg << "\n";
+			int errno_value = errno;
+			logerror("recv", errno_value);
 			status = FAILURE;
 			return ;
 		}
@@ -134,14 +137,18 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	}
 }
 
-void	send_bad_request(int fd, int& status)
+void	setup_response(int& status, int errorCode, InputSocket& is, OutputSocket& os)
 {
-	int ret = send(fd, ERROR_PAGE_400, sizeof(ERROR_PAGE_400), MSG_DONTWAIT | MSG_NOSIGNAL);
-	if (ret < 0)
-	{
-		std::cerr << "error while sending error page back to client\n";
-	}
-	status = FAILURE;
+	(void) is;
+	status = FINISH;
+	HeadersBuilder b;
+	os.getOutputBuffer() = b.initialize()
+	 .buildStatusLine("HTTP/1.1", errorCode)
+	 .buildDate()
+	 .buildCRLF()
+	 .buildBody(errorCode)
+	 .build();
+	os.getIsLastBuffer() = true;
 }
 
 void	InputSocket::process_body(size_t& pos)
@@ -213,7 +220,8 @@ void	InputSocket::prepareCGI()
 	int pid = fork();
 	if (pid < 0)
 	{
-		logerror();
+		int errno_value = errno;
+		logerror("fork", errno_value);
 		this->status = FAILURE;
 		return ;
 	}
@@ -258,7 +266,8 @@ void	InputSocket::prepareCGI()
 			}
 
 			execve(path.c_str(), args.data(), envp);
-			logerror();
+			int	errno_value = errno;
+			logerror("execve", errno_value);
 			for (size_t i = 0; i < formatted_envp.size(); i++)
 			{
 				delete [] formatted_envp.at(i);
@@ -333,19 +342,6 @@ void	InputSocket::process_skip_sp(size_t& pos)
 	if (pos < this->input_buffer.size())
 		(this->*process_functions[this->state])(pos);
 	return ;
-}
-
-size_t		getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims)
-{
-	size_t res = std::string::npos;
-
-	for (size_t i = 0; i < delims.size(); i++)
-	{
-		size_t	tmp = str.find(delims.at(i), start);
-		if (tmp < res)
-			res = tmp;
-	}
-	return (res);
 }
 
 std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)

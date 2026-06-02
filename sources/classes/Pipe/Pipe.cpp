@@ -6,13 +6,14 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 12:39:01 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/30 14:30:05 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 17:36:44 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Pipe.hpp"
 #include "error.hpp"
 #include <unistd.h>
+#include <cerrno>
 
 Pipe::Pipe()
 {
@@ -20,7 +21,8 @@ Pipe::Pipe()
 	this->fd[1] = -1;
 	if (pipe(this->fd) < 0)
 	{
-		logerror();
+		int errno_value = errno;
+		logerror("pipe", errno_value);
 		throw Pipe::PipeFailure();
 	}
 }

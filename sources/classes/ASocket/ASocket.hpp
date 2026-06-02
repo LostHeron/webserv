@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:21:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 17:49:08 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/01 15:57:31 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,10 @@ class ASocket
 
 		virtual void	process() = 0;
 		virtual	bool	fail();
+		virtual	bool	terminate();
 		
-		void	setAssociatedSocket(ASocket *ptr);
+		void		setAssociatedSocket(ASocket *ptr);
+		ASocket*	getAssociatedSocket();
 
 	protected:
 
@@ -56,5 +58,10 @@ class ASocket
 		ASocket(const ASocket& other);
 		ASocket& operator=(const ASocket& other);
 };
+
+int		fill_last_line(const std::string &buf, std::string &last_line, size_t &start, int &state);
+size_t	getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims);
+int		check_last_line(std::string last_line);
+void	remove_trailing_new_line(std::string& line);
 
 #endif

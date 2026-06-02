@@ -6,19 +6,18 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 18:07:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:08:35 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 16:54:44 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HeadersBuilder.hpp"
 #include "InputSocket.hpp"
 #include "RequestFactory.hpp"
 #include "ToOutSocket.hpp"
 #include "VirtualHost.hpp"
 #include "OutputSocket.hpp"
-#include <sstream>
 #include <sys/epoll.h>
 
-static std::string status_phrase(uint16_t status_code);
 
 void	InputSocket::process_request(size_t& pos)
 {
@@ -50,36 +49,20 @@ void	InputSocket::process_request(size_t& pos)
 	else
 	{
 		OutputSocket* os = static_cast<OutputSocket*>(this->associatedSocket);
-		std::string&	output_buffer = os->getOutputBuffer();
-		bool&			isLastBuffer = os->getIsLastBuffer();
-		output_buffer += this->version;
-		output_buffer += " ";
 
-		std::string			status_string;
-		std::stringstream	ss;
-		ss << resp.getStatus();
-		ss >> status_string;
-		output_buffer += status_string;
-		output_buffer += " ";
-		
-		output_buffer += status_phrase(resp.getStatus());
-		output_buffer += "\r\n";
+		HeadersBuilder	b;
+		os->getOutputBuffer() =  b.initialize()
+		 .buildStatusLine("HTTP/1.1", resp.getStatus())
+		 .buildDate()
+		 .buildCRLF()
+		 .buildBody(resp.getContent())
+		 .build();
 
-
-		output_buffer += "Date: ";
-		output_buffer += "\r\n";
-			
-		/*
-		output_buffer += "Content-Type: text/html; charset=iso-8859-1\r\n";
-		output_buffer += "\r\n";
-		*/
-
-		output_buffer += "\r\n";
 		if (resp.getResourceFd() < 0)
-			isLastBuffer = true;
+			os->getIsLastBuffer() = true;
 		else
 		{
-			ToOutSocket *tos = new ToOutSocket(resp.getResourceFd(), isLastBuffer, output_buffer, this->server);
+			ToOutSocket *tos = new ToOutSocket(resp.getResourceFd(), os->getIsLastBuffer(), os->getOutputBuffer(), this->server);
 			this->server.add(tos, EPOLLIN);
 			this->associatedToOutSocket = tos;
 		}
@@ -89,13 +72,4 @@ void	InputSocket::process_request(size_t& pos)
 	if (pos < this->input_buffer.size())
 		(this->*process_functions[this->state])(pos);
 	return ;
-}
-
-static std::string status_phrase(uint16_t status_code)
-{
-	switch (status_code) {
-		case 200: return "OK";
-		case 404: return "Not Found";
-		default: return "";
-	}
 }
