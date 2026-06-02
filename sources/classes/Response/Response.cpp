@@ -13,15 +13,17 @@
 # include "Response.hpp"
 
 // Construction/Destruction ====================================================
-Response::Response(const int &fd):
+Response::Response(const int fd):
 	AMessage(fd),
 	_status(0),
-	_resourceFd(-1) {}
+	_resourceFd(-1),
+	_content() {}
 
 Response::Response(const Response &cpy):
 	AMessage(cpy._fd),
 	_status(cpy._status),
-	_resourceFd(cpy._resourceFd) {}
+	_resourceFd(cpy._resourceFd),
+	_content(cpy._content) {}
 
 Response::~Response(void) {}
 

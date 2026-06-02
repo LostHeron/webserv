@@ -20,7 +20,7 @@ class	HTTPStatus
 {
 	public:
 
-		static inline const std::string	getStatusMessage(const uint16_t &statusCode);
+		static inline const std::string	getStatusMessage(const uint16_t statusCode);
 
 		enum				e_reqStatus
 		{

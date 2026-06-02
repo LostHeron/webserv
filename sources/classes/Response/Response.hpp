@@ -19,7 +19,7 @@
 class	Response: public AMessage
 {
 	public:
-		Response(const int &fd);
+		Response(const int fd);
 		Response(const Response &cpy);
 		~Response(void);
 

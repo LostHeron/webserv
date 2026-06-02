@@ -52,7 +52,7 @@ const std::string	HTMLPageBuilder::dirListingPage(DIR *directory, const std::str
 	return (content);
 }
 
-const std::string	HTMLPageBuilder::errorPage(const uint16_t &errCode)
+const std::string	HTMLPageBuilder::errorPage(const uint16_t errCode)
 {
 	std::stringstream		ss_errCode; 
 	ss_errCode << errCode << " ";

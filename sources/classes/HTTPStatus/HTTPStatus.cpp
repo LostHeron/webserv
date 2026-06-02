@@ -12,7 +12,7 @@
 
 #include "HTTPStatus.hpp"
 
-inline const std::string HTTPStatus::getStatusMessage(const uint16_t &statusCode)
+inline const std::string HTTPStatus::getStatusMessage(const uint16_t statusCode)
 {
 	switch (statusCode / 100)
 	{

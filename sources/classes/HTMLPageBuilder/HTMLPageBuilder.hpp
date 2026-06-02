@@ -21,7 +21,7 @@ class	HTMLPageBuilder
 {
 	public:
 		static const std::string	dirListingPage(DIR *directory, const std::string &uri);
-		static const std::string	errorPage(const uint16_t &errCode);
+		static const std::string	errorPage(const uint16_t errCode);
 
 
 	private:
