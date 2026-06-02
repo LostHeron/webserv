@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 15:39:53 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 16:39:06 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,16 @@
 #include "InCGI.hpp"
 #include "IsChildren.hpp"
 #include "OutCGI.hpp"
+#include "OutputSocket.hpp"
 #include "Pipe.hpp"
+#include "HeadersBuilder.hpp"
 #include "Server.hpp"
 #include "default_pages.hpp"
 #include "status.hpp"
 #include "error.hpp"
 #include <cctype>
 #include <cstddef>
+#include <fcntl.h>
 #include <fstream>
 #include <stdint.h>
 #include <cstdio>
@@ -86,6 +89,8 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
 
 void InputSocket::process()
 {
+	if (this->status != SUCCESS)
+		return ;
 	std::cout << "in InputSocket process()\n";
 	updateInputBuffer(this->input_buffer, this->fd, this->status);
 	if (this->status != SUCCESS)
@@ -132,14 +137,18 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	}
 }
 
-void	send_bad_request(int fd, int& status)
+void	setup_response(int& status, int errorCode, InputSocket& is, OutputSocket& os)
 {
-	int ret = send(fd, ERROR_PAGE_400, sizeof(ERROR_PAGE_400), MSG_DONTWAIT | MSG_NOSIGNAL);
-	if (ret < 0)
-	{
-		std::cerr << "error while sending error page back to client\n";
-	}
-	status = FAILURE;
+	(void) is;
+	status = FINISH;
+	HeadersBuilder b;
+	os.getOutputBuffer() = b.initialize()
+	 .buildStatusLine("HTTP/1.1", errorCode)
+	 .buildDate()
+	 .buildCRLF()
+	 .buildBody(errorCode)
+	 .build();
+	os.getIsLastBuffer() = true;
 }
 
 void	InputSocket::process_body(size_t& pos)

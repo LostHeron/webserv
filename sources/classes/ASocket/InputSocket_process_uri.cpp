@@ -33,7 +33,7 @@ void	InputSocket::process_uri(size_t& pos)
 	{
 		this->uri.append(this->input_buffer, pos, this->input_buffer.size() - pos);
 		if (check_uri(this->uri) != SUCCESS)
-			return (send_bad_request(this->fd, this->status));
+			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
 		pos = this->input_buffer.size();
 	}
 	else
@@ -41,7 +41,7 @@ void	InputSocket::process_uri(size_t& pos)
 		if (delim > pos)
 			this->uri.append(this->input_buffer, pos, delim - pos);
 		if (check_uri(this->uri) || this->uri == "")
-			return (send_bad_request(this->fd, this->status));
+			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
 		clear_uri(this->uri);
 		this->state++;
 		pos = delim;

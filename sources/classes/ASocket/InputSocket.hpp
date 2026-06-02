@@ -16,6 +16,7 @@
 # include "ASocket.hpp"
 # include "InCGI.hpp"
 # include "OutCGI.hpp"
+#include "OutputSocket.hpp"
 # include "Server.hpp"
 # include "ToOutSocket.hpp"
 # include "typedef.hpp"
@@ -89,6 +90,6 @@ class InputSocket: public ASocket
 		void						prepareCGI();
 };
 
-void		send_bad_request(int fd, int& status);
+void	setup_response(int& status, int errorCode, InputSocket& is, OutputSocket& os);
 
 #endif

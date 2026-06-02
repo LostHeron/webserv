@@ -28,7 +28,8 @@ class ASocket
 		virtual	bool	fail();
 		virtual	bool	terminate();
 		
-		void	setAssociatedSocket(ASocket *ptr);
+		void		setAssociatedSocket(ASocket *ptr);
+		ASocket*	getAssociatedSocket();
 
 	protected:
 

@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 14:21:38 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 15:41:14 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 12:07:11 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,16 @@ void OutCGI::process_headers(size_t &start)
 		if (check_last_line(this->last_line) != SUCCESS)
 		{
 			// ok must return here and kill the process ?
-			return (send_bad_request(this->fd, this->status));
+			// return (send_bad_request(this->fd, this->status));
 		}
 
 		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
 		{
+			/*
 			add_line_headers(this->last_line, this->headers);
 			if (check_headers(this->headers) != SUCCESS)
 				return (send_bad_request(this->fd, this->status));
+			*/
 			this->last_line.clear();
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 11:36:00 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/26 15:00:20 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 11:57:41 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 # define STATUS
 
 enum {
-SUCCESS=0,
-FAILURE,
-TERMINATE,
+	SUCCESS=0,
+	FAILURE,
+	QUIT,
+	FINISH,
+	TERMINATE,
 };
 
 # define STOP 0

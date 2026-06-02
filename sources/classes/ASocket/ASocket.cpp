@@ -60,6 +60,11 @@ void	ASocket::setAssociatedSocket(ASocket *ptr)
 	this->associatedSocket = ptr;
 }
 
+ASocket*	ASocket::getAssociatedSocket()
+{
+	return (this->associatedSocket);
+}
+
 
 int fill_last_line(const std::string &buf, std::string &last_line, size_t &start, int &state)
 {

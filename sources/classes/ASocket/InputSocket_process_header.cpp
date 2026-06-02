@@ -20,7 +20,7 @@
 #include <vector>
 
 static int	check_headers(const string_map& headers);
-static void	no_version(const InputSocket& inputSocket, int& status);
+static void	no_version(InputSocket& inputSocket, int& status);
 static void add_line_headers(std::string& line,  string_map& headers);
 static void	lowering(std::string& line);
 
@@ -60,20 +60,20 @@ void	InputSocket::process_headers(size_t& start)
 
 		if (check_last_line(this->last_line) != SUCCESS)
 		{
-			return (send_bad_request(this->fd, this->status));
+			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
 		}
 
 		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
 		{
 			add_line_headers(this->last_line, this->headers);
 			if (check_headers(this->headers) != SUCCESS)
-				return (send_bad_request(this->fd, this->status));
+				return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
 			this->last_line.clear();
 		}
 	}
 }
 
-static void	no_version(const InputSocket& inputSocket, int& status)
+static void	no_version(InputSocket& inputSocket, int& status)
 {
 		if (inputSocket.getMethod() == "GET")
 		{
@@ -84,7 +84,7 @@ static void	no_version(const InputSocket& inputSocket, int& status)
 		}
 		else
 		{
-			return (send_bad_request(inputSocket.getFd(), status));
+			return (setup_response(status, 400, inputSocket, *static_cast<OutputSocket*>(inputSocket.getAssociatedSocket())));
 		}
 		return ;
 }
