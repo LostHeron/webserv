@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 11:22:53 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/01 15:43:09 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,9 @@
 #include <vector>
 
 static int	check_headers(const string_map& headers);
-static void	no_version(const InputSocket& inputSocket, int& status);
-static int	check_last_line(std::string last_line);
+static void	no_version(InputSocket& inputSocket, int& status);
 static void add_line_headers(std::string& line,  string_map& headers);
 static void	lowering(std::string& line);
-static void	remove_trailing_new_line(std::string& line);
-static int fill_last_line(const std::string &buf, std::string &last_line, size_t &start, int &state);
 
 // here depending on the version, it should exepct no header 
 // maybe header should be in key-value pairs ? like:
@@ -47,7 +44,6 @@ void	InputSocket::process_headers(size_t& start)
 {
 	// std::cout << "in process header\n";
 
-
 	if (this->version == "")
 	{
 		return (no_version(*this, this->status));
@@ -64,61 +60,20 @@ void	InputSocket::process_headers(size_t& start)
 
 		if (check_last_line(this->last_line) != SUCCESS)
 		{
-			return (send_bad_request(this->fd, this->status));
+			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
 		}
 
 		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
 		{
 			add_line_headers(this->last_line, this->headers);
 			if (check_headers(this->headers) != SUCCESS)
-				return (send_bad_request(this->fd, this->status));
+				return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
 			this->last_line.clear();
 		}
-
 	}
 }
 
-static int fill_last_line(const std::string &buf, std::string &last_line, size_t &start, int &state)
-{
-	static std::vector<std::string> delims;
-	if (delims.size() == 0)
-	{
-		delims.reserve(2);
-		delims.push_back("\n");
-		delims.push_back("\r\n");
-	}
-	size_t	delimPosition;
-	size_t	until;
-
-	delimPosition = getDelimPosition(buf, start, delims);
-	if (delimPosition == std::string::npos) // no \r\n
-	{
-		until = buf.size();
-		last_line.append(buf, start, until - start);
-	}
-	else 
-	{
-		if (buf[delimPosition] == '\r')
-			until = delimPosition + 2;
-		else
-			until = delimPosition + 1;
-
-		if (delimPosition == start && last_line.size() == 0)
-		{
-			state++;
-			start = until;
-			return (STOP);
-		}
-		else
-		{
-			last_line.append(buf, start, until - start);
-		}
-	}
-	start = until;
-	return (CONTINUE);
-}
-
-static void	no_version(const InputSocket& inputSocket, int& status)
+static void	no_version(InputSocket& inputSocket, int& status)
 {
 		if (inputSocket.getMethod() == "GET")
 		{
@@ -129,7 +84,7 @@ static void	no_version(const InputSocket& inputSocket, int& status)
 		}
 		else
 		{
-			return (send_bad_request(inputSocket.getFd(), status));
+			return (setup_response(status, 400, inputSocket, *static_cast<OutputSocket*>(inputSocket.getAssociatedSocket())));
 		}
 		return ;
 }
@@ -163,49 +118,6 @@ static void add_line_headers(std::string& line, string_map& headers)
 			headers[key].push_back("");
 		else
 			headers[key].push_back(std::string(line, value_begin, value_end - value_begin + 1));
-	}
-}
-
-# define ALLOWED_CHAR_KEY   ABNF_ALPHA ABNF_DIGIT ":_;.,\\/\"'?!(){}[]@<>=-+*#$&`|~^%"
-# define ALLOWED_CHAR_VALUE ALLOWED_CHAR_KEY " "
-
-// "coucou\r\n" -> valid
-// coucou\r:\r\n -> invalid
-// coucou:yo\ryo\r\n -> invalid
-static int check_last_line(std::string last_line)
-{
-	size_t	colonPosition = last_line.find(":");
-
-	remove_trailing_new_line(last_line);
-	if (colonPosition == std::string::npos)
-	{
-		if (last_line.find_first_not_of(ALLOWED_CHAR_KEY) != std::string::npos)
-			return (FAILURE);
-	}
-	else
-	{
-		size_t	value_begin = colonPosition + 1;
-
-		std::string	key(last_line, 0, colonPosition);
-		if (key.find_first_not_of(ALLOWED_CHAR_KEY) != std::string::npos)
-			return (FAILURE);
-		if (value_begin < last_line.size()) // for line that look like : 'host:' to avoid checking forbidden character in non existing value
-		{
-			std::string	value(last_line, value_begin, last_line.size() - value_begin);
-			if (value.find_first_not_of(ALLOWED_CHAR_VALUE) != std::string::npos)
-				return (FAILURE);
-		}
-	}
-	return (SUCCESS);
-}
-
-static void	remove_trailing_new_line(std::string& line)
-{
-	if (line.size() > 0 && line[line.size() - 1] == '\n')
-	{
-		line.erase(line.size() - 1, 1);
-		while (line.size() > 0 && line[line.size() - 1] == '\r')
-			line.erase(line.size() - 1, 1);
 	}
 }
 

@@ -1,29 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   status.hpp                                         :+:      :+:    :+:   */
+/*   typedef.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/09 11:36:00 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 11:57:41 by jweber           ###   ########.fr       */
+/*   Created: 2026/06/01 15:19:00 by jweber            #+#    #+#             */
+/*   Updated: 2026/06/01 15:19:41 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STATUS
-# define STATUS
+#ifndef TYPEDEF_HPP
+# define TYPEDEF_HPP
 
-enum {
-	SUCCESS=0,
-	FAILURE,
-	QUIT,
-	FINISH,
-	TERMINATE,
-};
+# include <string>
+# include <map>
+# include <vector>
 
-# define STOP 0
-# define CONTINUE 1
-
-extern int run;
+typedef std::map<std::string, std::vector<std::string> > string_map;
 
 #endif

@@ -5,8 +5,9 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/31 16:53:53 by jweber           ###   ########.fr        # #
+#    Created: 2026/06/02 18:54:23 by jweber            #+#    #+#              #
+#    Updated: 2026/06/02 18:54:30 by jweber           ###   ########.fr        #
+#                                                                              #
 # **************************************************************************** #
 
 NAME := webserv
@@ -20,6 +21,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HTTPSTATUS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HTMLPAGEBUILDER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(PIPE_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HEADERSBUILDER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
@@ -106,6 +108,9 @@ ASOCKET_FILES := 	ASocket.cpp \
 PIPE_DIR := Pipe/
 PIPE_FILES := Pipe.cpp \
 
+HEADERSBUILDER_DIR := HeadersBuilder/
+HEADERSBUILDER_FILES := HeadersBuilder.cpp \
+
 EXCEPTIONS_DIR := Exceptions/
 EXCEPTIONS_FILES := IsChildren.cpp \
 
@@ -153,6 +158,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
 				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \
 				 $(addprefix $(HTMLPAGEBUILDER_DIR), $(HTMLPAGEBUILDER_FILES)) \
+				 $(addprefix $(HEADERSBUILDER_DIR), $(HEADERSBUILDER_FILES)) \
 				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \
 				 $(addprefix $(VIRTUALHOST_DIR), $(VIRTUALHOST_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(ASCHEMA_DIR), $(ASCHEMA_FILES)) \
@@ -225,16 +231,16 @@ re:
 
 debug:
 	# rm webserv
-	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused" OBJ_DIR=".obj_debug/"
+	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
 
 debug_clean:
-	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3" OBJ_DIR=".obj_debug/"
+	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
 
 debug_fclean:
-	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3" OBJ_DIR=".obj_debug/"
+	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
 
 debug_re:
-	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3" OBJ_DIR=".obj_debug/"
+	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
 
 print-%:
 	@echo $($(patsubst print-%,%,$@))
