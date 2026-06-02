@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 16:48:19 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:18:47 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 17:39:19 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "error.hpp"
 #include <fcntl.h>
 #include <iostream>
+#include <cerrno>
 
 ToOutSocket::ToOutSocket(int fd, bool& isLastBuffer, std::string& outputBuffer, Server &server):
 	ASocket(server),
@@ -43,7 +44,8 @@ void ToOutSocket::process()
 			std::cout << "ToOutSocket read " << nb_read << " bytes\n";
 			if (nb_read < 0)
 			{
-				logerror();
+				int errno_value = errno;
+				logerror("read", errno_value);
 			}
 			else if (nb_read == 0)
 			{

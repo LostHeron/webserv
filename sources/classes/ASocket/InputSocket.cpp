@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 16:39:06 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 17:38:19 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,8 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
 		if (nb_read < 0)
 		{
-			// error happened
-			logerror();
+			int errno_value = errno;
+			logerror("recv", errno_value);
 			status = FAILURE;
 			return ;
 		}
@@ -220,7 +220,8 @@ void	InputSocket::prepareCGI()
 	int pid = fork();
 	if (pid < 0)
 	{
-		logerror();
+		int errno_value = errno;
+		logerror("fork", errno_value);
 		this->status = FAILURE;
 		return ;
 	}
@@ -265,7 +266,8 @@ void	InputSocket::prepareCGI()
 			}
 
 			execve(path.c_str(), args.data(), envp);
-			logerror();
+			int	errno_value = errno;
+			logerror("execve", errno_value);
 			for (size_t i = 0; i < formatted_envp.size(); i++)
 			{
 				delete [] formatted_envp.at(i);

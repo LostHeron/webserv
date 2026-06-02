@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 14:21:38 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 12:07:11 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 17:38:57 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
+#include <cerrno>
 
 OutCGI::OutCGI(int fd, Server& server):
 	ASocket(server),
@@ -85,7 +86,8 @@ void update_buffer(int fd, std::string& cgi_out_buffer)
 		ssize_t nb_read = read(fd, buf, BUFSIZ);
 		if (nb_read < 0)
 		{
-			logerror();
+			int errno_value = errno;
+			logerror("read", errno_value);
 		}
 		else
 		{

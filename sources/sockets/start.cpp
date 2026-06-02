@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 16:49:00 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/02 17:35:57 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "sockets.hpp"
 #include "ASocket.hpp"
 #include "status.hpp"
+#include "error.hpp"
 #include <cstring>
 #include <exception>
 #include <sys/epoll.h>
@@ -38,8 +39,7 @@ void	start(Server& server)
 		#endif
 		if (nb_events < 0)
 		{
-			std::string error_msg(strerror(errno));
-			std::cerr << "epoll_wait: " << error_msg << "\n";
+			logerror("epoll_wait", errno);
 			usleep(1000); // is it necessary ?
 		}
 		else
