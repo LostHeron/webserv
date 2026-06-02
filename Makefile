@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/06/02 16:51:41 by jweber           ###   ########.fr        #
+#    Created: 2026/06/02 18:54:23 by jweber            #+#    #+#              #
+#    Updated: 2026/06/02 18:54:30 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,8 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SERVER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HTTPSTATUS_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HTMLPAGEBUILDER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(PIPE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HEADERSBUILDER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
@@ -39,6 +41,12 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INTSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR)
+
+HTTPSTATUS_DIR :=	HTTPStatus/
+HTTPSTATUS_FILES :=	HTTPStatus.cpp
+
+HTMLPAGEBUILDER_DIR :=		HTMLPageBuilder/
+HTMLPAGEBUILDER_FILES :=	HTMLPageBuilder.cpp
 
 SCHEMA_DIR :=		Schemas/
 
@@ -144,11 +152,13 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
 				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
 				 $(addprefix $(PIPE_DIR), $(PIPE_FILES)) \
-				 $(addprefix $(HEADERSBUILDER_DIR), $(HEADERSBUILDER_FILES)) \
 				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
+				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \
+				 $(addprefix $(HTMLPAGEBUILDER_DIR), $(HTMLPAGEBUILDER_FILES)) \
+				 $(addprefix $(HEADERSBUILDER_DIR), $(HEADERSBUILDER_FILES)) \
 				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \
 				 $(addprefix $(VIRTUALHOST_DIR), $(VIRTUALHOST_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(ASCHEMA_DIR), $(ASCHEMA_FILES)) \

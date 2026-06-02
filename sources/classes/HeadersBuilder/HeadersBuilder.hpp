@@ -29,7 +29,8 @@ class HeadersBuilder
 		HeadersBuilder& buildHeaderKeyValue(const std::string& key, const std::string& value);
 		HeadersBuilder&	buildCRLF();
 		HeadersBuilder&	buildBody(int errorCode);
-		std::string			build();
+		HeadersBuilder&	buildBody(const std::string& content);
+		std::string		build();
 	private:
 		HeadersBuilder(const HeadersBuilder& other);
 		const HeadersBuilder& operator=(const HeadersBuilder& other);

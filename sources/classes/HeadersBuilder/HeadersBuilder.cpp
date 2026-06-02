@@ -11,14 +11,13 @@
 /* ************************************************************************** */
 
 #include "HeadersBuilder.hpp"
+#include "HTTPStatus.hpp"
+#include "HTTPStatus.cpp" // hm strange
 #include "default_pages.hpp"
 #include <sstream>
 
-
 HeadersBuilder::HeadersBuilder(){};
 HeadersBuilder::~HeadersBuilder(){};
-
-static std::string status_phrase(int error_code);
 
 HeadersBuilder& HeadersBuilder::initialize()
 {
@@ -39,19 +38,10 @@ HeadersBuilder& HeadersBuilder::buildStatusLine(const std::string& version, int 
 	this->response.append(errorCode_str);
 	this->response.append(" ");
 	
-	this->response.append(status_phrase(errorCode));
+	std::string test = HTTPStatus::getStatusMessage(errorCode);
+	this->response.append(test);
 	this->response.append("\r\n");
 	return (*this);
-}
-
-static std::string status_phrase(int error_code)
-{
-	switch (error_code) {
-		case 200: return "OK";
-		case 400: return "Bad Request";
-		case 404: return "Not Found";
-		default: return "";
-	}
 }
 
 HeadersBuilder& HeadersBuilder::buildDate()
@@ -86,6 +76,12 @@ static std::string default_error_page(int errorCode);
 HeadersBuilder&	HeadersBuilder::buildBody(int errorCode)
 {
 	this->response.append(default_error_page(errorCode));
+	return (*this);
+}
+
+HeadersBuilder&	HeadersBuilder::buildBody(const std::string& content)
+{
+	this->response.append(content);
 	return (*this);
 }
 

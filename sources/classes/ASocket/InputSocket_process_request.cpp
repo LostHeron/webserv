@@ -51,21 +51,12 @@ void	InputSocket::process_request(size_t& pos)
 		OutputSocket* os = static_cast<OutputSocket*>(this->associatedSocket);
 
 		HeadersBuilder	b;
-		os->getOutputBuffer() =	b.initialize()
+		os->getOutputBuffer() =  b.initialize()
 		 .buildStatusLine("HTTP/1.1", resp.getStatus())
 		 .buildDate()
 		 .buildCRLF()
-		 .buildBody(this->status)
+		 .buildBody(resp.getContent())
 		 .build();
-
-
-
-		// something like 
-		//
-		/*
-		if (resp.getResourceFd() < 0)
-			b.buildBody(resp.getBufferHTMLPage())
-			   */
 
 		if (resp.getResourceFd() < 0)
 			os->getIsLastBuffer() = true;

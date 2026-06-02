@@ -32,7 +32,7 @@ class	GETReq: public ARequest // only GET ?
 		Response		execute(void);
 
 	private:
-		int		_displayDir(DIR *dir) const;
+		int		_dirListing(DIR *dir) const;
 		DIR		*_tryOpenDirectory(const char *path) const;
 		int		_tryOpenFile(const char *path) const;
 };

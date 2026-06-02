@@ -44,7 +44,7 @@ void	start(Server& server)
 		}
 		else
 		{
-			std::cout << nb_events << " event where received in the epoll_wait function\n";
+			// std::cout << nb_events << " event where received in the epoll_wait function\n";
 			try
 			{
 				for (size_t i = 0; i < server.getNonBlockingsFds().size(); i++)
