@@ -32,18 +32,20 @@ Response			&Response::operator=(const Response &assign){ (void) assign; return (
 // Setters =====================================================================
 void				Response::setStatus(const uint16_t &status)
 {
-	// maybe try if already set
 	this->_status = status;
-	std::cout << "==> STATUS SET\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
 }
 
 void				Response::setResourceFd(const int &resourceFd)
 {
-	// maybe try if already set
 	this->_resourceFd = resourceFd;
-	std::cout << "==> RESOURCEFD SET\nfd: " << this->_fd << " | status: " << this->_status << " | resourceFd: " << this->_resourceFd << std::endl;
+}
+
+void				Response::setContent(const std::string &content)
+{
+	this->_content = content;
 }
 
 // Getters =====================================================================
 const uint16_t		&Response::getStatus(void) const {	return (this->_status); }
 const int			&Response::getResourceFd(void) const {	return (this->_resourceFd); }
+const std::string	&Response::getContent(void) const {	return (this->_content); }

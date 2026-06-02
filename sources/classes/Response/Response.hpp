@@ -23,19 +23,20 @@ class	Response: public AMessage
 		Response(const Response &cpy);
 		~Response(void);
 
-		Response		&operator=(const Response &assign);
+		Response			&operator=(const Response &assign);
 
-		const uint16_t	&getStatus(void) const;
-		const int		&getResourceFd(void) const;
+		const uint16_t		&getStatus(void) const;
+		const int			&getResourceFd(void) const;
+		const std::string	&getContent(void) const;
 
-		void			setStatus(const uint16_t &status);
-		void			setResourceFd(const int &resourceFd);
+		void				setStatus(const uint16_t &status);
+		void				setResourceFd(const int &resourceFd);
+		void				setContent(const std::string &content);
 
 	protected:
-		// metadata
-		uint16_t		_status;
-		int				_resourceFd;
-		// if no resources to read during response, build pipe, resource fd becomes read side, response write onto write side the error (bad request/invalide resouce...)
+		uint16_t			_status;
+		int					_resourceFd;
+		std::string			_content;
 };
 
 #endif

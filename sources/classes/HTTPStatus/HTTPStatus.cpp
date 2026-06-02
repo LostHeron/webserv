@@ -12,7 +12,7 @@
 
 #include "HTTPStatus.hpp"
 
-inline const char	*HTTPStatus::getStatusMessage(const uint16_t &statusCode)
+inline const std::string HTTPStatus::getStatusMessage(const uint16_t &statusCode)
 {
 	switch (statusCode / 100)
 	{
@@ -69,7 +69,7 @@ inline const char	*HTTPStatus::_getSuccessMessage(const uint16_t &statusCode)
 		case (HTTPStatus::ALREADY_REPORTED):
 			return ("Already Reported");
 		case (HTTPStatus::IM_USED):
-			return ("IM Used");
+			return ("Im Used");
 	};
 	return (NULL);
 }
@@ -180,7 +180,7 @@ inline const char	*HTTPStatus::_getServerErrorMessage(const uint16_t &statusCode
 			return ("HTTP Version Not Supported");
 		case (HTTPStatus::VARIANT_ALSO_NEGOTIATES):
 			return ("Variant Also Negotiates");
-		case (HTTPStatus::INSUFFICENT_STORAGE):
+		case (HTTPStatus::INSUFFICIENT_STORAGE):
 			return ("Insufficient Storage");
 		case (HTTPStatus::LOOP_DETECTED):
 			return ("Loop Detected");
