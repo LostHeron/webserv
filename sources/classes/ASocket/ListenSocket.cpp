@@ -33,7 +33,7 @@ ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
 
 	// to allow reusing the same port, should be disabled in prod ?
 	int	optval = 1;
-	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) < 0)
+	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
 	{
 		std::cerr << strerror(errno) << "\n";
 		std::cerr << "error occured will trying to set SO_REUSEPORT!\n";
