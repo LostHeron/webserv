@@ -42,9 +42,12 @@ void	InputSocket::process_request(size_t& pos)
 	delete req;
 	
 	bool iscgi = false;
+	iscgi = true;
 	if (iscgi == true)
 	{
 		this->prepareCGI();
+		if (resp.getResourceFd() > 0)
+			close(resp.getResourceFd());
 	}
 	else
 	{
@@ -52,11 +55,11 @@ void	InputSocket::process_request(size_t& pos)
 
 		HeadersBuilder	b;
 		os->getOutputBuffer() =  b.initialize()
-		 .buildStatusLine("HTTP/1.1", resp.getStatus())
-		 .buildDate()
-		 .buildCRLF()
-		 .buildBody(resp.getContent())
-		 .build();
+			.buildStatusLine("HTTP/1.1", resp.getStatus())
+		 	.buildDate()
+		 	.buildCRLF()
+		 	.buildBody(resp.getContent())
+		 	.build();
 
 		if (resp.getResourceFd() < 0)
 			os->getIsLastBuffer() = true;

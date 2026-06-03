@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "status.hpp"
 #include "abnf.hpp"

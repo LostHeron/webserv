@@ -13,9 +13,10 @@
 #ifndef HEADERSBUILDER_HPP
 # define HEADERSBUILDER_HPP
 
-#include <cstring>
-#include <ctime>
-#include <string>
+# include <cstring>
+# include <ctime>
+# include <string>
+# include <vector>
 
 class HeadersBuilder
 {
@@ -27,6 +28,8 @@ class HeadersBuilder
 		HeadersBuilder&	buildStatusLine(const std::string& version, int errorCode);
 		HeadersBuilder&	buildDate();
 		HeadersBuilder& buildHeaderKeyValue(const std::string& key, const std::string& value);
+		HeadersBuilder& buildHeaderKeyVecValue(const std::string& key, 
+										 const std::vector<std::string>& values);
 		HeadersBuilder&	buildCRLF();
 		HeadersBuilder&	buildBody(int errorCode);
 		HeadersBuilder&	buildBody(const std::string& content);

@@ -14,7 +14,9 @@
 #include "HTTPStatus.hpp"
 #include "HTTPStatus.cpp" // hm strange
 #include "default_pages.hpp"
+#include <locale>
 #include <sstream>
+#include <vector>
 
 HeadersBuilder::HeadersBuilder(){};
 HeadersBuilder::~HeadersBuilder(){};
@@ -61,6 +63,20 @@ HeadersBuilder& HeadersBuilder::buildHeaderKeyValue(const std::string& key, cons
 	this->response.append(key);
 	this->response.append(": ");
 	this->response.append(value);
+	this->response.append("\r\n");
+	return (*this);
+}
+
+HeadersBuilder& HeadersBuilder::buildHeaderKeyVecValue(const std::string& key, const std::vector<std::string>& values)
+{
+	this->response.append(key);
+	this->response.append(": ");
+	for (size_t i = 0; i < values.size(); i++)
+	{
+		if (i != 0)
+			this->response.append(", ");
+		this->response.append(values.at(i));
+	}
 	this->response.append("\r\n");
 	return (*this);
 }

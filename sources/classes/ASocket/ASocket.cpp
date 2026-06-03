@@ -163,3 +163,36 @@ void	remove_trailing_new_line(std::string& line)
 	}
 }
 
+static void	lowering(std::string& line);
+
+void add_line_headers(std::string& line, string_map& headers)
+{
+	size_t		colonPosition = line.find(":");
+	std::string	key;
+
+	remove_trailing_new_line(line);
+	if (colonPosition == std::string::npos)
+	{
+		lowering(line);
+		headers[line].push_back("");
+	}
+	else
+	{
+		size_t	value_begin = line.find_first_not_of(" ", colonPosition + 1);
+		size_t	value_end = line.find_last_not_of(" ");
+		key.append(line, 0, colonPosition);
+		lowering(key);
+		if (value_end == std::string::npos || value_begin == std::string::npos)
+			headers[key].push_back("");
+		else
+			headers[key].push_back(std::string(line, value_begin, value_end - value_begin + 1));
+	}
+}
+
+static void	lowering(std::string& line)
+{
+	for (size_t i = 0; i < line.size(); i++)
+	{
+		line[i] = std::tolower(line[i]);
+	}
+}

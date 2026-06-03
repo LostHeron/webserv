@@ -19,13 +19,11 @@
 #include "Pipe.hpp"
 #include "HeadersBuilder.hpp"
 #include "Server.hpp"
-#include "default_pages.hpp"
 #include "status.hpp"
 #include "error.hpp"
 #include <cctype>
 #include <cstddef>
 #include <fcntl.h>
-#include <fstream>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
@@ -162,57 +160,10 @@ void	InputSocket::process_body(size_t& pos)
 void	InputSocket::prepareCGI()
 {
 	std::string script_name = "/home/jweber/goinfre/test.sh";
-	std::ifstream file;
-	file.open(script_name.c_str());
-	if (file.fail())
-	{
-		std::cerr << "could not open script '" << script_name << "'\n";
-		this->status = FAILURE;
-		return ;
-	}
-
-	std::string line;
-	std::getline(file, line);
-	if (file.fail())
-	{
-		std::cerr << "could not read first line of script '" << script_name << "'\n";
-		this->status = FAILURE;
-		return ;
-	}
-
-	std::string path;
-	std::vector<char *> args;
-	if (std::strncmp(line.c_str(), "#!", 2) == 0)
-	{
-		path = std::string(line, 2);
-
-		char *tmp;
-
-		tmp = new char[path.size() + 1];
-		std::memcpy(tmp, path.data(), path.size());
-		tmp[path.size()] = '\0';
-		args.push_back(tmp);
-
-		tmp = new char[script_name.size() + 1];
-		std::memcpy(tmp, script_name.data(), script_name.size());
-		tmp[script_name.size()] = '\0';
-		args.push_back(tmp);
-
-		args.push_back(NULL);
-	}
-	else
-	{
-		path = script_name;
-
-		char *tmp;
-
-		tmp = new char[path.size() + 1];
-		std::memcpy(tmp, path.data(), path.size());
-		tmp[path.size()] = '\0';
-		args.push_back(tmp);
-
-		args.push_back(NULL);
-	}
+	char	*argv[2];
+	char	str[] = "";
+	argv[0] = str; 
+	argv[1] = NULL;
 
 	Pipe toCGI;
 	Pipe fromCGI;
@@ -265,16 +216,12 @@ void	InputSocket::prepareCGI()
 				std::cerr << envp << "\n";
 			}
 
-			execve(path.c_str(), args.data(), envp);
+			execve(script_name.c_str(), argv, envp);
 			int	errno_value = errno;
 			logerror("execve", errno_value);
 			for (size_t i = 0; i < formatted_envp.size(); i++)
 			{
 				delete [] formatted_envp.at(i);
-			}
-			for (size_t i = 0; i < args.size(); i++)
-			{
-				delete [] args.at(i);
 			}
 		}
 		catch (...)
@@ -285,15 +232,11 @@ void	InputSocket::prepareCGI()
 	}
 	else
 	{
-		for (size_t i = 0; i < args.size(); i++)
-		{
-			delete [] args.at(i);
-		}
 		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), this->input_buffer, this->server);
 		this->associatedInCgi = incgi;
 		this->server.add(incgi, EPOLLOUT);
 
-		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), this->server);
+		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), *this, *static_cast<OutputSocket*>(this->associatedSocket), this->server);
 		this->associatedOutCgi = outcgi;
 		this->server.add(outcgi, EPOLLIN);
 	}

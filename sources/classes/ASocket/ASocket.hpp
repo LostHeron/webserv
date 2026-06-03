@@ -14,6 +14,7 @@
 # define ASOCKET_HPP
 
 #include "Server.hpp"
+#include "typedef.hpp"
 #include <cstddef>
 
 class ASocket
@@ -63,5 +64,6 @@ int		fill_last_line(const std::string &buf, std::string &last_line, size_t &star
 size_t	getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims);
 int		check_last_line(std::string last_line);
 void	remove_trailing_new_line(std::string& line);
+void	add_line_headers(std::string& line,  string_map& headers);
 
 #endif
