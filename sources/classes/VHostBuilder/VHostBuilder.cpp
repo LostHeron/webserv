@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 16:06:22 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/01 19:42:54 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/02 14:29:17 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,3 +47,30 @@ std::pair<uint16_t, VirtualHost>	VHostBuilder::jsonBuild(std::map<std::string, J
 	}
 	return (std::pair<uint16_t, VirtualHost>(obj_map.find(HOST_PORT_KEY)->second.getInt(), host));
 }
+
+template <typename T>
+bool	VirtualHost::checkDuplicates(T const& val, std::vector<T> const& vec)
+{
+	for (typename std::vector<T>::const_iterator it = vec.begin(); it != vec.end(); ++it)
+	{
+		if (val == *it)
+			return (true);
+	}
+	return (false);
+}
+
+static void	setName(JsonObj const& names)
+{
+	
+}
+
+
+static void	setRoot(JsonObj const& root);
+static void	setIndex(JsonObj const& index);
+static void	setMaxBody(JsonObj const& max_body);
+static void	setInterface(JsonObj const& interface);
+static void	setDirList(JsonObj const& dir_list);
+static void	setAllowedRequest(JsonObj const& allowed_request);
+static void	setError(JsonObj const& error);
+static void	setLocation(JsonObj const& location);
+static void	setCgi(JsonObj const& cgi);

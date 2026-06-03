@@ -1,11 +1,13 @@
-
-"host":{
-    "listen": 8080,
-    "name": "test",
-    "root": "/",
-	"location": 
-		{
-			"name":"/",
-			"alias":"/home/abetemps/"
-		}
-}
+"host":[
+    {
+        "listen":4343,
+        "name": "host_a",
+        "root":"/home/jweber/goinfre/tmp/a",
+        "location":[
+        { 
+            "name": "/images",
+            "alias":"/home/jweber/goinfre/tmp/b/",
+        },
+        ]
+    },
+]
