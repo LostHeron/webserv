@@ -11,11 +11,9 @@
 /* ************************************************************************** */
 
 #include "InputSocket.hpp"
-#include "ASocket.hpp"
-#include "InCGI.hpp"
-#include "IsChildren.hpp"
 #include "OutCGI.hpp"
 #include "OutputSocket.hpp"
+#include "IsChildren.hpp"
 #include "Pipe.hpp"
 #include "HeadersBuilder.hpp"
 #include "Server.hpp"
@@ -47,8 +45,7 @@ InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& 
 	local_port(local_port),
 	peer_port(ntohs(addr.sin_port)),
 	associatedInCgi(NULL),
-	associatedOutCgi(NULL),
-	associatedToOutSocket(NULL)
+	associatedOutCgi(NULL)
 {
 	uint32_t addrh = (addr.sin_addr.s_addr);
 	for (int i = 0; i < 4; i++)
@@ -74,9 +71,6 @@ InputSocket::~InputSocket()
 	if (associatedOutCgi != NULL)
 		this->server.remove(this->associatedOutCgi);
 	this->associatedOutCgi = NULL;
-	if (associatedToOutSocket != NULL)
-		this->server.remove(this->associatedToOutSocket);
-	this->associatedToOutSocket = NULL;
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }

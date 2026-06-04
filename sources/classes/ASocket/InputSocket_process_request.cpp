@@ -13,7 +13,6 @@
 #include "HeadersBuilder.hpp"
 #include "InputSocket.hpp"
 #include "RequestFactory.hpp"
-#include "ToOutSocket.hpp"
 #include "VirtualHost.hpp"
 #include "OutputSocket.hpp"
 #include <sys/epoll.h>
@@ -61,17 +60,6 @@ void	InputSocket::process_request(size_t& pos)
 		 	.buildBody(resp.getContent());
 
 		os->setup(resp.getResourceFd(), b.build());
-		/*
-		if (resp.getResourceFd() < 0)
-			os->getIsLastBuffer() = true;
-		else
-		{
-
-			ToOutSocket *tos = new ToOutSocket(resp.getResourceFd(), os->getIsLastBuffer(), os->getOutputBuffer(), this->server);
-			this->server.add(tos, EPOLLIN);
-			this->associatedToOutSocket = tos;
-		}
-	*/
 	}
 	
 	this->state++;

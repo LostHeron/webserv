@@ -16,9 +16,8 @@
 # include "ASocket.hpp"
 # include "InCGI.hpp"
 # include "OutCGI.hpp"
-#include "OutputSocket.hpp"
+# include "OutputSocket.hpp"
 # include "Server.hpp"
-# include "ToOutSocket.hpp"
 # include "typedef.hpp"
 # include <ostream>
 # include <vector>
@@ -86,7 +85,6 @@ class InputSocket: public ASocket
 
 		InCGI						*associatedInCgi;
 		OutCGI						*associatedOutCgi;
-		ToOutSocket					*associatedToOutSocket;
 		void						updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
 		void						prepareCGI();
 };
