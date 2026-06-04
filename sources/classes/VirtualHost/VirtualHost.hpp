@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 16:04:42 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/04 21:19:29 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,6 @@ class VirtualHost
 {
 	public:
 
-		VirtualHost(VirtualHost const& other);
-		~VirtualHost();
-		
-		static std::pair<uint16_t, VirtualHost>	build(std::map<std::string, JsonObj> obj_map);
-
-		std::vector<std::string> const&	getName(void) const;
-		std::pair<std::string, bool>	getPathReq(std::string const& uri, std::string const& req) const;
-		std::pair<bool, std::string> 	getError(int err_code) const;
-		
-		// void	log(bool success);
-		
-	private:
-
 		struct s_ip_range
 		{
 			uint32_t	min;	
@@ -45,28 +32,20 @@ class VirtualHost
 			
 			bool	operator==(struct s_ip_range const& other) const {return (this->min == other.min && this->max == other.max);}
 		};
-		
-		// class StreambufNull :
-		// 	public std::streambuf
-		// {
-		// 	public:
-		
-		// 		StreambufNull(void);
-		// 		StreambufNull(StreambufNull const& other);
-		// 		~StreambufNull();
-		
-		// 		StreambufNull&	operator=(StreambufNull const& other);
-		
-		// 	protected:
-		
-		// 		virtual int_type		overflow(int ch);
-		// 		virtual std::streamsize	xsputn(const char_type* s, std::streamsize count);	
-		// 		virtual int				sync(void);		
-		// };
 
 		class Location
 		{
 			public:
+			
+				struct s_config
+				{
+					std::string					alias;
+					std::string					redirection;
+					std::string					index;
+					std::vector<std::string>	allowedRequest;
+					bool						allowDirList;
+					bool						cgi;
+				};
 			
 				Location(Location const& other);
 				~Location();
@@ -75,61 +54,48 @@ class VirtualHost
 			
 			private:
 			
-				struct s_redir
-				{
-					std::string	from;
-					std::string	to;
-
-					bool	operator==(struct s_redir const& other) const {return (this->from == other.from);}
-				};
-				
-				std::string							_alias;
-				std::string							_index;
-				std::vector<std::string>			_allowedRequest;
-				bool								_allowDirList;
-				std::vector<Location::s_redir>		_redirection;
-				std::map<std::string, std::string>	_cgi;
-				
-				Location(void);
+				Location::s_config	_conf;
 				
 				Location&	operator=(Location const& other);
+		};
 
-				static Location::s_redir	buildRedir(std::string const& redir);
-				
-			// std::ostream*	_successLogs;
-			// std::ostream*	_errorLogs;
+		struct s_config
+		{
+			std::vector<std::string>						name;
+			std::string										root;
+			std::string										index;
+			uint32_t										max_body_size;
+			std::vector<VirtualHost::s_ip_range>			allowedInterface;
+			std::vector<std::string>						allowedRequest;
+			bool											allowDirList;
+			std::map<int, std::string>						error;
+			std::map<std::string, VirtualHost::Location>	location;
+			bool											cgi;
 		};
 		
-		std::vector<std::string>						_name;
-		std::string										_root;
-		std::string										_index;
-		uint32_t										_max_body_size;
-		std::vector<VirtualHost::s_ip_range>			_allowedInterface;
-		std::vector<std::string>						_allowedRequest;
-		bool											_allowDirList;
-		std::map<int, std::string>						_error;
-		std::map<std::string, VirtualHost::Location>	_location;
-		std::map<std::string, std::string>				_cgi;
+		struct s_uriInfo
+		{
+			std::string	path;
+				
+		};
+
+		VirtualHost(VirtualHost::s_config const& conf);
+		VirtualHost(VirtualHost const& other);
+		~VirtualHost();
+
+		std::vector<std::string> const&	getName(void) const;
+		std::pair<std::string, bool>	getPathReq(std::string const& uri, std::string const& req) const;
+		std::pair<bool, std::string> 	getError(int err_code) const;
+		
+		// void	log(bool success);
+		
+	private:
+		
+		struct s_config	_conf;
 		
 		VirtualHost(void);
 
 		VirtualHost&	operator=(VirtualHost const& other);
-
-		friend class VHostBuilder;
-
-		template <typename T>
-		static bool	checkDuplicates(T const& val, std::vector<T> const& vec);
-
-		static VirtualHost::s_ip_range	buildInterfaceRange(std::string const& interfaces);
-		static uint32_t					buildInterface(std::string const& interface);
-		static void						addErrorPage(std::map<std::string, JsonObj> const& error, std::map<int, std::string>& host_error);
-		static void						addLocation(std::map<std::string, JsonObj> const& location, std::map<std::string, VirtualHost::Location>& host_location, std::vector<std::string> const& host_allowed_request);
-		static void						addCgi(std::map<std::string, JsonObj> const& cgi, std::map<std::string, std::string>& host_cgi);		
-		
-		// StreambufNull					_streambufNull;
-		// std::ostream						_streamNull;
-		// std::ostream*					_successLogs;
-		// std::ostream*					_errorLogs;
 };
 		
 #endif // VIRTUALHOST_HPP
