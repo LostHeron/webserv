@@ -25,14 +25,19 @@ class OutputSocket: public ASocket
 
 		std::string&	getOutputBuffer();
 		bool&			getIsLastBuffer();
+		void			updateOutputBuffer();
+		void			setup(int newRessourceFd, const std::string& firstBuffer);
 		void			end();
 
-protected:
+	protected:
 
 	private:
 		OutputSocket();
 		OutputSocket(const OutputSocket& other);
+		const OutputSocket&	operator=(const OutputSocket& other);
 
+		int			ressourceFd;
+		bool		ready;
 		bool		isLastBuffer;
 		std::string	outputBuffer;
 };

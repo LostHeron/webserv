@@ -14,6 +14,8 @@
 #include "ASocket.hpp"
 #include "Server.hpp"
 #include "status.hpp"
+#include "error.hpp"
+#include <cerrno>
 #include <cstdio>
 #include <stdint.h>
 #include <iostream>
@@ -22,6 +24,8 @@
 
 OutputSocket::OutputSocket(int socket_fd, Server& server):
 	ASocket(server),
+	ressourceFd(-1),
+	ready(false),
 	isLastBuffer(false)
 {
 	this->fd = dup(socket_fd);
@@ -39,9 +43,22 @@ OutputSocket::~OutputSocket()
 {
 }
 
+void	OutputSocket::setup(int newRessourceFd, const std::string& firstBuffer)
+{
+	this->ressourceFd = newRessourceFd;
+	this->outputBuffer = firstBuffer;
+	if (this->ressourceFd < 0)
+		this->isLastBuffer = true;
+	this->ready = true;
+}
+
 void	OutputSocket::process()
 {
 	std::cout << "in OutputSocket process()\n";
+	if (this->ready == true && this->outputBuffer == "")
+	{
+		updateOutputBuffer();
+	}
 	if (this->outputBuffer.size() > 0)
 	{
 		ssize_t nb_send = send(this->fd, this->outputBuffer.data(), this->outputBuffer.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
@@ -60,9 +77,31 @@ void	OutputSocket::process()
 		// used to clean ressources associated with the ressource,
 		// change name for better understanding of the meaning
 		// like TERMINATE instead of FAILURE or something
+		// or finish ?
 		this->status = FAILURE; 
 	}
 }
+
+void	OutputSocket::updateOutputBuffer()
+{
+	char buf[BUFSIZ];
+	ssize_t nb_read = read(this->ressourceFd, buf, BUFSIZ);
+	if (nb_read < 0)
+	{
+		int errno_value = errno;
+		logerror("read", errno_value);
+		this->status = FAILURE;
+	}
+	else if (nb_read == 0)
+	{
+		this->isLastBuffer = true;
+	}
+	else
+	{
+		this->outputBuffer = std::string(buf, nb_read);
+	}
+}
+
 
 std::string& OutputSocket::getOutputBuffer()
 {

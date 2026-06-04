@@ -47,32 +47,6 @@ void	start(Server& server)
 			// std::cout << nb_events << " event where received in the epoll_wait function\n";
 			try
 			{
-				for (size_t i = 0; i < server.getNonBlockingsFds().size(); i++)
-				{
-					ASocket* event = static_cast<ASocket*>(server.getNonBlockingsFds()[i]);
-					try
-					{
-						event->process();
-						if (event->fail())
-						{
-							server.remove(event);
-							break;
-						}
-					}
-					catch (IsChildren& e)
-					{
-						throw;
-					}
-					catch (std::exception& e)
-					{
-						std::cerr << e.what() << "\n";
-					}
-					catch (...)
-					{
-						std::cerr << "an error occured\n";
-					}
-					
-				}
 				for (int i = 0; i < nb_events; i++)
 				{
 					ASocket* event = static_cast<ASocket*>(events[i].data.ptr);

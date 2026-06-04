@@ -42,7 +42,7 @@ void	InputSocket::process_request(size_t& pos)
 	delete req;
 	
 	bool iscgi = false;
-	iscgi = true;
+	//iscgi = true;
 	if (iscgi == true)
 	{
 		this->prepareCGI();
@@ -54,21 +54,24 @@ void	InputSocket::process_request(size_t& pos)
 		OutputSocket* os = static_cast<OutputSocket*>(this->associatedSocket);
 
 		HeadersBuilder	b;
-		os->getOutputBuffer() =  b.initialize()
+		b.initialize()
 			.buildStatusLine("HTTP/1.1", resp.getStatus())
 		 	.buildDate()
 		 	.buildCRLF()
-		 	.buildBody(resp.getContent())
-		 	.build();
+		 	.buildBody(resp.getContent());
 
+		os->setup(resp.getResourceFd(), b.build());
+		/*
 		if (resp.getResourceFd() < 0)
 			os->getIsLastBuffer() = true;
 		else
 		{
+
 			ToOutSocket *tos = new ToOutSocket(resp.getResourceFd(), os->getIsLastBuffer(), os->getOutputBuffer(), this->server);
 			this->server.add(tos, EPOLLIN);
 			this->associatedToOutSocket = tos;
 		}
+	*/
 	}
 	
 	this->state++;
