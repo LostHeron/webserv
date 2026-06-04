@@ -15,8 +15,9 @@
 #include "status.hpp"
 #include "abnf.hpp"
 
-static int	check_uri(std::string& uri);
-static void	clear_uri(std::string& uri);
+static int			check_uri(std::string& uri);
+static void			clear_uri(std::string& uri);
+static std::string	extract_query_string(std::string& uri);
 
 // goal: should fill and check URI
 // - reject any uri containing invalid char, like newline etc.
@@ -43,6 +44,7 @@ void	InputSocket::process_uri(size_t& pos)
 			this->uri.append(this->input_buffer, pos, delim - pos);
 		if (check_uri(this->uri) || this->uri == "")
 			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
+		this->query_string = extract_query_string(this->uri);
 		clear_uri(this->uri);
 		this->state++;
 		pos = delim;
@@ -50,6 +52,20 @@ void	InputSocket::process_uri(size_t& pos)
 			(this->*process_functions[this->state])(pos);
 	}
 	return ;
+}
+
+static std::string extract_query_string(std::string& uri)
+{
+
+	size_t interrogation_position = uri.find("?");
+	if (interrogation_position == std::string::npos)
+		return ("");
+	else
+	{
+		std::string query = std::string(uri, interrogation_position + 1);
+		uri = std::string(uri, 0, interrogation_position);
+		return (query);
+	}
 }
 
 // what is an invalid uri ?

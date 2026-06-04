@@ -64,6 +64,7 @@ class InputSocket: public ASocket
 
 		// identify which uri the client tries to reach
 		std::string					uri;
+		std::string					query_string;
 		void						process_uri(size_t& pos);
 
 		// identify which version of HTTP the client tries to reach
@@ -86,7 +87,7 @@ class InputSocket: public ASocket
 		InCGI						*associatedInCgi;
 		OutCGI						*associatedOutCgi;
 		ToOutSocket					*associatedToOutSocket;
-		void						updateCgiEnvp(std::vector<std::string>&);
+		void						updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
 		void						prepareCGI();
 };
 

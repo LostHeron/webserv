@@ -24,6 +24,7 @@
 #include <cctype>
 #include <cstddef>
 #include <fcntl.h>
+#include <sstream>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
@@ -159,7 +160,7 @@ void	InputSocket::process_body(size_t& pos)
 
 void	InputSocket::prepareCGI()
 {
-	std::string script_name = "/home/jweber/goinfre/test.sh";
+	std::string script_name = "/home/jweber/goinfre/test.php";
 	char	*argv[2];
 	char	str[] = "";
 	argv[0] = str; 
@@ -196,7 +197,7 @@ void	InputSocket::prepareCGI()
 			toCGI.closeReadEnd();
 
 			std::vector<std::string>	vec_envp;
-			this->updateCgiEnvp(vec_envp);
+			this->updateCgiEnvp(vec_envp, script_name);
 
 			std::vector< char * > formatted_envp;
 			formatted_envp.reserve(vec_envp.size() + 1);
@@ -243,21 +244,18 @@ void	InputSocket::prepareCGI()
 	return ;
 }
 
-void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp)
+static std::string	get_IPv4_string_format(uint8_t addr[4]);
+static std::string	get_port_string_format(uint16_t peer_port);
+
+void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::string& script_name)
 {
 	std::string str;
-
-	str = "GATEWAY_INTERFACE=CGI/1.1";
-	vec_envp.push_back(str);
-
-	str = "REQUEST_METHOD=";
-	str += this->method;
-	vec_envp.push_back(str);
 
 	if (this->headers.count("content-length"))
 	{
 		str = "CONTENT_LENGTH=";
 		str += this->headers["content-length"].at(0);
+		this->headers.erase("content-length");
 		vec_envp.push_back(str);
 	}
 
@@ -270,8 +268,106 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp)
 				str += ", ";
 			str += this->headers["content-type"].at(i);
 		}
+		this->headers.erase("content-type");
 		vec_envp.push_back(str);
 	}
+
+	str = "GATEWAY_INTERFACE=CGI/1.1";
+	vec_envp.push_back(str);
+
+	// str = "PATH_INFO..."
+	// not implemented yet, seems annoying to do
+	// example : /cgi-bin/somescript/coucou
+	// -> PATH_INFO = /coucou
+	// must see when a ressource is an identified file on the server
+	// and then set PATH_INFO to what is after, but it's annoying 
+	// so not yet for now
+	
+	// str = "PATH_TRANSLATED..."
+	// not implemented yet
+	// anyway in the RFC 3875, it says that script
+	// relying on the variable 'may suffer limited portabillity'
+	// and it is implementation defined .. so let's see if we have
+	// time to do it
+
+	str = "QUERY_STRING=" + this->query_string;
+	vec_envp.push_back(str);
+
+	str = "REMOTE_ADDR=" + get_IPv4_string_format(this->addr);
+	vec_envp.push_back(str);
+
+	str = "REMOTE_PORT=" + get_port_string_format(this->peer_port);
+	vec_envp.push_back(str);
+
+	str = "REQUEST_METHOD=" + this->method;
+	vec_envp.push_back(str);
+
+	str = "SCRIPT_NAME=" + this->uri;
+	vec_envp.push_back(str);
+
+	str = "SCRIPT_FILENAME=" + script_name;
+	vec_envp.push_back(str);
+
+	str = "SERVER_NAME=???"; // should retrived the vhost name
+	vec_envp.push_back(str);
+
+	str = "SERVER_PORT=" + get_port_string_format(this->local_port);
+	vec_envp.push_back(str);
+
+	str = "SERVER_PROTOCOLE=HTTP/1.1";
+	vec_envp.push_back(str);
+
+	str = "SERVER_SOFTWARE=ft_webserv";
+	vec_envp.push_back(str);
+
+	str = "REDIRECT_STATUS=200";
+	vec_envp.push_back(str);
+
+	for (string_map::const_iterator it = this->headers.begin(); it != this->headers.end(); it++)
+	{
+		str = "HTTP_";
+		str += it->first;
+		for (std::string::iterator jt = str.begin(); jt != str.end(); jt++)
+		{
+			if (*jt == '-')
+				*jt = '_';
+			*jt = std::toupper(*jt);
+		}
+		str += "=";
+		for (size_t i = 0; i < it->second.size(); i++)
+		{
+			if (i !=0)
+				str +=", ";
+			str += it->second.at(i);
+		}
+		vec_envp.push_back(str);
+	}
+}
+
+static std::string	get_IPv4_string_format(uint8_t addr[4])
+{
+	std::stringstream ss;
+	std::string res;
+	for (int i = 0; i < 4; i++)
+	{
+		if (i != 0)
+			res += ".";
+		ss << static_cast<int>(addr[i]);
+		std::string tmp;
+		ss >> tmp;
+		ss.clear();
+		res += tmp;
+	}
+	return (res);
+}
+
+static std::string get_port_string_format(uint16_t peer_port)
+{
+	std::string res;
+	std::stringstream ss;
+	ss << peer_port;
+	ss >> res;
+	return (res);
 }
 
 void	InputSocket::process_skip_sp(size_t& pos)

@@ -78,8 +78,9 @@ void OutCGI::process_headers(size_t &start)
 		{
 			if (check_headers(this->headers) != SUCCESS)
 				return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->is, this->os));
-			// here we will leave this function, so we should write all header informations to
-			// buffer of os
+			// here we will leave this function, 
+			// so it's right now we MUST write all header informations 
+			// to buffer of OutputSocket:
 			HeadersBuilder b;
 			b.initialize()
 				.buildStatusLine("HTTP/1.1", 200)
@@ -90,7 +91,6 @@ void OutCGI::process_headers(size_t &start)
 			}
 			b.buildCRLF();
 			this->os.getOutputBuffer() = b.build();
-			//this->state++;
 			break;
 		}
 
