@@ -12,6 +12,7 @@
 
 #include "InputSocket.hpp"
 #include "status.hpp"
+#include "Connection.hpp"
 #include <cctype>
 #include <cctype>
 #include <map>
@@ -56,14 +57,14 @@ void	InputSocket::process_headers(size_t& start)
 
 		if (check_last_line(this->last_line) != SUCCESS)
 		{
-			return (setup_response(this->status, 400, *static_cast<OutputSocket*>(this->associatedSocket)));
+			return (setup_response(this->status, 400, *this->connection->getOutputSocket()));
 		}
 
 		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
 		{
 			add_line_headers(this->last_line, this->headers);
 			if (check_headers(this->headers) != SUCCESS)
-				return (setup_response(this->status, 400, *static_cast<OutputSocket*>(this->associatedSocket)));
+				return (setup_response(this->status, 400, *this->connection->getOutputSocket()));
 			this->last_line.clear();
 		}
 	}
@@ -80,7 +81,7 @@ static void	no_version(InputSocket& inputSocket, int& status)
 		}
 		else
 		{
-			return (setup_response(status, 400, *static_cast<OutputSocket*>(inputSocket.getAssociatedSocket())));
+			return (setup_response(status, 400, *inputSocket.getConnection()->getOutputSocket()));
 		}
 		return ;
 }

@@ -6,13 +6,14 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 16:10:49 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:54:06 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "ASocket.hpp"
 #include "HostList.hpp"
+#include "ListenSocket.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
 #include <algorithm>
@@ -21,6 +22,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include "Connection/Connection.hpp"
 
 Server::Server(char *config_file):
 	status(SUCCESS),
@@ -44,9 +46,9 @@ Server::Server(char *config_file):
 
 Server::~Server()
 {
-	for (size_t	i = 0; i < this->sockets.size(); i++)
+	for (size_t	i = 0; i < this->listenSockets.size(); i++)
 	{
-		delete (this->sockets[i]);
+		delete (this->listenSockets[i]);
 	}
 }
 
@@ -64,13 +66,35 @@ void	Server::setFailure(int value)
 }
 
 // function used to add the ASocket pointer 
-void	Server::add(ASocket* abstract_socket, int event_flags)
+void	Server::add(ListenSocket* newListenSocket)
 {
-	if (this->epoll.add(abstract_socket, event_flags) != SUCCESS)
+	if (this->epoll.add(newListenSocket, EPOLLIN) != SUCCESS)
 	{
 		std::cerr << "could not add FD to epoll interest list!\n";
 	}
-	this->sockets.push_back(abstract_socket);
+	this->listenSockets.push_back(newListenSocket);
+}
+
+void	Server::add(ASocket *abstractSocket, int event)
+{
+	if (this->epoll.add(abstractSocket, event) != SUCCESS)
+		std::cerr << "could not add FD to epoll interest list!\n";
+}
+
+void	Server::add(Connection* newConnection)
+{
+	this->connections.push_back(newConnection);
+}
+
+void	Server::remove(Connection* toBeDeleted)
+{
+	std::vector<Connection *>::iterator it;
+
+	it = std::find(this->connections.begin(), this->connections.end(), toBeDeleted);
+	if (it != this->connections.end())
+		this->connections.erase(it);
+
+	delete toBeDeleted;
 }
 
 int	Server::getEfd()
@@ -80,14 +104,7 @@ int	Server::getEfd()
 
 const HostList& Server::getHostList() const {return (this->host_list);};
 
-void	Server::remove(ASocket *asocket)
+void	Server::remove(ASocket *abstractSocket)
 {
-	this->epoll.remove(asocket);
-	std::vector<ASocket *>::iterator it;
-
-	it = std::find(this->sockets.begin(), this->sockets.end(), asocket);
-	if (it != this->sockets.end())
-		this->sockets.erase(it);
-
-	delete asocket;
+	this->epoll.remove(abstractSocket);
 }

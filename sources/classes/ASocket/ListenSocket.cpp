@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:31 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:18:16 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:46:50 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@
 #include <fcntl.h>
 
 ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
-	ASocket(server)
+	ASocket(NULL),
+	server(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
 

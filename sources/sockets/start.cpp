@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 17:35:57 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:56:34 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,8 @@ void	start(Server& server)
 						event->process();
 						if (event->fail())
 						{
-							server.remove(event);
+							if (event->getConnection() != NULL)
+								server.remove(event->getConnection());
 							break;
 						}
 					}

@@ -6,14 +6,13 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:14:12 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 17:50:04 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:52:11 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "sockets.hpp"
 #include "ListenSocket.hpp"
-#include "InputSocket.hpp"
-#include "OutputSocket.hpp"
+#include "Connection.hpp"
 #include "Server.hpp"
 #include "status.hpp"
 #include <netinet/in.h>
@@ -26,16 +25,16 @@ void	CreateFd(uint16_t port, uint32_t addr, Server& server)
 {
 	try
 	{
-		ListenSocket* fd = new ListenSocket(port, addr, server);
-		fd->activate();
-		if (fd->fail())
+		ListenSocket* listenSocket = new ListenSocket(port, addr, server);
+		listenSocket->activate();
+		if (listenSocket->fail())
 		{
 			server.setFailure(FAILURE);
-			delete fd;
+			delete listenSocket;
 		}
 		else
 		{
-			server.add(fd, EPOLLIN);
+			server.add(listenSocket);
 		}
 	}
 	catch (std::exception& e)
@@ -49,6 +48,9 @@ void	CreateFd(int socket_fd, uint16_t local_port, const struct sockaddr_in& addr
 {
 	try
 	{
+		Connection	*new_connection = new Connection(socket_fd, local_port, addr, server);
+		server.add(new_connection);
+		/*
 		OutputSocket * new_output_socket = new OutputSocket(socket_fd, server);
 		server.add(new_output_socket, EPOLLOUT);
 		std::cout << "added ouputsocket\n";
@@ -57,6 +59,7 @@ void	CreateFd(int socket_fd, uint16_t local_port, const struct sockaddr_in& addr
 		std::cout << "added inputsocket\n";
 		new_output_socket->setAssociatedSocket(new_input_socket);
 		new_input_socket->setAssociatedSocket(new_output_socket);
+		*/
 	}
 	catch (std::exception& e)
 	{

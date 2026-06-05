@@ -6,37 +6,37 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 17:01:33 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 15:44:18 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:56:10 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ASocket.hpp"
 #include "Server.hpp"
 #include "status.hpp"
+#include "Connection.hpp"
 #include <unistd.h>
 
-ASocket::ASocket(Server& server):
+ASocket::ASocket(Connection* connection):
 	fd(-1),
 	memoryUsage(0),
 	status(SUCCESS),
-	associatedSocket(NULL),	
-	server(server)
+	connection(connection)
 {
 }
 
 ASocket::~ASocket()
 {
 	close(this->fd);
-	if (this->associatedSocket != NULL)
-	{
-		this->associatedSocket->associatedSocket = NULL;
-		server.remove(this->associatedSocket);
-	}
 }
 
 int	ASocket::getFd() const
 {
 	return (this->fd);
+}
+
+Connection		*ASocket::getConnection()
+{
+	return (this->connection);
 }
 
 bool	ASocket::fail()
@@ -54,17 +54,6 @@ bool	ASocket::terminate()
 	else
 		return (false);
 }
-
-void	ASocket::setAssociatedSocket(ASocket *ptr)
-{
-	this->associatedSocket = ptr;
-}
-
-ASocket*	ASocket::getAssociatedSocket()
-{
-	return (this->associatedSocket);
-}
-
 
 int fill_last_line(const std::string &buf, std::string &last_line, size_t &start, int &state)
 {

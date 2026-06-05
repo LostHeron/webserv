@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 14:13:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:20:07 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:30:28 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-OutputSocket::OutputSocket(int socket_fd, Server& server):
-	ASocket(server),
+OutputSocket::OutputSocket(int socket_fd, Connection* connection):
+	ASocket(connection),
 	ressourceFd(-1),
 	ready(false),
 	isLastBuffer(false)
@@ -41,6 +41,9 @@ OutputSocket::OutputSocket(int socket_fd, Server& server):
 
 OutputSocket::~OutputSocket()
 {
+	if (this->ressourceFd >= 0)
+		close(this->ressourceFd);
+	this->ressourceFd = -1;
 }
 
 void	OutputSocket::setup(int newRessourceFd, const std::string& firstBuffer)

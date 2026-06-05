@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/02 18:54:23 by jweber            #+#    #+#              #
-#    Updated: 2026/06/02 18:54:30 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/05 14:21:30 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(CONNECTION_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
@@ -91,6 +92,9 @@ POSTREQ_FILES := 	POSTReq.cpp \
 UNKNOWNREQ_DIR := 	UNKNOWNReq/
 UNKNOWNREQ_FILES := UNKNOWNReq.cpp \
 
+CONNECTION_DIR := Connection/
+CONNECTION_FILES := Connection.cpp \
+
 ASOCKET_DIR := 	ASocket/
 ASOCKET_FILES := 	ASocket.cpp \
 					ListenSocket.cpp \
@@ -153,6 +157,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(PIPE_DIR), $(PIPE_FILES)) \
 				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
+				 $(addprefix $(CONNECTION_DIR), $(CONNECTION_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
 				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \

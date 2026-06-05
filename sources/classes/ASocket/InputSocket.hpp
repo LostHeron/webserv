@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 15:40:37 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 15:04:52 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,7 @@
 class InputSocket: public ASocket
 {
 	public:
-		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
-		InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
+		InputSocket(int fd, Connection* connection);
 		
 		~InputSocket();
 
@@ -40,6 +39,8 @@ class InputSocket: public ASocket
 		const string_map					&getHeaders(void) const;
 
 		void	process();
+
+		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
 		
 	protected:
 
@@ -52,10 +53,6 @@ class InputSocket: public ASocket
 		// used to know which state the program is in
 		std::string			input_buffer;
 		int					state;	
-
-		uint16_t			local_port;
-		uint16_t			peer_port;
-		uint8_t				addr[4];
 
 		// identify which method the client tries to reach
 		std::string					method;
@@ -83,8 +80,6 @@ class InputSocket: public ASocket
 		void						process_skip_sp(size_t& pos);
 		void						process_request(size_t& pos);
 
-		InCGI						*associatedInCgi;
-		OutCGI						*associatedOutCgi;
 		void						updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
 		void						prepareCGI(const std::string& script_name);
 };

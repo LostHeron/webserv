@@ -19,8 +19,8 @@
 #include <unistd.h>
 #include <cerrno>
 
-InCGI::InCGI(int fd, std::string& input_buffer, Server& server):
-	ASocket(server),
+InCGI::InCGI(int fd, std::string& input_buffer, Connection* connection):
+	ASocket(connection),
 	input_buffer(input_buffer)
 {
 	this->fd = dup(fd); 

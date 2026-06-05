@@ -19,7 +19,7 @@
 class InCGI: public ASocket
 {
 	public:
-		InCGI(int fd, std::string& input_buffer, Server& server);
+		InCGI(int fd, std::string& input_buffer, Connection* connection);
 		~InCGI();
 
 		void	process();
