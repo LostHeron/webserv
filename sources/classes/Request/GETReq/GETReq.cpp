@@ -55,16 +55,16 @@ Response	GETReq::execute(void)
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
 	std::pair<std::string, bool> configSetting = _vhost.getPathReq(this->_uri, this->_method);
-	const std::string path = configSetting.first;
+	const std::string resourcePath = configSetting.first;
 	// TEMP DEBUG
 	std::cout << "URI to fetch: " << this->_uri 
-		<< " for real path: " << path
+		<< " for real resourcePath: " << resourcePath
 		<< " for method: " << this->_method 
 		<< (configSetting.second ? " <ALLOWED>" : " <FORBIDEN>")
 		<< std::endl;
 	// TEMP DEBUG
 	
-	DIR	*directory = this->_tryOpenDirectory(path.c_str());
+	DIR	*directory = this->_tryOpenDirectory(resourcePath.c_str());
 	if (directory)	
 		resp.setContent(HTMLPageBuilder::dirListingPage(directory, this->_uri));
 	else
@@ -72,7 +72,7 @@ Response	GETReq::execute(void)
 		switch (errno)
 		{
 			case (ENOTDIR):
-				if ((resourceFd = this->_tryOpenFile(path.c_str())) >= 0)
+				if ((resourceFd = this->_tryOpenFile(resourcePath.c_str())) >= 0)
 					break;
 				__attribute__((fallthrough));
 			case (EACCES):
@@ -90,7 +90,7 @@ Response	GETReq::execute(void)
 	}
 
 	// metadata settings
-	resp.setResourceFd(resourceFd);
+	resp.setResource(resourceFd, resourcePath);
 	resp.setStatus(status);
 
 	return (resp);
