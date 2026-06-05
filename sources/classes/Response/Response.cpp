@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 # include "Response.hpp"
+# include "HTMLPageBuilder.hpp"
 
 // Construction/Destruction ====================================================
 Response::Response(const int fd):
@@ -18,6 +19,12 @@ Response::Response(const int fd):
 	_status(0),
 	_resourceFd(-1),
 	_content() {}
+
+Response::Response(uint16_t errCode):
+	AMessage(-1),
+	_status(errCode),
+	_resourceFd(-1),
+	_content(HTMLPageBuilder::errorPage(errCode)) {}
 
 Response::Response(const Response &cpy):
 	AMessage(cpy._fd),

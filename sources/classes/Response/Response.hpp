@@ -20,6 +20,7 @@ class	Response: public AMessage
 {
 	public:
 		Response(const int fd);
+		Response(uint16_t errCode);
 		Response(const Response &cpy);
 		~Response(void);
 
