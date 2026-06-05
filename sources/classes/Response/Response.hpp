@@ -24,20 +24,20 @@ class	Response: public AMessage
 		Response(const Response &cpy);
 		~Response(void);
 
-		Response			&operator=(const Response &assign);
+		Response							&operator=(const Response &assign);
 
-		const uint16_t		&getStatus(void) const;
-		const int			&getResourceFd(void) const;
-		const std::string	&getContent(void) const;
+		const uint16_t						&getStatus(void) const;
+		const std::pair<int, std::string>	&getResource(void) const;
+		const std::string					&getContent(void) const;
 
-		void				setStatus(const uint16_t &status);
-		void				setResourceFd(const int &resourceFd);
-		void				setContent(const std::string &content);
+		void								setStatus(const uint16_t &status);
+		void								setResource(const int fd, const std::string &path);
+		void								setContent(const std::string &content);
 
 	protected:
-		uint16_t			_status;
-		int					_resourceFd;
-		std::string			_content;
+		uint16_t							_status;
+		std::pair<int, std::string>			_resource;
+		std::string							_content;
 };
 
 #endif

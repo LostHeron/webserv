@@ -38,9 +38,6 @@ ARequest::~ARequest(void) {}
 ARequest			&ARequest::operator=(const ARequest &assign){ (void) assign; return (*this); }
 
 // // Setters =====================================================================
-// void	ARequest::setType(const std::string &type)		{ this->_type = type; }
-// void	ARequest::setHeader(const std::string &header) 	{ this->_header = header; }
-// void	ARequest::setBody(const std::string &body) 		{ this->_body = body; }
 
 
 // // Getters =====================================================================
