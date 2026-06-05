@@ -18,14 +18,19 @@
 #include "typedef.hpp"
 #include <string>
 
+class InputSocket;
+class OutputSocket;
+
 class OutCGI: public ASocket
 {
 	public:
-		OutCGI(int fd, Server& server);
+		OutCGI(int fd, InputSocket& is, OutputSocket& os, Server& server);
 		~OutCGI();
 
 		void process();
 		void process_headers(size_t &start);
+		void process_body(size_t &start);
+		void update_buffer();
 
 	protected:
 
@@ -34,10 +39,12 @@ class OutCGI: public ASocket
 		OutCGI(const OutCGI& other);
 		const OutCGI& operator=(const OutCGI& other);
 
-		int			state;
-		string_map	headers;
-		std::string cgi_out_buffer;
-		std::string last_line;
+		InputSocket		&is;
+		OutputSocket	&os;	
+		int				state;
+		string_map		headers;
+		std::string 	cgi_out_buffer;
+		std::string 	last_line;
 };
 
 

@@ -103,7 +103,6 @@ ASOCKET_FILES := 	ASocket.cpp \
 					InCGI.cpp \
 					OutCGI.cpp \
 					OutputSocket.cpp \
-					ToOutSocket.cpp \
 
 PIPE_DIR := Pipe/
 PIPE_FILES := Pipe.cpp \

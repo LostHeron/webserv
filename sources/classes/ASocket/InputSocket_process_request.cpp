@@ -13,7 +13,6 @@
 #include "HeadersBuilder.hpp"
 #include "InputSocket.hpp"
 #include "RequestFactory.hpp"
-#include "ToOutSocket.hpp"
 #include "VirtualHost.hpp"
 #include "OutputSocket.hpp"
 #include <sys/epoll.h>
@@ -42,30 +41,25 @@ void	InputSocket::process_request(size_t& pos)
 	delete req;
 	
 	bool iscgi = false;
+	//iscgi = true;
 	if (iscgi == true)
 	{
 		this->prepareCGI();
+		if (resp.getResourceFd() > 0)
+			close(resp.getResourceFd());
 	}
 	else
 	{
 		OutputSocket* os = static_cast<OutputSocket*>(this->associatedSocket);
 
 		HeadersBuilder	b;
-		os->getOutputBuffer() =  b.initialize()
-		 .buildStatusLine("HTTP/1.1", resp.getStatus())
-		 .buildDate()
-		 .buildCRLF()
-		 .buildBody(resp.getContent())
-		 .build();
+		b.initialize()
+			.buildStatusLine("HTTP/1.1", resp.getStatus())
+		 	.buildDate()
+		 	.buildCRLF()
+		 	.buildBody(resp.getContent());
 
-		if (resp.getResourceFd() < 0)
-			os->getIsLastBuffer() = true;
-		else
-		{
-			ToOutSocket *tos = new ToOutSocket(resp.getResourceFd(), os->getIsLastBuffer(), os->getOutputBuffer(), this->server);
-			this->server.add(tos, EPOLLIN);
-			this->associatedToOutSocket = tos;
-		}
+		os->setup(resp.getResourceFd(), b.build());
 	}
 	
 	this->state++;

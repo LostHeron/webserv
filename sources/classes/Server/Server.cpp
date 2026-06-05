@@ -68,10 +68,9 @@ void	Server::add(ASocket* abstract_socket, int event_flags)
 {
 	if (this->epoll.add(abstract_socket, event_flags) != SUCCESS)
 	{
-		this->nonBlockingsFds.push_back(abstract_socket);
+		std::cerr << "could not add FD to epoll interest list!\n";
 	}
-	else
-		this->sockets.push_back(abstract_socket);
+	this->sockets.push_back(abstract_socket);
 }
 
 int	Server::getEfd()
@@ -90,14 +89,5 @@ void	Server::remove(ASocket *asocket)
 	if (it != this->sockets.end())
 		this->sockets.erase(it);
 
-	it = std::find(this->nonBlockingsFds.begin(), this->nonBlockingsFds.end(), asocket);
-	if (it != this->nonBlockingsFds.end())
-		this->nonBlockingsFds.erase(it);
-
 	delete asocket;
-}
-
-std::vector<ASocket*>&	Server::getNonBlockingsFds()
-{
-	return (this->nonBlockingsFds);
 }
