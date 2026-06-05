@@ -89,6 +89,6 @@ class InputSocket: public ASocket
 		void						prepareCGI();
 };
 
-void	setup_response(int& status, int errorCode, InputSocket& is, OutputSocket& os);
+void	setup_response(int& status, int errorCode, OutputSocket& os);
 
 #endif

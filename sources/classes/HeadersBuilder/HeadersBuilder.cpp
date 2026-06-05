@@ -87,28 +87,10 @@ HeadersBuilder& HeadersBuilder::buildCRLF()
 	return (*this);
 }
 
-static std::string default_error_page(int errorCode);
-
-HeadersBuilder&	HeadersBuilder::buildBody(int errorCode)
-{
-	this->response.append(default_error_page(errorCode));
-	return (*this);
-}
-
 HeadersBuilder&	HeadersBuilder::buildBody(const std::string& content)
 {
 	this->response.append(content);
 	return (*this);
-}
-
-static std::string default_error_page(int errorCode)
-{
-	switch (errorCode) {
-		//case 200: return "OK";
-		case 400: return ERROR_PAGE_400;
-		//case 404: return ERROR_PAGE_404;
-		default: return "";
-	}
 }
 
 std::string	HeadersBuilder::build()

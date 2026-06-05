@@ -77,7 +77,7 @@ void OutCGI::process_headers(size_t &start)
 		if (fill_last_line(this->cgi_out_buffer, this->last_line, start, this->state) == STOP)
 		{
 			if (check_headers(this->headers) != SUCCESS)
-				return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->is, this->os));
+				return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->os));
 			// here we will leave this function, 
 			// so it's right now we MUST write all header informations 
 			// to buffer of OutputSocket:
@@ -96,7 +96,7 @@ void OutCGI::process_headers(size_t &start)
 
 		if (check_last_line(this->last_line) != SUCCESS)
 		{
-			return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->is, this->os));
+			return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->os));
 		}
 
 		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
@@ -138,7 +138,7 @@ void OutCGI::update_buffer()
 			// if nb_read is 0 and we still in state = 0
 			// then send internal
 			if (this->state == 0)
-				return (setup_response(status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, is, os));
+				return (setup_response(status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, os));
 			else
 				this->os.getIsLastBuffer() = true;
 		}

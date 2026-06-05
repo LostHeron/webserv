@@ -25,7 +25,7 @@ void	InputSocket::process_method(size_t& pos)
 		// no space found: add everything in the 'method' field
 		this->method.append(this->input_buffer);
 		if (check_method(this->method) != SUCCESS)
-			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
+			return (setup_response(this->status, 400, *static_cast<OutputSocket*>(this->associatedSocket)));
 		pos = this->input_buffer.size();
 		return ;
 	}
@@ -33,7 +33,7 @@ void	InputSocket::process_method(size_t& pos)
 	{
 		this->method.append(this->input_buffer, pos, space_pos - pos);
 		if (check_method(this->method) != SUCCESS)
-			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
+			return (setup_response(this->status, 400, *static_cast<OutputSocket*>(this->associatedSocket)));
 		else
 		{
 			this->state++;

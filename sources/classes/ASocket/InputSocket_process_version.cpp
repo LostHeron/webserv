@@ -35,7 +35,7 @@ void	InputSocket::process_version(size_t& pos)
 	{
 		this->version.append(this->input_buffer, pos, this->input_buffer.size() - pos);
 		if (this->version.size() > INPUTSOCKET_MAX_SIZE)
-			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
+			return (setup_response(this->status, 400, *static_cast<OutputSocket*>(this->associatedSocket)));
 		pos = this->input_buffer.size();
 	}
 	else
@@ -51,7 +51,7 @@ void	InputSocket::process_version(size_t& pos)
 		this->version.erase(trailing_space_pos, version.size() - trailing_space_pos);
 
 		if (check_version(this->method, this->version) != SUCCESS)
-			return (setup_response(this->status, 400, *this, *static_cast<OutputSocket*>(this->associatedSocket)));
+			return (setup_response(this->status, 400, *static_cast<OutputSocket*>(this->associatedSocket)));
 		this->state++;
 		pos = until;
 		if (pos < this->input_buffer.size())

@@ -13,8 +13,10 @@
 #include "HeadersBuilder.hpp"
 #include "InputSocket.hpp"
 #include "RequestFactory.hpp"
+#include "Response.hpp"
 #include "VirtualHost.hpp"
 #include "OutputSocket.hpp"
+#include <stdint.h>
 #include <sys/epoll.h>
 
 
@@ -41,7 +43,7 @@ void	InputSocket::process_request(size_t& pos)
 	delete req;
 	
 	bool iscgi = false;
-	//iscgi = true;
+	iscgi = true;
 	if (iscgi == true)
 	{
 		this->prepareCGI();

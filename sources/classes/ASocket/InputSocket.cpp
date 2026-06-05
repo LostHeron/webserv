@@ -11,11 +11,13 @@
 /* ************************************************************************** */
 
 #include "InputSocket.hpp"
+#include "HTTPStatus.hpp"
 #include "OutCGI.hpp"
 #include "OutputSocket.hpp"
 #include "IsChildren.hpp"
 #include "Pipe.hpp"
 #include "HeadersBuilder.hpp"
+#include "Response.hpp"
 #include "Server.hpp"
 #include "status.hpp"
 #include "error.hpp"
@@ -130,18 +132,17 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	}
 }
 
-void	setup_response(int& status, int errorCode, InputSocket& is, OutputSocket& os)
+void	setup_response(int& status, int errorCode, OutputSocket& os)
 {
-	(void) is;
+	Response resp(static_cast<uint16_t>(HTTPStatus::S_ERR + HTTPStatus::INTERNAL));
 	status = FINISH;
 	HeadersBuilder b;
-	os.getOutputBuffer() = b.initialize()
+	b.initialize()
 	 .buildStatusLine("HTTP/1.1", errorCode)
 	 .buildDate()
 	 .buildCRLF()
-	 .buildBody(errorCode)
-	 .build();
-	os.getIsLastBuffer() = true;
+	 .buildBody(resp.getContent());
+	os.setup(resp.getResourceFd(), b.build());
 }
 
 void	InputSocket::process_body(size_t& pos)
@@ -154,7 +155,7 @@ void	InputSocket::process_body(size_t& pos)
 
 void	InputSocket::prepareCGI()
 {
-	std::string script_name = "/home/jweber/goinfre/test.php";
+	std::string script_name = "/home/jweber/goinfre/test.sh";
 	char	*argv[2];
 	char	str[] = "";
 	argv[0] = str; 
