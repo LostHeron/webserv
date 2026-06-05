@@ -23,7 +23,7 @@ class	GETReq: public ARequest // only GET ?
 	public:
 		// GETReq(void);
 		// GETReq(const std::string &type, const std::string &header, const std::string &body);
-		GETReq(const ARequest &cpy);
+		GETReq(const ARequest &src);
 		GETReq(const GETReq &cpy);
 		~GETReq(void);
 
@@ -32,9 +32,10 @@ class	GETReq: public ARequest // only GET ?
 		Response		execute(void);
 
 	private:
-		int		_dirListing(DIR *dir) const;
-		DIR		*_tryOpenDirectory(const char *path) const;
-		int		_tryOpenFile(const char *path) const;
+		uint16_t	_fetchResource(std::pair<int, std::string> &resource, std::string &content) const;
+		int			_dirListing(DIR *dir) const;
+		DIR			*_tryOpenDirectory(const char *path) const;
+		int			_tryOpenFile(const char *path) const;
 };
 
 #endif
