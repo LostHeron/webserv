@@ -142,7 +142,7 @@ void	setup_response(int& status, int errorCode, OutputSocket& os)
 	 .buildDate()
 	 .buildCRLF()
 	 .buildBody(resp.getContent());
-	os.setup(resp.getResourceFd(), b.build());
+	os.setup(resp.getResource().first, b.build());
 }
 
 void	InputSocket::process_body(size_t& pos)
@@ -153,9 +153,9 @@ void	InputSocket::process_body(size_t& pos)
 }
 
 
-void	InputSocket::prepareCGI()
+void	InputSocket::prepareCGI(const std::string& script_name)
 {
-	std::string script_name = "/home/jweber/goinfre/test.sh";
+	//std::string script_name = "/home/jweber/goinfre/test.sh";
 	char	*argv[2];
 	char	str[] = "";
 	argv[0] = str; 

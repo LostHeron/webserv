@@ -46,9 +46,9 @@ void	InputSocket::process_request(size_t& pos)
 	iscgi = true;
 	if (iscgi == true)
 	{
-		this->prepareCGI();
-		if (resp.getResourceFd() > 0)
-			close(resp.getResourceFd());
+		this->prepareCGI(resp.getResource().second);
+		if (resp.getResource().first > 0)
+			close(resp.getResource().first);
 	}
 	else
 	{
@@ -61,7 +61,7 @@ void	InputSocket::process_request(size_t& pos)
 		 	.buildCRLF()
 		 	.buildBody(resp.getContent());
 
-		os->setup(resp.getResourceFd(), b.build());
+		os->setup(resp.getResource().first, b.build());
 	}
 	
 	this->state++;

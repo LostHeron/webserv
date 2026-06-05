@@ -86,7 +86,7 @@ class InputSocket: public ASocket
 		InCGI						*associatedInCgi;
 		OutCGI						*associatedOutCgi;
 		void						updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
-		void						prepareCGI();
+		void						prepareCGI(const std::string& script_name);
 };
 
 void	setup_response(int& status, int errorCode, OutputSocket& os);
