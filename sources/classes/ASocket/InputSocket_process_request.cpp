@@ -43,7 +43,7 @@ void	InputSocket::process_request(size_t& pos)
 	delete req;
 	
 	bool iscgi = false;
-	iscgi = true;
+	//iscgi = true;
 	if (iscgi == true)
 	{
 		this->prepareCGI(resp.getResource().second);
