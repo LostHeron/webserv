@@ -162,7 +162,6 @@ void	InputSocket::process_body(size_t& pos)
 
 void	InputSocket::prepareCGI(const std::string& script_name)
 {
-	//std::string script_name = "/home/jweber/goinfre/test.sh";
 	char	*argv[2];
 	char	str[] = "";
 	argv[0] = str; 
@@ -235,7 +234,13 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	}
 	else
 	{
-		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), this->input_buffer, this->connection);
+		size_t body_size;
+		char *end;
+		if (this->headers.count("content-length") == 1) // something wrong ?
+			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
+		else
+			body_size = 0;
+		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->input_buffer, this->connection);
 		this->connection->add(incgi, EPOLLOUT);
 		this->connection->setInCGI(incgi);
 		//this->server.add(incgi, EPOLLOUT);
