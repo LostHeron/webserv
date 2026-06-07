@@ -40,6 +40,8 @@ class Server
 		int				getEfd();
 		const HostList& getHostList() const;
 
+		std::vector<Connection*>&	getConnections();
+
 	protected:
 
 	private:

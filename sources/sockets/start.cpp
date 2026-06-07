@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "Connection/Connection.hpp"
 #include "IsChildren.hpp"
 #include "sockets.hpp"
 #include "ASocket.hpp"
@@ -18,10 +19,12 @@
 #include <cstring>
 #include <exception>
 #include <sys/epoll.h>
-#include <string>
 #include <cerrno>
 #include <iostream>
 #include <unistd.h>
+#include <vector>
+
+static void	timeout_connections(Server& server);
 
 #define EVENT_SIZE 50
 
@@ -31,7 +34,7 @@ void	start(Server& server)
 {
 	struct epoll_event events[EVENT_SIZE];
 	std::cout << "server is now running waiting for events\n";
-	while (run != 0)
+	while (run != STOP)
 	{
 		int nb_events = epoll_wait(server.getEfd(), events, EVENT_SIZE, -1);
 		#ifdef DEBUG
@@ -86,6 +89,7 @@ void	start(Server& server)
 					 * }
 					*/
 				}
+				timeout_connections(server);
 			}
 			catch (IsChildren& e)
 			{
@@ -96,5 +100,17 @@ void	start(Server& server)
 				break;
 			}
 		}
+	}
+}
+
+
+static void	timeout_connections(Server& server)
+{
+	time_t	current_time = time(NULL);
+	std::vector<Connection*>& connections = server.getConnections();
+	for (size_t i = 0; i < connections.size(); i++)
+	{
+		if (current_time - connections[i]->getStartTime() > TTL_CONNECTION)
+			server.remove(connections[i]);
 	}
 }

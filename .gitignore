@@ -6,4 +6,5 @@ webserv
 .gdb_history
 .cache/
 .gdbinit
+*.conf
 *.log

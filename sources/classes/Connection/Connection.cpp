@@ -12,10 +12,12 @@
 
 #include "Connection.hpp"
 #include "ASocket.hpp"
+#include <ctime>
 #include <netinet/ip.h>
 #include <sys/epoll.h>
 
 Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& newPeerAddr, Server& server):
+	startTime(time(NULL)),
 	peerPort(ntohs(newPeerAddr.sin_port)),
 	localPort(newLocalPort),
 	inputSocket(fd, this),
@@ -70,3 +72,5 @@ uint16_t		Connection::getPeerPort() {return (this->peerPort);}
 uint16_t		Connection::getLocalPort() {return (this->localPort);}
 
 const HostList& Connection::getHostList() const {return (this->server.getHostList());}
+
+time_t			Connection::getStartTime() const {return (this->startTime);}

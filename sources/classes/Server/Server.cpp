@@ -108,3 +108,8 @@ void	Server::remove(ASocket *abstractSocket)
 {
 	this->epoll.remove(abstractSocket);
 }
+
+std::vector<Connection*>&	Server::getConnections()
+{
+	return (this->connections);
+}

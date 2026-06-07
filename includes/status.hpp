@@ -24,6 +24,8 @@ enum {
 # define STOP 0
 # define CONTINUE 1
 
+# define TTL_CONNECTION 60
+
 extern int run;
 
 #endif

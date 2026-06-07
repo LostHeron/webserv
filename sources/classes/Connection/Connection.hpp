@@ -41,10 +41,15 @@ class Connection
 
 		const HostList& getHostList() const;
 
+		time_t			getStartTime() const;
+
 	private:
 		Connection();
 		Connection(const Connection& other);
 		const Connection& operator=(const Connection& other);
+
+		// used to timeout request
+		time_t			startTime;
 
 		uint8_t			peerAddr[4];
 		uint16_t		peerPort;
