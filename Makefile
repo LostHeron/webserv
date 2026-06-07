@@ -234,7 +234,7 @@ re:
 
 
 debug:
-	# rm webserv
+	rm webserv
 	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
 
 debug_clean:

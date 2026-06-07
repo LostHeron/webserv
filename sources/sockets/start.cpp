@@ -111,6 +111,9 @@ static void	timeout_connections(Server& server)
 	for (size_t i = 0; i < connections.size(); i++)
 	{
 		if (current_time - connections[i]->getStartTime() > TTL_CONNECTION)
+		{
+			std::cerr << "CONNECTION GETTING TIMEDOUT!!!\n";
 			server.remove(connections[i]);
+		}
 	}
 }

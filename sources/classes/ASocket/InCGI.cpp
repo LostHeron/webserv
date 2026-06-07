@@ -48,8 +48,10 @@ InCGI::InCGI(int fd, size_t bodySize, std::string& input_buffer, Connection* con
 
 void	InCGI::process()
 {
+	/*
 	if (this->status != SUCCESS)
 		return ;
+	*/
 	if (this->input_buffer.size() > 0)
 	{
 		size_t	tmp_size;
@@ -58,26 +60,29 @@ void	InCGI::process()
 		else
 			tmp_size = this->input_buffer.size();
 
-		ssize_t nb_write = write(this->fd, this->input_buffer.data(), tmp_size);
-		if (nb_write < 0)
+		if (tmp_size > 0)
 		{
-			int errno_value = errno;
-			logerror("write", errno_value);
-			std::cerr << "InCgi could not wrote to process\n";
-			return;
-		}
-		else
-		{
-			std::cout << "-->ACTION: InCgi wrote " << nb_write << " byte to pipe\n";
-			this->nbSent += nb_write;
-			this->input_buffer = std::string(this->input_buffer, nb_write);
-			if (this->nbSent >= this->nbToSend)
+			ssize_t nb_write = write(this->fd, this->input_buffer.data(), tmp_size);
+			if (nb_write < 0)
 			{
-				this->status = FINISH;
-				close(this->fd);
-				this->fd = -1;
+				int errno_value = errno;
+				logerror("write", errno_value);
+				std::cerr << "InCgi could not wrote to process\n";
+				return;
 			}
+			else
+			{
+				std::cout << "-->ACTION: InCgi wrote " << nb_write << " byte to pipe\n";
+				this->nbSent += nb_write;
+				this->input_buffer = std::string(this->input_buffer, nb_write);
+				if (this->nbSent >= this->nbToSend)
+				{
+					this->status = FINISH;
+					close(this->fd);
+					this->fd = -1;
+				}
 
+			}
 		}
 	}
 }
