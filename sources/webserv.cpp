@@ -32,16 +32,21 @@ int	main(int ac, char **av)
 		return (1);
 	}
 
-	if (ac != 2)
+	if (ac > 2)
 	{
-		std::cerr << "usage: ./webserv config_file\n";
+		std::cerr << "usage: ./webserv [config_file]\n";
 		return (1);
 	}
 	try
 	{	
 		//HostList	host_list(HostList::build(av[1]));	
 
-		Server server(av[1]);
+		char *filename;
+		if (ac == 1)
+			filename = (char *)"webserv.conf";
+		else
+			filename = av[1];
+		Server server(filename);
 		if (server.fail())
 		{
 			std::cerr << "could not launch server\n";
