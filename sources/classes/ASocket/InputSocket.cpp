@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <fcntl.h>
 #include <sstream>
+#include <stdexcept>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
@@ -47,6 +48,18 @@ InputSocket::InputSocket(int fd, Connection* connection):
 	state(0)
 {
 	this->fd = fd;
+	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+		//this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+		//this->status = FAILURE;
+	}
 	InputSocket::process_functions[0] = &InputSocket::process_method;
 	InputSocket::process_functions[1] = &InputSocket::process_skip_sp;
 	InputSocket::process_functions[2] = &InputSocket::process_uri;
@@ -224,10 +237,12 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	{
 		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), this->input_buffer, this->connection);
 		this->connection->add(incgi, EPOLLOUT);
+		this->connection->setInCGI(incgi);
 		//this->server.add(incgi, EPOLLOUT);
 
 		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), this->connection);
 		this->connection->add(outcgi, EPOLLIN);
+		this->connection->setOutCGI(outcgi);
 	}
 	return ;
 }

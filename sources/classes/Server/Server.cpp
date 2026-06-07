@@ -50,6 +50,10 @@ Server::~Server()
 	{
 		delete (this->listenSockets[i]);
 	}
+	for (size_t	i = 0; i < this->connections.size(); i++)
+	{
+		delete (this->connections[i]);
+	}
 }
 
 bool	Server::fail()

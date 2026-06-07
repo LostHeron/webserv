@@ -15,6 +15,7 @@
 #include "Server.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
+#include "error.hpp"
 #include <asm-generic/socket.h>
 #include <cstring>
 #include <sys/epoll.h>
@@ -31,6 +32,25 @@ ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
 	server(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->fd < 0)
+	{
+		// socket creation !
+		int error_value = errno;
+		logerror("socket", error_value);
+		this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	{
+		int	error_value = errno;
+		logerror("fcntl O_NONBLOCK", error_value);
+		this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int	error_value = errno;
+		logerror("fcntl FD_CLOEXEC", error_value);
+		this->status = FAILURE;
+	}
 
 	// to allow reusing the same port, should be disabled in prod ?
 	int	optval = 1;
@@ -40,19 +60,6 @@ ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
 		std::cerr << "error occured will trying to set SO_REUSEPORT!\n";
 	}
 
-	if (this->fd < 0)
-	{
-		// socket creation !
-		std::string error_msg(strerror(errno));
-		std::cerr << "socket: " << error_msg << "\n";
-		this->status = FAILURE;
-	}
-	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
-	{
-		std::string error_msg(strerror(errno));
-		std::cerr << "fcntl: " << error_msg << "\n";
-		this->status = FAILURE;
-	}
 
 	std::memset(&this->addr_data, 0, sizeof(addr_data));
 	this->addr_data.sin_family = AF_INET;

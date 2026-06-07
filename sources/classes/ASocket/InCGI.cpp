@@ -14,6 +14,7 @@
 #include "ASocket.hpp"
 #include "Server.hpp"
 #include "status.hpp"
+#include "error.hpp"
 #include <fcntl.h>
 #include <iostream>
 #include <unistd.h>
@@ -30,10 +31,18 @@ InCGI::InCGI(int fd, std::string& input_buffer, Connection* connection):
 		// throw an error ?
 	}
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
-		this->status = FAILURE;
+	{
+		int error_value = errno;
+		logerror("error_value", error_value);
+		//this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("error_value", error_value);
+		//this->status = FAILURE;
+	}
 }
-
-#include "error.hpp"
 
 void	InCGI::process()
 {

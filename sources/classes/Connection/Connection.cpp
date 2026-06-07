@@ -64,8 +64,12 @@ void	Connection::remove(ASocket* abstractSocket)
 
 InputSocket*	Connection::getInputSocket() {return (&this->inputSocket);}
 OutputSocket*	Connection::getOutputSocket() {return (&this->outputSocket);}
+
 InCGI*			Connection::getInCGI() {return (this->inCGI);}
+void			Connection::setInCGI(InCGI* icgi) {this->inCGI = icgi;}
+
 OutCGI*			Connection::getOutCGI(){return(this->outCGI);}
+void			Connection::setOutCGI(OutCGI* ocgi) {this->outCGI = ocgi;}
 
 uint8_t			*Connection::getPeerAddr() {return (this->peerAddr);}
 uint16_t		Connection::getPeerPort() {return (this->peerPort);}

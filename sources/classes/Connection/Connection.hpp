@@ -29,8 +29,12 @@ class Connection
 
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();
+
 		InCGI*			getInCGI();
+		void			setInCGI(InCGI*);
+
 		OutCGI*			getOutCGI();
+		void			setOutCGI(OutCGI*);
 
 		void			add(ASocket*, int event);
 		void			remove(ASocket*);

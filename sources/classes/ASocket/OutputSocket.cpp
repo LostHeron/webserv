@@ -21,6 +21,7 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 OutputSocket::OutputSocket(int socket_fd, Connection* connection):
 	ASocket(connection),
@@ -34,6 +35,16 @@ OutputSocket::OutputSocket(int socket_fd, Connection* connection):
 		std::cerr << "could not duplicate socket_fd\n";
 		this->status = FAILURE;
 		// throw ??
+	}
+	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+	}
+	else if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
 	}
 	else
 		std::cout << "successfully duplicated socket_fd\n";

@@ -36,7 +36,17 @@ OutCGI::OutCGI(int fd, Connection* connection):
 		// throw an error ?
 	}
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
 		this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+		this->status = FAILURE;
+	}
 }
 
 OutCGI::~OutCGI()
