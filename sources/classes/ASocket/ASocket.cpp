@@ -26,7 +26,9 @@ ASocket::ASocket(Connection* connection):
 
 ASocket::~ASocket()
 {
-	close(this->fd);
+	if (this->fd >= 0)
+		close(this->fd);
+	this->fd = -1;
 }
 
 int	ASocket::getFd() const
