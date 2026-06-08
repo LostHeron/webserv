@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/04 21:19:29 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/08 19:22:31 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ class VirtualHost
 					std::vector<std::string>	allowedRequest;
 					bool						allowDirList;
 					bool						cgi;
+					std::vector<std::string>	cgi_ext;
 				};
 			
 				Location(Location const& other);
@@ -71,6 +72,8 @@ class VirtualHost
 			std::map<int, std::string>						error;
 			std::map<std::string, VirtualHost::Location>	location;
 			bool											cgi;
+			std::vector<std::string>						cgi_ext;
+
 		};
 		
 		struct s_uriInfo

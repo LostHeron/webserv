@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:25:38 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/04 18:35:17 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/08 16:07:31 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # define HOST_ERROR_KEY "error"
 # define HOST_LOCATION_KEY "location"
 # define HOST_CGI_KEY "cgi"
+# define HOST_CGI_EXT_KEY "extension"
 # define ERROR_CODE_KEY "code"
 # define ERROR_PAGE_KEY "link"
 # define LOC_NAME_KEY "name"
@@ -35,6 +36,7 @@
 # define LOC_DIR_LIST_KEY "directory listing"
 # define LOC_ALLOWED_REQUEST_KEY "request"
 # define LOC_CGI_KEY "cgi"
+# define LOC_CGI_EXT_KEY "extension"
 
 # include <stdint.h>
 # include "VirtualHost.hpp"

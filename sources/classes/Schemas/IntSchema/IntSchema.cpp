@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:47:44 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/12 19:20:01 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/08 17:24:36 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,6 @@ void	IntSchema::setMax(int max)
 
 void	IntSchema::checkValue(JsonObj const& object) const
 {
-	if (object.getInt() < this->_min || object.getInt() > this->_max)
+	if (object.getVal<int>() < this->_min || object.getVal<int>() > this->_max)
 		throw std::invalid_argument("Object '" + this->getName() + "' has its value out of the expected range");
 }

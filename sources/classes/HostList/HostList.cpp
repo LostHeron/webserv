@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 15:32:26 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/22 16:09:37 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/08 17:25:09 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,13 @@ HostList    HostList::build(char const* filename)
 	
 	if (obj_map_it->second.getType() == JsonObj::ARRAY)
 	{
-		for (std::vector<JsonObj>::const_iterator it = obj_map_it->second.getArray().begin(); it != obj_map_it->second.getArray().end(); ++it)
+		for (std::vector<JsonObj>::const_iterator it = obj_map_it->second.getVal<JsonObj::Array>().begin(); it != obj_map_it->second.getVal<JsonObj::Array>().end(); ++it)
 		{
-			addHost(VirtualHost::build(it->getSubObj()), host_list._map);
+			addHost(VirtualHost::build(it->getVal<JsonObj::SubObj>()), host_list._map);
 		}
 	}
 	else
-		addHost(VirtualHost::build(obj_map_it->second.getSubObj()), host_list._map);
+		addHost(VirtualHost::build(obj_map_it->second.getVal<JsonObj::SubObj>()), host_list._map);
 	return (host_list);
 }
 

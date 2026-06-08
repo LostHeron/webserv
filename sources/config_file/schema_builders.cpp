@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/04 18:32:49 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/08 16:09:50 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,11 @@ void	host_schema_builder(ObjSchema& host_schema)
 	location_schema_builder(*location_schema);
 	host_schema.addField(location_schema);
 	host_schema.addField(new BoolSchema(HOST_CGI_KEY, false, false));
+
+	StringSchema*	cgi_ext_schema = new StringSchema(HOST_CGI_EXT_KEY, false, true);
+
+	cgi_ext_schema->addValidator(non_empty_validator);
+	host_schema.addField(cgi_ext_schema);
 }
 
 static void	error_page_schema_builder(ObjSchema& error_schema)
@@ -114,5 +119,10 @@ static void	location_schema_builder(ObjSchema& location_schema)
 	location_schema.addField(allowed_requests_schema);
 	location_schema.addField(new BoolSchema(LOC_DIR_LIST_KEY, false, false));
 	location_schema.addField(new BoolSchema(LOC_CGI_KEY, false, false));
+
+	StringSchema*	cgi_ext_schema = new StringSchema(HOST_CGI_EXT_KEY, false, true);
+
+	cgi_ext_schema->addValidator(non_empty_validator);
+	location_schema.addField(cgi_ext_schema);
 }
 
