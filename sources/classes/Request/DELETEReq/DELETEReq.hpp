@@ -27,6 +27,9 @@ class	DELETEReq: public ARequest // only DELETE ?
 		// DELETEReq		&operator=(const DELETEReq &assign);
 
 		Response		execute(void);
+
+	private:
+		uint16_t	_removeResource(std::pair<int, std::string> &resource) const;
 };
 
 #endif

@@ -2,11 +2,6 @@
 "host":{
     "listen": 8080,
     "name": "test",
-    "root": "/",
-	"location": 
-		{
-			"name":"/",
-			"alias":"/home/abetemps/",
-			"allowed_methods":["GET"]
-		}
+    "root": "/home/abetemps",
+	"allowed methods":["GET", "DELETE"]
 }

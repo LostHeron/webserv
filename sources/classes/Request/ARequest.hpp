@@ -17,7 +17,7 @@
 # include "Response.hpp"
 # include "InputSocket.hpp"
 # include "VirtualHost.hpp"
-# include <vector>
+# include <errno.h>
 # include <unistd.h>
 # include <fcntl.h>
 
@@ -38,7 +38,7 @@ class	ARequest: public AMessage
 
 		ARequest							&operator=(const ARequest &assign);
                                 			
-		virtual Response					execute(void) = 0; // instant execute immediate actions, then build Response according to execution metadata, status...
+		virtual Response					execute(void) = 0;
 
 		const std::string										&getMethod(void) const;
 		const std::string										&getUri(void) const;
@@ -61,7 +61,6 @@ class	ARequest: public AMessage
 		const std::string				  	_version;
 		const string_map					_header;
 
-		// int									&_getError()
 };
 
 #endif
