@@ -45,14 +45,12 @@ ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
 		logerror("fcntl O_NONBLOCK", error_value);
 		this->status = FAILURE;
 	}
-	/*
 	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
 	{
 		int	error_value = errno;
 		logerror("fcntl FD_CLOEXEC", error_value);
 		this->status = FAILURE;
 	}
-	*/
 
 	// to allow reusing the same port, should be disabled in prod ?
 	int	optval = 1;

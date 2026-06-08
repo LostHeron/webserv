@@ -31,14 +31,12 @@ EpollStruct::EpollStruct()
 		logerror("epoll_create", error_value);
 		this->status = FAILURE;
 	}
-	/*
 	if (fcntl(this->epfd, F_SETFD, FD_CLOEXEC) < 0)
 	{
 		int	error_value = errno;
 		logerror("epoll_create", error_value);
 		this->status = FAILURE;
 	}
-	*/
 }
 
 EpollStruct::~EpollStruct()

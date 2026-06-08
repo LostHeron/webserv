@@ -35,7 +35,6 @@ OutCGI::OutCGI(int fd, Connection* connection):
 		// TODO DANGER, what happens if dup fails ?
 		// throw an error ?
 	}
-	/*
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		int error_value = errno;
@@ -48,7 +47,6 @@ OutCGI::OutCGI(int fd, Connection* connection):
 		logerror("fcntl", error_value);
 		this->status = FAILURE;
 	}
-	*/
 }
 
 OutCGI::~OutCGI()

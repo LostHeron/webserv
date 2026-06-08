@@ -43,8 +43,8 @@ Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& 
 Connection::~Connection()
 {
 	std::cout << "IN CONNECTION DESTRUCTOR\n";
-	this->server.remove(&inputSocket);
-	this->server.remove(&outputSocket);
+	//this->server.remove(&inputSocket);
+	//this->server.remove(&outputSocket);
 
 	if (this->inCGI != NULL)
 		this->server.remove(this->inCGI);

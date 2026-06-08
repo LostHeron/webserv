@@ -48,7 +48,6 @@ InputSocket::InputSocket(int fd, Connection* connection):
 	state(0)
 {
 	this->fd = fd;
-	/*
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
 	{
 		int error_value = errno;
@@ -61,7 +60,6 @@ InputSocket::InputSocket(int fd, Connection* connection):
 		logerror("fcntl", error_value);
 		//this->status = FAILURE;
 	}
-	*/
 	InputSocket::process_functions[0] = &InputSocket::process_method;
 	InputSocket::process_functions[1] = &InputSocket::process_skip_sp;
 	InputSocket::process_functions[2] = &InputSocket::process_uri;
@@ -379,7 +377,10 @@ void	InputSocket::process_skip_sp(size_t& pos)
 	// std::cout << "in process skip spaces\n";
 	size_t	non_sp_pos = this->input_buffer.find_first_not_of(" ", pos);
 	if (non_sp_pos == this->input_buffer.npos)
+	{
+		pos = non_sp_pos;
 		return ;
+	}
 	this->state++;
 	pos = non_sp_pos;
 	if (pos < this->input_buffer.size())

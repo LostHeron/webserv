@@ -90,6 +90,7 @@ void	start(Server& server)
 					*/
 				}
 				timeout_connections(server);
+				(void) timeout_connections;
 			}
 			catch (IsChildren& e)
 			{
