@@ -13,11 +13,13 @@
 #include "Connection.hpp"
 #include "ASocket.hpp"
 #include "typedef.hpp"
+#include "error.hpp"
+#include <cerrno>
+#include <csignal>
 #include <ctime>
 #include <iostream>
 #include <netinet/ip.h>
 #include <sys/epoll.h>
-#include <vector>
 
 Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& newPeerAddr, Server& server):
 	startTime(time(NULL)),
@@ -26,6 +28,7 @@ Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& 
 	localPort(newLocalPort),
 	inputSocket(fd, this),
 	outputSocket(fd, this),
+	cgiPid(-1),
 	inCGI(NULL),
 	outCGI(NULL),
 	server(server)
@@ -46,6 +49,15 @@ Connection::~Connection()
 	//this->server.remove(&inputSocket);
 	//this->server.remove(&outputSocket);
 
+	if (this->cgiPid > 0)
+	{
+		if (kill(this->cgiPid, SIGTERM) < 0)
+		{
+			int	error_value = errno;
+			logerror("kill", error_value);
+		}
+		this->cgiPid = -1;
+	}
 	if (this->inCGI != NULL)
 		this->server.remove(this->inCGI);
 	delete this->inCGI;
@@ -64,6 +76,14 @@ void	Connection::add(ASocket* abstractSocket, int event)
 
 void	Connection::remove(ASocket* abstractSocket)
 {
+	if (this->cgiPid > 0)
+	{
+		if (kill(this->cgiPid, SIGTERM) < 0)
+		{
+			int	error_value = errno;
+			logerror("kill", error_value);
+		}
+	}
 	this->server.remove(abstractSocket);
 }
 
@@ -75,6 +95,9 @@ void			Connection::setInCGI(InCGI* icgi) {this->inCGI = icgi;}
 
 OutCGI*			Connection::getOutCGI(){return(this->outCGI);}
 void			Connection::setOutCGI(OutCGI* ocgi) {this->outCGI = ocgi;}
+
+int				Connection::getCgiPid() {return (this->cgiPid);}
+void			Connection::setCgiPid(int pid) {this->cgiPid = pid;}
 
 uint8_t			*Connection::getPeerAddr() {return (this->peerAddr);}
 uint16_t		Connection::getPeerPort() {return (this->peerPort);}

@@ -136,7 +136,7 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 void	setup_response(int& status, int errorCode, Connection* connection)
 {
 	connection->setVHost();
-	Response resp(HTTPStatus::S_ERR + HTTPStatus::INTERNAL, *(connection->getVHost()) );
+	Response resp(errorCode, *(connection->getVHost()) );
 	status = FINISH;
 	HeadersBuilder b;
 	b.initialize()
@@ -173,7 +173,6 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 		this->status = FAILURE;
 		return ;
 	}
-
 	if (pid == 0)
 	{
 		//here is the child !
@@ -229,6 +228,7 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	}
 	else
 	{
+		this->getConnection()->setCgiPid(pid);
 		size_t body_size;
 		char *end;
 		if (this->headers.count("content-length") == 1) // something wrong ?

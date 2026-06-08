@@ -37,6 +37,9 @@ class Connection
 		OutCGI*			getOutCGI();
 		void			setOutCGI(OutCGI*);
 
+		int				getCgiPid();
+		void			setCgiPid(int pid);
+
 		void			add(ASocket*, int event);
 		void			remove(ASocket*);
 
@@ -68,6 +71,7 @@ class Connection
 		InputSocket			inputSocket;
 		OutputSocket		outputSocket;
 
+		int					cgiPid;
 		InCGI				*inCGI;
 		OutCGI				*outCGI;
 

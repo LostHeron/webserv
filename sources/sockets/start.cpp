@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "Connection/Connection.hpp"
+#include "HTTPStatus.hpp"
+#include "InputSocket.hpp"
 #include "IsChildren.hpp"
 #include "sockets.hpp"
 #include "ASocket.hpp"
@@ -114,7 +116,8 @@ static void	timeout_connections(Server& server)
 		if (current_time - connections[i]->getStartTime() > TTL_CONNECTION)
 		{
 			std::cerr << "CONNECTION GETTING TIMEDOUT!!!\n";
-			server.remove(connections[i]);
+			int	a;
+			setup_response(a, HTTPStatus::C_ERR + HTTPStatus::TIMEOUT, connections[i]);
 		}
 	}
 }
