@@ -46,6 +46,7 @@ Server::Server(char *config_file):
 
 Server::~Server()
 {
+	std::cout << "In SERVER DESTRUCTOR\n";
 	for (size_t	i = 0; i < this->listenSockets.size(); i++)
 	{
 		delete (this->listenSockets[i]);
@@ -92,6 +93,7 @@ void	Server::add(Connection* newConnection)
 
 void	Server::remove(Connection* toBeDeleted)
 {
+	std::cout << "REMOVING A CONNECTION !!\n";
 	std::vector<Connection *>::iterator it;
 
 	it = std::find(this->connections.begin(), this->connections.end(), toBeDeleted);

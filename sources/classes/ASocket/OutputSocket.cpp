@@ -36,6 +36,7 @@ OutputSocket::OutputSocket(int socket_fd, Connection* connection):
 		this->status = FAILURE;
 		// throw ??
 	}
+	/*
 	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		int error_value = errno;
@@ -46,12 +47,14 @@ OutputSocket::OutputSocket(int socket_fd, Connection* connection):
 		int error_value = errno;
 		logerror("fcntl", error_value);
 	}
+	*/
 	else
 		std::cout << "successfully duplicated socket_fd\n";
 }
 
 OutputSocket::~OutputSocket()
 {
+	std::cout << "In Outputsocket destructor\n";
 	if (this->ressourceFd >= 0)
 		close(this->ressourceFd);
 	this->ressourceFd = -1;

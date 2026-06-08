@@ -48,6 +48,7 @@ InputSocket::InputSocket(int fd, Connection* connection):
 	state(0)
 {
 	this->fd = fd;
+	/*
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
 	{
 		int error_value = errno;
@@ -60,6 +61,7 @@ InputSocket::InputSocket(int fd, Connection* connection):
 		logerror("fcntl", error_value);
 		//this->status = FAILURE;
 	}
+	*/
 	InputSocket::process_functions[0] = &InputSocket::process_method;
 	InputSocket::process_functions[1] = &InputSocket::process_skip_sp;
 	InputSocket::process_functions[2] = &InputSocket::process_uri;
@@ -72,28 +74,22 @@ InputSocket::InputSocket(int fd, Connection* connection):
 
 InputSocket::~InputSocket()
 {
-	/*
-	if (associatedInCgi != NULL)
-		this->server.remove(this->associatedInCgi);
-	this->associatedInCgi = NULL;
-	if (associatedOutCgi != NULL)
-		this->server.remove(this->associatedOutCgi);
-	this->associatedOutCgi = NULL;
-	*/
+	std::cout << "In InputSocket Destructor\n";
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
 const std::string					&InputSocket::getUri(void) const { return(this->uri); }
 const std::string					&InputSocket::getVersion(void) const { return(this->version); }
 const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
+string_map							&InputSocket::getHeadersNoConst(void) { return(this->headers); }
 
 void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
 
 void InputSocket::process()
 {
+	std::cout << "in InputSocket process()\n";
 	if (this->status != SUCCESS)
 		return ;
-	std::cout << "in InputSocket process()\n";
 	updateInputBuffer(this->input_buffer, this->fd, this->status);
 	if (this->status != SUCCESS)
 		return ;
@@ -139,9 +135,10 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	}
 }
 
-void	setup_response(int& status, int errorCode, OutputSocket& os)
+void	setup_response(int& status, int errorCode, Connection* connection)
 {
-	Response resp(static_cast<uint16_t>(HTTPStatus::S_ERR + HTTPStatus::INTERNAL));
+	connection->setVHost();
+	Response resp(HTTPStatus::S_ERR + HTTPStatus::INTERNAL, *(connection->getVHost()) );
 	status = FINISH;
 	HeadersBuilder b;
 	b.initialize()
@@ -149,7 +146,7 @@ void	setup_response(int& status, int errorCode, OutputSocket& os)
 	 .buildDate()
 	 .buildCRLF()
 	 .buildBody(resp.getContent());
-	os.setup(resp.getResource().first, b.build());
+	connection->getOutputSocket()->setup(resp.getResource().first, b.build());
 }
 
 void	InputSocket::process_body(size_t& pos)
@@ -243,7 +240,6 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->input_buffer, this->connection);
 		this->connection->add(incgi, EPOLLOUT);
 		this->connection->setInCGI(incgi);
-		//this->server.add(incgi, EPOLLOUT);
 
 		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), this->connection);
 		this->connection->add(outcgi, EPOLLIN);

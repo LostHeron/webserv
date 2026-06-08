@@ -33,10 +33,11 @@ class InputSocket: public ASocket
 		
 		~InputSocket();
 
-		const std::string					&getMethod(void) const;
-		const std::string					&getUri(void) const;
-		const std::string					&getVersion(void) const;
-		const string_map					&getHeaders(void) const;
+		const std::string	&getMethod(void) const;
+		const std::string	&getUri(void) const;
+		const std::string	&getVersion(void) const;
+		const string_map	&getHeaders(void) const;
+		string_map			&getHeadersNoConst(void);
 
 		void	process();
 
@@ -84,6 +85,6 @@ class InputSocket: public ASocket
 		void						prepareCGI(const std::string& script_name);
 };
 
-void	setup_response(int& status, int errorCode, OutputSocket& os);
+void	setup_response(int& status, int errorCode, Connection *connection);
 
 #endif

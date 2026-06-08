@@ -35,6 +35,7 @@ OutCGI::OutCGI(int fd, Connection* connection):
 		// TODO DANGER, what happens if dup fails ?
 		// throw an error ?
 	}
+	/*
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		int error_value = errno;
@@ -47,15 +48,18 @@ OutCGI::OutCGI(int fd, Connection* connection):
 		logerror("fcntl", error_value);
 		this->status = FAILURE;
 	}
+	*/
 }
 
 OutCGI::~OutCGI()
 {
+	std::cout << "In OUTCGI Destructor\n";
 }
 
 
 void OutCGI::process()
 {
+	std::cout << "In OutCGI process\n";
 	if (this->status == FINISH)
 		return ;
 	this->update_buffer();
@@ -85,7 +89,7 @@ void OutCGI::process_headers(size_t &start)
 		if (fill_last_line(this->cgi_out_buffer, this->last_line, start, this->state) == STOP)
 		{
 			if (check_headers(this->headers) != SUCCESS)
-				return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, *this->connection->getOutputSocket()));
+				return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->connection));
 			// here we will leave this function, 
 			// so it's right now we MUST write all header informations 
 			// to buffer of OutputSocket:
@@ -104,7 +108,7 @@ void OutCGI::process_headers(size_t &start)
 
 		if (check_last_line(this->last_line) != SUCCESS)
 		{
-			return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, *this->connection->getOutputSocket()));
+			return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->connection));
 		}
 
 		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
@@ -146,7 +150,7 @@ void OutCGI::update_buffer()
 			// if nb_read is 0 and we still in state = 0
 			// then send internal
 			if (this->state == 0)
-				return (setup_response(status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, *this->connection->getOutputSocket()));
+				return (setup_response(status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->connection));
 			else
 				this->connection->getOutputSocket()->getIsLastBuffer() = true;
 		}

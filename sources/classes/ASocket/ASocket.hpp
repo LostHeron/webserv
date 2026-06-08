@@ -56,6 +56,7 @@ class ASocket
 		Connection*	connection;
 
 	private:
+		ASocket();
 		ASocket(const ASocket& other);
 		ASocket& operator=(const ASocket& other);
 };

@@ -32,6 +32,7 @@ InCGI::InCGI(int fd, size_t bodySize, std::string& input_buffer, Connection* con
 		// TODO DANGER, what happens if dup fails ?
 		// throw an error ?
 	}
+	/*
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		int error_value = errno;
@@ -44,10 +45,12 @@ InCGI::InCGI(int fd, size_t bodySize, std::string& input_buffer, Connection* con
 		logerror("error_value", error_value);
 		//this->status = FAILURE;
 	}
+	*/
 }
 
 void	InCGI::process()
 {
+	std::cout << "In InCGI process\n";
 	/*
 	if (this->status != SUCCESS)
 		return ;
@@ -89,4 +92,5 @@ void	InCGI::process()
 
 InCGI::~InCGI()
 {
+	std::cout << "In INCGI DESTRUCTOR\n";
 }

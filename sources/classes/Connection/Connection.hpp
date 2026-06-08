@@ -20,6 +20,7 @@
 #include "OutCGI.hpp"
 #include "OutCGI.hpp"
 #include "OutputSocket.hpp"
+#include "VirtualHost.hpp"
 
 class Connection
 {
@@ -47,25 +48,30 @@ class Connection
 
 		time_t			getStartTime() const;
 
+		const VirtualHost	*getVHost();
+		void				setVHost();
+
 	private:
 		Connection();
 		Connection(const Connection& other);
 		const Connection& operator=(const Connection& other);
 
 		// used to timeout request
-		time_t			startTime;
+		time_t				startTime;
 
-		uint8_t			peerAddr[4];
-		uint16_t		peerPort;
-		uint16_t		localPort;
+		const VirtualHost	*vHost;
 
-		InputSocket		inputSocket;
-		OutputSocket	outputSocket;
+		uint8_t				peerAddr[4];
+		uint16_t			peerPort;
+		uint16_t			localPort;
 
-		InCGI			*inCGI;
-		OutCGI			*outCGI;
+		InputSocket			inputSocket;
+		OutputSocket		outputSocket;
 
-		Server&			server;
+		InCGI				*inCGI;
+		OutCGI				*outCGI;
+
+		Server&				server;
 };
 
 #endif

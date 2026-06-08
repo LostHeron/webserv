@@ -12,12 +12,16 @@
 
 #include "Connection.hpp"
 #include "ASocket.hpp"
+#include "typedef.hpp"
 #include <ctime>
+#include <iostream>
 #include <netinet/ip.h>
 #include <sys/epoll.h>
+#include <vector>
 
 Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& newPeerAddr, Server& server):
 	startTime(time(NULL)),
+	vHost(NULL),
 	peerPort(ntohs(newPeerAddr.sin_port)),
 	localPort(newLocalPort),
 	inputSocket(fd, this),
@@ -32,12 +36,13 @@ Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& 
 		this->peerAddr[i] = ( reinterpret_cast<uint8_t *>(&addrh) )[i];
 	}
 
-	this->server.add(&inputSocket, EPOLLIN);
-	this->server.add(&outputSocket, EPOLLOUT);
+	this->server.add(&this->inputSocket, EPOLLIN);
+	this->server.add(&this->outputSocket, EPOLLOUT);
 }
 
 Connection::~Connection()
 {
+	std::cout << "IN CONNECTION DESTRUCTOR\n";
 	this->server.remove(&inputSocket);
 	this->server.remove(&outputSocket);
 
@@ -78,3 +83,21 @@ uint16_t		Connection::getLocalPort() {return (this->localPort);}
 const HostList& Connection::getHostList() const {return (this->server.getHostList());}
 
 time_t			Connection::getStartTime() const {return (this->startTime);}
+
+const VirtualHost		*Connection::getVHost()
+{
+	return (this->vHost);
+}
+
+void			Connection::setVHost()
+{
+	std::string	requested_host_name;
+	string_map&	headers = this->getInputSocket()->getHeadersNoConst();
+	if (headers.count("host") == 1 && headers["host"].size() > 0)
+		requested_host_name = headers["host"].at(0);
+	else
+		requested_host_name = "";
+
+	this->vHost = &this->getHostList().getHost(this->localPort, requested_host_name);
+	return;
+}
