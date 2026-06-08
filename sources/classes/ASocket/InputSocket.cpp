@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 17:38:19 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 15:05:42 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,12 @@
 #include "Server.hpp"
 #include "status.hpp"
 #include "error.hpp"
+#include "Connection/Connection.hpp"
 #include <cctype>
 #include <cstddef>
 #include <fcntl.h>
 #include <sstream>
+#include <stdexcept>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
@@ -41,20 +43,23 @@
 #include <iostream>
 #include <vector>
 
-InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server):
-	ASocket(server),
-	state(0),
-	local_port(local_port),
-	peer_port(ntohs(addr.sin_port)),
-	associatedInCgi(NULL),
-	associatedOutCgi(NULL)
+InputSocket::InputSocket(int fd, Connection* connection):
+	ASocket(connection),
+	state(0)
 {
-	uint32_t addrh = (addr.sin_addr.s_addr);
-	for (int i = 0; i < 4; i++)
-	{
-		this->addr[i] = ( reinterpret_cast<uint8_t *>(&addrh) )[i];
-	}
 	this->fd = fd;
+	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+		//this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+		//this->status = FAILURE;
+	}
 	InputSocket::process_functions[0] = &InputSocket::process_method;
 	InputSocket::process_functions[1] = &InputSocket::process_skip_sp;
 	InputSocket::process_functions[2] = &InputSocket::process_uri;
@@ -67,12 +72,14 @@ InputSocket::InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& 
 
 InputSocket::~InputSocket()
 {
+	/*
 	if (associatedInCgi != NULL)
 		this->server.remove(this->associatedInCgi);
 	this->associatedInCgi = NULL;
 	if (associatedOutCgi != NULL)
 		this->server.remove(this->associatedOutCgi);
 	this->associatedOutCgi = NULL;
+	*/
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
@@ -155,7 +162,6 @@ void	InputSocket::process_body(size_t& pos)
 
 void	InputSocket::prepareCGI(const std::string& script_name)
 {
-	//std::string script_name = "/home/jweber/goinfre/test.sh";
 	char	*argv[2];
 	char	str[] = "";
 	argv[0] = str; 
@@ -228,13 +234,20 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	}
 	else
 	{
-		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), this->input_buffer, this->server);
-		this->associatedInCgi = incgi;
-		this->server.add(incgi, EPOLLOUT);
+		size_t body_size;
+		char *end;
+		if (this->headers.count("content-length") == 1) // something wrong ?
+			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
+		else
+			body_size = 0;
+		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->input_buffer, this->connection);
+		this->connection->add(incgi, EPOLLOUT);
+		this->connection->setInCGI(incgi);
+		//this->server.add(incgi, EPOLLOUT);
 
-		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), *this, *static_cast<OutputSocket*>(this->associatedSocket), this->server);
-		this->associatedOutCgi = outcgi;
-		this->server.add(outcgi, EPOLLIN);
+		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), this->connection);
+		this->connection->add(outcgi, EPOLLIN);
+		this->connection->setOutCGI(outcgi);
 	}
 	return ;
 }
@@ -288,10 +301,10 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	str = "QUERY_STRING=" + this->query_string;
 	vec_envp.push_back(str);
 
-	str = "REMOTE_ADDR=" + get_IPv4_string_format(this->addr);
+	str = "REMOTE_ADDR=" + get_IPv4_string_format(this->connection->getPeerAddr());
 	vec_envp.push_back(str);
 
-	str = "REMOTE_PORT=" + get_port_string_format(this->peer_port);
+	str = "REMOTE_PORT=" + get_port_string_format(this->connection->getPeerPort());
 	vec_envp.push_back(str);
 
 	str = "REQUEST_METHOD=" + this->method;
@@ -306,7 +319,7 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	str = "SERVER_NAME=???"; // should retrived the vhost name
 	vec_envp.push_back(str);
 
-	str = "SERVER_PORT=" + get_port_string_format(this->local_port);
+	str = "SERVER_PORT=" + get_port_string_format(this->connection->getLocalPort());
 	vec_envp.push_back(str);
 
 	str = "SERVER_PROTOCOLE=HTTP/1.1";
@@ -383,11 +396,11 @@ std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)
 	os << "connection: ";
 	for (int i = 0; i < 4; i++)
 	{
-		os << static_cast<int>(inputSocket.addr[i]);
+		os << static_cast<int>(inputSocket.connection->getPeerAddr()[i]);
 		if (i != 3)
 			os << ".";
 	}
-	os << ":" << inputSocket.peer_port << ";\n";
+	os << ":" << inputSocket.connection->getPeerPort() << ";\n";
 	os << "current buffer contains: '" << inputSocket.input_buffer << "'\n";
 	os << "method: '" << inputSocket.method << "'; ";
 	os << "uri: '" << inputSocket.uri << "'; ";
@@ -404,11 +417,6 @@ std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)
 		os << "\n";
 	}
 	os << "----------------------\n";
-	/*
-	os << "body:\n";
-	os << inputSocket.body;
-	os << "\n";
-	*/
 	return (os);
 }
 

@@ -6,10 +6,11 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 17:35:57 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:56:34 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "Connection/Connection.hpp"
 #include "IsChildren.hpp"
 #include "sockets.hpp"
 #include "ASocket.hpp"
@@ -18,10 +19,12 @@
 #include <cstring>
 #include <exception>
 #include <sys/epoll.h>
-#include <string>
 #include <cerrno>
 #include <iostream>
 #include <unistd.h>
+#include <vector>
+
+static void	timeout_connections(Server& server);
 
 #define EVENT_SIZE 50
 
@@ -31,7 +34,7 @@ void	start(Server& server)
 {
 	struct epoll_event events[EVENT_SIZE];
 	std::cout << "server is now running waiting for events\n";
-	while (run != 0)
+	while (run != STOP)
 	{
 		int nb_events = epoll_wait(server.getEfd(), events, EVENT_SIZE, -1);
 		#ifdef DEBUG
@@ -55,7 +58,8 @@ void	start(Server& server)
 						event->process();
 						if (event->fail())
 						{
-							server.remove(event);
+							if (event->getConnection() != NULL)
+								server.remove(event->getConnection());
 							break;
 						}
 					}
@@ -85,6 +89,7 @@ void	start(Server& server)
 					 * }
 					*/
 				}
+				timeout_connections(server);
 			}
 			catch (IsChildren& e)
 			{
@@ -94,6 +99,21 @@ void	start(Server& server)
 					"it might not work with only that throw though, to be checked\n";
 				break;
 			}
+		}
+	}
+}
+
+
+static void	timeout_connections(Server& server)
+{
+	time_t	current_time = time(NULL);
+	std::vector<Connection*>& connections = server.getConnections();
+	for (size_t i = 0; i < connections.size(); i++)
+	{
+		if (current_time - connections[i]->getStartTime() > TTL_CONNECTION)
+		{
+			std::cerr << "CONNECTION GETTING TIMEDOUT!!!\n";
+			server.remove(connections[i]);
 		}
 	}
 }

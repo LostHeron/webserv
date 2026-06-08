@@ -18,13 +18,10 @@
 #include "typedef.hpp"
 #include <string>
 
-class InputSocket;
-class OutputSocket;
-
 class OutCGI: public ASocket
 {
 	public:
-		OutCGI(int fd, InputSocket& is, OutputSocket& os, Server& server);
+		OutCGI(int fd, Connection* connection);
 		~OutCGI();
 
 		void process();
@@ -39,8 +36,6 @@ class OutCGI: public ASocket
 		OutCGI(const OutCGI& other);
 		const OutCGI& operator=(const OutCGI& other);
 
-		InputSocket		&is;
-		OutputSocket	&os;	
 		int				state;
 		string_map		headers;
 		std::string 	cgi_out_buffer;

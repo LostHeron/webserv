@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:21:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 15:57:31 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:55:45 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@
 #include "typedef.hpp"
 #include <cstddef>
 
+class Connection;
+
 class ASocket
 {
 	public:
-		ASocket(Server& server);
+		ASocket(Connection* connection);
 		virtual ~ASocket();
 
 		int	getFd() const;
@@ -28,10 +30,9 @@ class ASocket
 		virtual void	process() = 0;
 		virtual	bool	fail();
 		virtual	bool	terminate();
-		
-		void		setAssociatedSocket(ASocket *ptr);
-		ASocket*	getAssociatedSocket();
 
+		Connection		*getConnection();
+		
 	protected:
 
 		// the fd corresponding to the connection
@@ -49,11 +50,10 @@ class ASocket
 		// non nul indicating a problem
 		int		status;
 
-		ASocket	*associatedSocket;
 		// a reference to the server, used to create new instances
 		// of InputSocket (which inherits from ASocket), when ListenSockets processes
 		// incomming connections (with the process function)
-		Server&	server;
+		Connection*	connection;
 
 	private:
 		ASocket(const ASocket& other);

@@ -16,13 +16,13 @@ CONFIG_FILE="\"host\":[
     \"root\":\"$HOME/goinfre/tmp/b\"
 }]"
 
+#echo $CONFIG_FILE
+echo $CONFIG_FILE > config_file.json
+
 mkdir -p $HOME/goinfre/tmp/a
 echo "in a" > $HOME/goinfre/tmp/a/index_a.html
 mkdir -p $HOME/goinfre/tmp/b
 echo "in b" > $HOME/goinfre/tmp/b/index_b.html
-
-#echo $CONFIG_FILE
-echo $CONFIG_FILE > config_file.json
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!

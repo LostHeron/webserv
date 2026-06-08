@@ -18,6 +18,7 @@
 #include "OutputSocket.hpp"
 #include <stdint.h>
 #include <sys/epoll.h>
+#include "Connection/Connection.hpp"
 
 
 void	InputSocket::process_request(size_t& pos)
@@ -33,7 +34,7 @@ void	InputSocket::process_request(size_t& pos)
 	}
 	else
 		requested_server_name = "";
-	const VirtualHost& vhost = this->server.getHostList().getHost(this->local_port, requested_server_name);
+	const VirtualHost& vhost = this->connection->getHostList().getHost(this->connection->getLocalPort(), requested_server_name);
 	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
 	ARequest *req = facto.createElement();
 
@@ -43,16 +44,16 @@ void	InputSocket::process_request(size_t& pos)
 	delete req;
 	
 	bool iscgi = false;
-	//iscgi = true;
+	iscgi = true;
 	if (iscgi == true)
 	{
-		this->prepareCGI(resp.getResource().second);
 		if (resp.getResource().first > 0)
 			close(resp.getResource().first);
+		this->prepareCGI(resp.getResource().second);
 	}
 	else
 	{
-		OutputSocket* os = static_cast<OutputSocket*>(this->associatedSocket);
+		OutputSocket* os = this->connection->getOutputSocket();
 
 		HeadersBuilder	b;
 		b.initialize()

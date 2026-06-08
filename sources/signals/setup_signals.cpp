@@ -68,6 +68,6 @@ static int setup_sigint()
 static void	change_run_status(int sig)
 {
 	(void) sig;
-	run = 0;
+	run = STOP;
 }
 

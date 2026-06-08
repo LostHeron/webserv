@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:54:45 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:05:54 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 15:03:34 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 #include "EpollStruct.hpp"
 #include "HostList.hpp"
 
-class ASocket;
+class Connection;
+class ListenSocket;
 
 class Server
 {
@@ -26,11 +27,20 @@ class Server
 		virtual ~Server();
 
 		bool			fail();
-		void			add(ASocket*, int event_flags);
+
+		void			add(ListenSocket*);
+
+		void			add(ASocket*, int event);
 		void			remove(ASocket*);
+
+		void			add(Connection*);
+		void			remove(Connection*);
+
 		void			setFailure(int value);
 		int				getEfd();
 		const HostList& getHostList() const;
+
+		std::vector<Connection*>&	getConnections();
 
 	protected:
 
@@ -49,7 +59,8 @@ class Server
 
 		// vectors of fds (sockets) associated with all listening ports
 		// initialized with socket + bind + listen;
-		std::vector<ASocket*>		sockets;
+		std::vector<Connection*>		connections;
+		std::vector<ListenSocket*>		listenSockets;
 
 
 		HostList				host_list;
