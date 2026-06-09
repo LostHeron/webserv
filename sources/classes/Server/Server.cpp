@@ -25,6 +25,7 @@
 #include "Connection/Connection.hpp"
 
 Server::Server(char *config_file):
+	isChildren(false),
 	status(SUCCESS),
 	epoll(),
 	host_list(HostList::build(config_file))
@@ -55,6 +56,16 @@ Server::~Server()
 	{
 		delete (this->connections[i]);
 	}
+}
+
+void	Server::setIsChildren()
+{
+	this->isChildren = true;
+}
+
+bool	Server::getIsChildren()
+{
+	return (this->isChildren);
 }
 
 bool	Server::fail()

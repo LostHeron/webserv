@@ -28,6 +28,9 @@ class Server
 
 		bool			fail();
 
+		void			setIsChildren();
+		bool			getIsChildren();
+
 		void			add(ListenSocket*);
 
 		void			add(ASocket*, int event);
@@ -51,7 +54,9 @@ class Server
 		Server(const Server& other);
 		Server&	operator=(const Server& other);
 
-		int status;
+		bool	isChildren;
+
+		int		status;
 
 		// the fd associated with the epoll instance
 		// initialized with epoll_create;

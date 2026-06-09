@@ -15,6 +15,7 @@
 #include "Server.hpp"
 #include "status.hpp"
 #include "error.hpp"
+#include "Connection.hpp"
 #include <cerrno>
 #include <cstdio>
 #include <stdint.h>
@@ -69,7 +70,7 @@ void	OutputSocket::setup(int newRessourceFd, const std::string& firstBuffer)
 
 void	OutputSocket::process()
 {
-	std::cout << "in OutputSocket process()\n";
+	std::cout << "in OutputSocket process() concerning uri:'" << this->connection->getInputSocket()->getUri() << "'\n";
 	if (this->ready == true && this->outputBuffer == "")
 	{
 		updateOutputBuffer();
@@ -77,6 +78,8 @@ void	OutputSocket::process()
 	if (this->outputBuffer.size() > 0)
 	{
 		ssize_t nb_send = send(this->fd, this->outputBuffer.data(), this->outputBuffer.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
+		std::cout << "OutputSocket sent " << nb_send << " bytes back to client which requested the following uri: '"
+			<< this->connection->getInputSocket()->getUri() << "'\n";
 		if (nb_send < 0)
 			std::cerr << "An error occured while sending data to server\n";
 		else
@@ -99,6 +102,7 @@ void	OutputSocket::process()
 
 void	OutputSocket::updateOutputBuffer()
 {
+	// should only be used to read data from regular file (non blocking fds)
 	char buf[BUFSIZ];
 	ssize_t nb_read = read(this->ressourceFd, buf, BUFSIZ);
 	if (nb_read < 0)

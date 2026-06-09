@@ -49,7 +49,7 @@ Connection::~Connection()
 	//this->server.remove(&inputSocket);
 	//this->server.remove(&outputSocket);
 
-	if (this->cgiPid > 0)
+	if (this->server.getIsChildren() == false && this->cgiPid > 0)
 	{
 		if (kill(this->cgiPid, SIGTERM) < 0)
 		{
@@ -59,14 +59,18 @@ Connection::~Connection()
 		this->cgiPid = -1;
 	}
 	if (this->inCGI != NULL)
-		this->server.remove(this->inCGI);
-	delete this->inCGI;
-	this->inCGI = NULL;
+	{
+		//this->server.remove(this->inCGI);
+		delete this->inCGI;
+		this->inCGI = NULL;
+	}
 
 	if (this->outCGI != NULL)
-		this->server.remove(this->outCGI);
-	delete this->outCGI;
-	this->outCGI = NULL;
+	{
+		//this->server.remove(this->outCGI);
+		delete this->outCGI;
+		this->outCGI = NULL;
+	}
 }
 
 void	Connection::add(ASocket* abstractSocket, int event)
@@ -76,7 +80,7 @@ void	Connection::add(ASocket* abstractSocket, int event)
 
 void	Connection::remove(ASocket* abstractSocket)
 {
-	if (this->cgiPid > 0)
+	if (this->server.getIsChildren() == false && this->cgiPid > 0)
 	{
 		if (kill(this->cgiPid, SIGTERM) < 0)
 		{
@@ -85,6 +89,11 @@ void	Connection::remove(ASocket* abstractSocket)
 		}
 	}
 	this->server.remove(abstractSocket);
+}
+
+void			Connection::setIsChildren()
+{
+	this->server.setIsChildren();
 }
 
 InputSocket*	Connection::getInputSocket() {return (&this->inputSocket);}

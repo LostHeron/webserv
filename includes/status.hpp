@@ -24,7 +24,7 @@ enum {
 # define STOP 0
 # define CONTINUE 1
 
-# define TTL_CONNECTION 6
+# define TTL_CONNECTION 6000
 
 extern int run;
 

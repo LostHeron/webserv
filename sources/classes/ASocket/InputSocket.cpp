@@ -178,6 +178,7 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 		//here is the child !
 		try
 		{
+			this->connection->setIsChildren();
 			toCGI.closeWriteEnd();
 			fromCGI.closeReadEnd();
 			if (dup2(toCGI.getReadEnd(), STDIN_FILENO) < 0)

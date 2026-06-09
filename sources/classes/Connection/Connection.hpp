@@ -27,6 +27,8 @@ class Connection
 	public:
 		Connection(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
 		~Connection();
+		
+		void			setIsChildren();
 
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();

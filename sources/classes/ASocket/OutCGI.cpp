@@ -99,7 +99,9 @@ void OutCGI::process_headers(size_t &start)
 			{
 				b.buildHeaderKeyVecValue(it->first, it->second);
 			}
-			b.buildCRLF();
+			b.buildCRLF()
+				.buildBody(std::string(this->cgi_out_buffer, start));
+			start = this->cgi_out_buffer.size();
 			this->connection->getOutputSocket()->getOutputBuffer() = b.build();
 			break;
 		}
