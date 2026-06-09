@@ -97,7 +97,8 @@ void OutCGI::process_headers(size_t &start)
 				.buildDate();
 			for (string_map::const_iterator it = this->headers.begin(); it != this->headers.end(); it++)
 			{
-				b.buildHeaderKeyVecValue(it->first, it->second);
+				if (it->first  != "content-length")
+					b.buildHeaderKeyVecValue(it->first, it->second);
 			}
 			b.buildCRLF()
 				.buildBody(std::string(this->cgi_out_buffer, start));

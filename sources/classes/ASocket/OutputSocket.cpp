@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <stdint.h>
 #include <iostream>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -80,6 +81,9 @@ void	OutputSocket::process()
 		ssize_t nb_send = send(this->fd, this->outputBuffer.data(), this->outputBuffer.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
 		std::cout << "OutputSocket sent " << nb_send << " bytes back to client which requested the following uri: '"
 			<< this->connection->getInputSocket()->getUri() << "'\n";
+		std::cout << "~~~~~~~~~~~~~~~~~~\n" 
+			<< std::string(this->outputBuffer.data(), nb_send)
+			<< "\n~~~~~~~~~~~~~~~~~~\n";
 		if (nb_send < 0)
 			std::cerr << "An error occured while sending data to server\n";
 		else

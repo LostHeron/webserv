@@ -45,12 +45,13 @@ Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& 
 
 Connection::~Connection()
 {
-	std::cout << "IN CONNECTION DESTRUCTOR\n";
+	std::cout << "IN CONNECTION DESTRUCTOR concerning uri: '" << this->getInputSocket()->getUri() << "'\n";
 	//this->server.remove(&inputSocket);
 	//this->server.remove(&outputSocket);
 
 	if (this->server.getIsChildren() == false && this->cgiPid > 0)
 	{
+		std::cout << "KILLING underlying process\n";
 		if (kill(this->cgiPid, SIGTERM) < 0)
 		{
 			int	error_value = errno;
@@ -82,6 +83,7 @@ void	Connection::remove(ASocket* abstractSocket)
 {
 	if (this->server.getIsChildren() == false && this->cgiPid > 0)
 	{
+		std::cout << "KILLING Underlying process from remove\n";
 		if (kill(this->cgiPid, SIGTERM) < 0)
 		{
 			int	error_value = errno;
