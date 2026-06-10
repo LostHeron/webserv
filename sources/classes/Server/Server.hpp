@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
+/*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 10:54:45 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:05:54 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/10 19:51:47 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include <vector>
 #include "EpollStruct.hpp"
-#include "HostList.hpp"
+#include "VHostList.hpp"
 
 class ASocket;
 
@@ -25,12 +25,12 @@ class Server
 		Server(char *config_file);
 		virtual ~Server();
 
-		bool			fail();
-		void			add(ASocket*, int event_flags);
-		void			remove(ASocket*);
-		void			setFailure(int value);
-		int				getEfd();
-		const HostList& getHostList() const;
+		bool				fail();
+		void				add(ASocket*, int event_flags);
+		void				remove(ASocket*);
+		void				setFailure(int value);
+		int					getEfd();
+		const VHostList&	getHostList() const;
 
 		std::vector<ASocket*>&	getNonBlockingsFds();
 
@@ -56,7 +56,7 @@ class Server
 		std::vector<ASocket*>		nonBlockingsFds;
 
 
-		HostList				host_list;
+		VHostList				host_list;
 		// some kind of structure to remember
 		// if an fd is associated with something
 		// we should do an 'accept' on or a 'read/write' from/to !

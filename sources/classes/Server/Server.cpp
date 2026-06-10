@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
+/*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 16:10:49 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/10 19:52:21 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "ASocket.hpp"
-#include "HostList.hpp"
+#include "VHostList.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
 #include <algorithm>
@@ -25,7 +25,7 @@
 Server::Server(char *config_file):
 	status(SUCCESS),
 	epoll(),
-	host_list(HostList::build(config_file))
+	host_list(VHostList::build(config_file))
 {
 	if (this->epoll.fail())
 	{
@@ -79,7 +79,7 @@ int	Server::getEfd()
 	return (this->epoll.getFd());
 }
 
-const HostList& Server::getHostList() const {return (this->host_list);};
+const VHostList& Server::getHostList() const {return (this->host_list);};
 
 void	Server::remove(ASocket *asocket)
 {
