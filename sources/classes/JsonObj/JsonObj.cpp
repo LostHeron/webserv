@@ -6,10 +6,11 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 16:18:42 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/08 19:15:04 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/09 16:38:24 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdint.h>
 #include <stdexcept>
 #include <string>
 #include <sstream>
@@ -197,7 +198,7 @@ JsonObj::e_jsonType	JsonObj::getType(void) const
 }
 
 template <>
-int const&	JsonObj::getVal<int>(void) const
+int64_t const&	JsonObj::getVal<int64_t>(void) const
 {
 	if (this->_type != JsonObj::INT)
 		throw std::logic_error("Incorrect type : JsonObj is not an integer");

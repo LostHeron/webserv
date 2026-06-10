@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
+#    By: cviel <cviel@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/31 16:53:53 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/10 18:14:05 by cviel            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(PIPE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
@@ -37,7 +37,8 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(BOOLSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INTSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJSCHEMA_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR)
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTPARSER_DIR) \
 
 SCHEMA_DIR :=		Schemas/
 
@@ -114,8 +115,11 @@ JSONLEXER_FILES := JsonLexer.cpp
 JSONOBJ_DIR := JsonObj/
 JSONOBJ_FILES := JsonObj.cpp
 
-HOSTLIST_DIR := HostList/
-HOSTLIST_FILES := HostList.cpp
+VHOSTPARSER_DIR := VHostParser/
+VHOSTPARSER_FILES := VHostParser.cpp
+
+VHOSTLIST_DIR := VHostList/
+VHOSTLIST_FILES := VHostList.cpp
 
 VIRTUALHOST_DIR := VirtualHost/
 VIRTUALHOST_FILES := VirtualHost.cpp
@@ -144,8 +148,9 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
-				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \
+				 $(addprefix $(VHOSTLIST_DIR), $(VHOSTLIST_FILES)) \
 				 $(addprefix $(VIRTUALHOST_DIR), $(VIRTUALHOST_FILES)) \
+				 $(addprefix $(VHOSTPARSER_DIR), $(VHOSTPARSER_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(ASCHEMA_DIR), $(ASCHEMA_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(BOOLSCHEMA_DIR), $(BOOLSCHEMA_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(INTSCHEMA_DIR), $(INTSCHEMA_FILES)) \

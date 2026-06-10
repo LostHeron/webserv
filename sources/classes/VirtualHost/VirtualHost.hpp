@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/08 19:22:31 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/09 17:33:08 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,9 @@ class VirtualHost
 					std::vector<std::string>	cgi_ext;
 				};
 			
+				Location(Location::s_config const& conf);
 				Location(Location const& other);
 				~Location();
-
-				static std::pair<std::string, Location>	build(std::map<std::string, JsonObj> const& loc_obj, std::vector<std::string> const& host_allowed_request);
 			
 			private:
 			
@@ -78,8 +77,14 @@ class VirtualHost
 		
 		struct s_uriInfo
 		{
-			std::string	path;
-				
+			bool						isRedir;
+			std::string					path;
+			std::string					index;
+			std::vector<std::string>	allowedRequests;
+			bool						allowDirList;
+			std::map<int, std::string>	error;
+			bool						cgi;
+			std::vector<std::string>	cgi_ext;
 		};
 
 		VirtualHost(VirtualHost::s_config const& conf);
@@ -87,10 +92,9 @@ class VirtualHost
 		~VirtualHost();
 
 		std::vector<std::string> const&	getName(void) const;
-		std::pair<std::string, bool>	getPathReq(std::string const& uri, std::string const& req) const;
+		bool							InterfaceAllowed(uint32_t interface) const;
+		uint64_t						getBodySize(void) const;
 		std::pair<bool, std::string> 	getError(int err_code) const;
-		
-		// void	log(bool success);
 		
 	private:
 		

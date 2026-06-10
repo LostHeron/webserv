@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 15:56:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/08 19:42:24 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/10 19:11:47 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,20 @@ class VHostParser
 			void (*setDef)(T&);
 		};	
 	
-		template <typename Key, typename Val>
-		static std::vector<std::pair<Key, Val> >	buildFromJson(std::map<std::string, JsonObj> const& obj_map, std::map<std::string, s_setter<Val> > const& dispatch_table, std::string const& key_name);
-
-		static std::map<std::string, s_setter<VirtualHost::s_config> >	build_host_dispatcher(void);
+		static std::map<uint16_t, std::vector<VirtualHost::s_config> >	buildFromJson(std::map<std::string, JsonObj> const& obj_map);
 
 	private:
+	
+		template <typename Key, typename Val>
+		static std::map<Key, Val>	dispatchJson(std::map<std::string, JsonObj> const& obj_map, std::map<std::string, s_setter<Val> > const& dispatch_table, std::string const& key_name);
 	
 		template <typename T>
 		static bool	checkDuplicates(T const& val, std::vector<T> const& vec);
 		
-		static std::map<std::string, s_setter<VirtualHost::Location> >	build_loc_dispatcher(void);
+		static std::map<std::string, s_setter<VirtualHost::s_config> >				buildHostDispatcher(void);
+		static std::map<std::string, s_setter<VirtualHost::Location::s_config> >	buildLocDispatcher(void);
+
+		static void	addVHostConf(std::map<uint16_t, VirtualHost::s_config> const& conf_map, std::map<uint16_t, std::vector<VirtualHost::s_config> >& host_conf_map);
 		
 		static VirtualHost::s_ip_range	buildInterfaceRange(std::string const& ips_str);
 		static uint32_t					buildInterface(std::string const& ip_str);
@@ -65,16 +68,13 @@ class VHostParser
 		static void	setLocCgi(JsonObj const& cgi, VirtualHost::Location::s_config& loc_config);
 		static void	setLocCgiExt(JsonObj const& cgi_ext, VirtualHost::Location::s_config& loc_config);
 
-		static void	setHostDefIndex(VirtualHost::s_config& host_config);
 		static void	setHostDefMaxBody(VirtualHost::s_config& host_config);
 		static void	setHostDefInterface(VirtualHost::s_config& host_config);
 		static void	setHostDefDirList(VirtualHost::s_config& host_config);
 		static void	setHostDefAllowedRequest(VirtualHost::s_config& host_config);
 		static void	setHostDefCgi(VirtualHost::s_config& host_config);
 
-		static void	setLocDefIndex(VirtualHost::Location::s_config& loc_config);
 		static void	setLocDefDirList(VirtualHost::Location::s_config& loc_config);
-		static void	setLocDefAllowedRequest(VirtualHost::Location::s_config& loc_config);
 		static void	setLocDefCgi(VirtualHost::Location::s_config& loc_config);
 };
 

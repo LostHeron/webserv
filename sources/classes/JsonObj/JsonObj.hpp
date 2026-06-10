@@ -6,13 +6,14 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/07 15:55:00 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/08 19:14:20 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/09 16:33:42 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef JSONOBJ_HPP
 # define JSONOBJ_HPP
 
+# include <stdint.h>
 # include <string>
 # include <vector>
 # include <map>
@@ -50,7 +51,7 @@ class JsonObj
 	private:
 
 		e_jsonType	_type;
-		int			_typeInt;
+		int64_t		_typeInt;
 		bool		_typeBool;
 		std::string	_typeString;
 		Array		_typeArray;
