@@ -49,7 +49,9 @@ Response			RequestFactory::execute(void)
 {
 	Response resp(-1);
 
+	#ifdef DEBUG
 	std::cout << "Cannot execute Factory class." << std::endl;
+	#endif
 
 	return (resp);
 }

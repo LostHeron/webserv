@@ -72,7 +72,9 @@ InputSocket::InputSocket(int fd, Connection* connection):
 
 InputSocket::~InputSocket()
 {
+	#ifdef DEBUG
 	std::cout << "In InputSocket Destructor\n";
+	#endif
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
@@ -85,7 +87,9 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
 
 void InputSocket::process()
 {
+	#ifdef DEBUG
 	std::cout << "in InputSocket process()\n";
+#endif
 	if (this->status != SUCCESS)
 		return ;
 	updateInputBuffer(this->input_buffer, this->fd, this->status);
@@ -98,7 +102,9 @@ void InputSocket::process()
 		return ;
 	if (position >= this->input_buffer.size())
 		this->input_buffer.clear();
+	#ifdef DEBUG
 	std::cout << *this << "\n";
+	#endif
 }
 
 void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
@@ -129,7 +135,9 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 	}
 	else
 	{
+		#ifdef DEBUG
 		std::cout << "-->ACTION: InputSocket does not read anything, buffer not empty\n";
+		#endif
 	}
 }
 

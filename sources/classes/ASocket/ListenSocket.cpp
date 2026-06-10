@@ -73,7 +73,9 @@ ListenSocket::~ListenSocket()
 
 void	ListenSocket::process()
 {
+	#ifdef DEBUG
 	std::cout << "in ListenSocket process()\n";
+	#endif
 	// ok and here should do stuff with the fd,
 	// and read data and start parsing request
 	int						peer_fd;
@@ -91,7 +93,9 @@ void	ListenSocket::process()
 					"AND WAS NOT EXPECTED!\n";
 		if (peer_fd < 0)
 			break;
+		#ifdef DEBUG
 		std::cout << "a connection was accepted\n";
+		#endif
 
 		CreateFd(peer_fd, ntohs(this->addr_data.sin_port), peer_addr, this->server);
 

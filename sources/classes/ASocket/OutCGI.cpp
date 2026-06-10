@@ -51,13 +51,17 @@ OutCGI::OutCGI(int fd, Connection* connection):
 
 OutCGI::~OutCGI()
 {
+	#ifdef DEBUG
 	std::cout << "In OUTCGI Destructor\n";
+	#endif
 }
 
 
 void OutCGI::process()
 {
+	#ifdef DEBUG
 	std::cout << "In OutCGI process\n";
+	#endif
 	if (this->status == FINISH)
 		return ;
 	this->update_buffer();
@@ -158,8 +162,10 @@ void OutCGI::update_buffer()
 		else
 		{
 			cgi_out_buffer = std::string(buf, nb_read);
+			#ifdef DEBUG
 			std::cout << "OutCgi read " << nb_read << " bytes\n";
 			std::cout << "OutCgi buffer = '" << cgi_out_buffer << "'\n";
+			#endif
 		}
 	}
 }

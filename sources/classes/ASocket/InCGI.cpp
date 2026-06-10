@@ -48,7 +48,9 @@ InCGI::InCGI(int fd, size_t bodySize, std::string& input_buffer, Connection* con
 
 void	InCGI::process()
 {
+	#ifdef DEBUG
 	std::cout << "In InCGI process\n";
+	#endif
 	/*
 	if (this->status != SUCCESS)
 		return ;
@@ -73,7 +75,9 @@ void	InCGI::process()
 			}
 			else
 			{
+				#ifdef DEBUG
 				std::cout << "-->ACTION: InCgi wrote " << nb_write << " byte to pipe\n";
+				#endif
 				this->nbSent += nb_write;
 				this->input_buffer = std::string(this->input_buffer, nb_write);
 				if (this->nbSent >= this->nbToSend)
@@ -90,5 +94,7 @@ void	InCGI::process()
 
 InCGI::~InCGI()
 {
+	#ifdef DEBUG
 	std::cout << "In INCGI DESTRUCTOR\n";
+	#endif
 }

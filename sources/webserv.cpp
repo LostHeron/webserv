@@ -17,7 +17,9 @@
 #include "sockets.hpp"
 #include "signals_handling.hpp"
 #include "status.hpp"
+#include <cstdio>
 #include <iostream>
+#include <sys/resource.h>
 
 int run = 1;
 
@@ -25,6 +27,15 @@ int	main(int ac, char **av)
 {
 	// some function to read info from config file
 	// that would return a structure containing necessary information
+	
+	#ifdef INFO_WEBSERV__
+	struct rlimit r;
+	if (getrlimit(RLIMIT_AS, &r) < 0)
+		return (perror("getrlimit"), 1);
+	r.rlim_cur = 50000000;
+	if (setrlimit(RLIMIT_AS, &r) < 0)
+		return (perror("getrlimit"), 1);
+	#endif
 	
 	if (setup_signals() != SUCCESS)
 	{
