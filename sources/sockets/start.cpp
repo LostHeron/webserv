@@ -72,6 +72,9 @@ void	start(Server& server)
 					catch (std::exception& e)
 					{
 						std::cerr << e.what() << "\n";
+						if (event->getConnection() != NULL)
+							server.remove(event->getConnection());
+						break;
 					}
 					catch (...)
 					{
