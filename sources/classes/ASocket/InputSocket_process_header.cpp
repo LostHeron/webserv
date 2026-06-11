@@ -13,7 +13,6 @@
 #include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "status.hpp"
-#include "Connection.hpp"
 #include "typedef.hpp"
 #include <cctype>
 #include <cctype>
@@ -21,7 +20,7 @@
 #include <sstream>
 #include <string>
 
-static void	no_version(InputSocket& inputSocket, int& status);
+static int	no_version(int& state, InputSocket& inputSocket, int& status);
 static int	getBodySize(size_t& bodySize, string_map& headers);
 static int	check_headers(const string_map& headers);
 
@@ -31,10 +30,10 @@ void	InputSocket::process_headers(size_t& start)
 
 	if (this->version == "")
 	{
-		return (no_version(*this, this->status));
+		if (no_version(this->state, *this, this->status) == SUCCESS)
+			(this->*process_functions[this->state])(start);
 	}
 
-	// goal, fill in the map
 	while (start < this->inputBuffer.size())
 	{
 		if (fill_last_line(this->inputBuffer, this->lastLine, start, this->state) == STOP)
@@ -60,20 +59,18 @@ void	InputSocket::process_headers(size_t& start)
 	}
 }
 
-static void	no_version(InputSocket& inputSocket, int& status)
+static int	no_version(int& state, InputSocket& inputSocket, int& status)
 {
 		if (inputSocket.getMethod() == "GET")
 		{
-			// do stuff to stop parsing incoming data,
-			// and process the request using only information
-			// in 'method' and in 'uri'
-			// return ...
+			state = 6;
+			return (SUCCESS);
 		}
 		else
 		{
-			return (setup_response(status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, inputSocket.getConnection()));
+			setup_response(status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, inputSocket.getConnection());
+			return (FAILURE);
 		}
-		return ;
 }
 
 int	getBodySize(size_t& bodySize, string_map& headers)
