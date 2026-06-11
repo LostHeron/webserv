@@ -17,5 +17,5 @@
 void	logerror(const char *str, int errno_value)
 {
 	std::string error_msg(strerror(errno_value));
-	std::cerr << str << error_msg << "\n";
+	std::cerr << str << ": " << error_msg << "\n";
 }

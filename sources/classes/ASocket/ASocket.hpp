@@ -40,11 +40,6 @@ class ASocket
 		// to read, write, recv, sendto
 		int		fd;
 
-		// used to keep track of memory usage by each
-		// request, in order to chose which connection 
-		// to abort first;
-		size_t	memoryUsage;
-
 		// used to indicate wether an error occured
 		// 0 = no probleme (0 should be same as SUCCESS)
 		// non nul indicating a problem

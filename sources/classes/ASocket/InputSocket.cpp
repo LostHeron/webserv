@@ -178,8 +178,8 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	{
 		int errno_value = errno;
 		logerror("fork", errno_value);
-		this->status = FAILURE;
-		return ;
+		int a;
+		return (setup_response(a, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->connection));
 	}
 	if (pid == 0)
 	{

@@ -76,6 +76,7 @@ class InputSocket: public ASocket
 		string_map					headers;
 		void						process_headers(size_t& pos);
 
+		size_t						bodySize;
 		void						process_body(size_t& pos);
 
 		void						process_skip_sp(size_t& pos);

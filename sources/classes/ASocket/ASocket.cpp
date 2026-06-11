@@ -18,7 +18,6 @@
 
 ASocket::ASocket(Connection* connection):
 	fd(-1),
-	memoryUsage(0),
 	status(SUCCESS),
 	connection(connection)
 {

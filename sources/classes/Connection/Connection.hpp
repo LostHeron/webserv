@@ -61,6 +61,11 @@ class Connection
 		Connection(const Connection& other);
 		const Connection& operator=(const Connection& other);
 
+		// used to keep track of memory usage by each
+		// connected client, in order to chose which connection 
+		// to abort first;
+		size_t				memoryUsage;
+
 		// used to timeout request
 		time_t				startTime;
 

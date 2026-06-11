@@ -17,11 +17,11 @@
 #include <cerrno>
 #include <csignal>
 #include <ctime>
-#include <iostream>
 #include <netinet/ip.h>
 #include <sys/epoll.h>
 
 Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& newPeerAddr, Server& server):
+	memoryUsage(0),
 	startTime(time(NULL)),
 	vHost(NULL),
 	peerPort(ntohs(newPeerAddr.sin_port)),
