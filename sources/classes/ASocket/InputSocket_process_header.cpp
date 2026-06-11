@@ -49,23 +49,23 @@ void	InputSocket::process_headers(size_t& start)
 	// goal, fill in the map
 	while (start < this->inputBuffer.size())
 	{
-		if (fill_last_line(this->inputBuffer, this->last_line, start, this->state) == STOP)
+		if (fill_last_line(this->inputBuffer, this->lastLine, start, this->state) == STOP)
 		{
 			(this->*process_functions[this->state])(start);
 			break;
 		}
 
-		if (check_last_line(this->last_line) != SUCCESS)
+		if (check_last_line(this->lastLine) != SUCCESS)
 		{
 			return (setup_response(this->status, 400, this->connection));
 		}
 
-		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
+		if (this->lastLine.size() > 0 && this->lastLine[this->lastLine.size() - 1] == '\n')
 		{
-			add_line_headers(this->last_line, this->headers);
+			add_line_headers(this->lastLine, this->headers);
 			if (check_headers(this->headers) != SUCCESS)
 				return (setup_response(this->status, 400, this->connection));
-			this->last_line.clear();
+			this->lastLine.clear();
 		}
 	}
 }
