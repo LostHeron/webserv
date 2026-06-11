@@ -47,9 +47,9 @@ void	InputSocket::process_headers(size_t& start)
 	}
 
 	// goal, fill in the map
-	while (start < this->input_buffer.size())
+	while (start < this->inputBuffer.size())
 	{
-		if (fill_last_line(this->input_buffer, this->last_line, start, this->state) == STOP)
+		if (fill_last_line(this->inputBuffer, this->last_line, start, this->state) == STOP)
 		{
 			(this->*process_functions[this->state])(start);
 			break;

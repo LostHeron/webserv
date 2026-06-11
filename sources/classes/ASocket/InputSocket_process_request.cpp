@@ -66,7 +66,7 @@ void	InputSocket::process_request(size_t& pos)
 	}
 	
 	this->state++;
-	if (pos < this->input_buffer.size())
+	if (pos < this->inputBuffer.size())
 		(this->*process_functions[this->state])(pos);
 	return ;
 }

@@ -83,7 +83,7 @@ const std::string					&InputSocket::getVersion(void) const { return(this->versio
 const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
 string_map							&InputSocket::getHeadersNoConst(void) { return(this->headers); }
 
-void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
+void	updateInputBuffer(std::string& inputBuffer, int fd, int& status);
 
 void InputSocket::process()
 {
@@ -92,7 +92,7 @@ void InputSocket::process()
 #endif
 	if (this->status != SUCCESS)
 		return ;
-	updateInputBuffer(this->input_buffer, this->fd, this->status);
+	updateInputBuffer(this->inputBuffer, this->fd, this->status);
 	if (this->status != SUCCESS)
 		return ;
 
@@ -100,16 +100,16 @@ void InputSocket::process()
 	(this->*process_functions[this->state])(position);
 	if (this->fail())
 		return ;
-	if (position >= this->input_buffer.size())
-		this->input_buffer.clear();
+	if (position >= this->inputBuffer.size())
+		this->inputBuffer.clear();
 	#ifdef DEBUG
 	std::cout << *this << "\n";
 	#endif
 }
 
-void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
+void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
 {
-	if (input_buffer == "")
+	if (inputBuffer == "")
 	{
 		char buf[BUFSIZ];
 		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
@@ -130,7 +130,7 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 		}
 		else
 		{
-			input_buffer = std::string(buf, nb_read);
+			inputBuffer = std::string(buf, nb_read);
 		}
 	}
 	else
@@ -158,7 +158,7 @@ void	setup_response(int& status, int errorCode, Connection* connection)
 void	InputSocket::process_body(size_t& pos)
 {
 	if (pos != 0)
-		this->input_buffer = std::string(this->input_buffer, pos);
+		this->inputBuffer = std::string(this->inputBuffer, pos);
 	return ;
 }
 
@@ -244,7 +244,7 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
 		else
 			body_size = 0;
-		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->input_buffer, this->connection);
+		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->inputBuffer, this->connection);
 		this->connection->add(incgi, EPOLLOUT);
 		this->connection->setInCGI(incgi);
 
@@ -384,15 +384,15 @@ static std::string get_port_string_format(uint16_t peer_port)
 void	InputSocket::process_skip_sp(size_t& pos)
 {
 	// std::cout << "in process skip spaces\n";
-	size_t	non_sp_pos = this->input_buffer.find_first_not_of(" ", pos);
-	if (non_sp_pos == this->input_buffer.npos)
+	size_t	non_sp_pos = this->inputBuffer.find_first_not_of(" ", pos);
+	if (non_sp_pos == this->inputBuffer.npos)
 	{
 		pos = non_sp_pos;
 		return ;
 	}
 	this->state++;
 	pos = non_sp_pos;
-	if (pos < this->input_buffer.size())
+	if (pos < this->inputBuffer.size())
 		(this->*process_functions[this->state])(pos);
 	return ;
 }
@@ -407,7 +407,7 @@ std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)
 			os << ".";
 	}
 	os << ":" << inputSocket.connection->getPeerPort() << ";\n";
-	os << "current buffer contains: '" << inputSocket.input_buffer << "'\n";
+	os << "current buffer contains: '" << inputSocket.inputBuffer << "'\n";
 	os << "method: '" << inputSocket.method << "'; ";
 	os << "uri: '" << inputSocket.uri << "'; ";
 	os << "version: '" << inputSocket.version << "'; ";

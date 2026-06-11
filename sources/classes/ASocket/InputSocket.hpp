@@ -52,7 +52,7 @@ class InputSocket: public ASocket
 		void (InputSocket::*process_functions[10])(size_t& pos);
 
 		// used to know which state the program is in
-		std::string			input_buffer;
+		std::string			inputBuffer;
 		int					state;	
 
 		// identify which method the client tries to reach

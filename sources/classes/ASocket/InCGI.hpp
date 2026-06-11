@@ -19,7 +19,7 @@
 class InCGI: public ASocket
 {
 	public:
-		InCGI(int fd, size_t bodySize, std::string& input_buffer, Connection* connection);
+		InCGI(int fd, size_t bodySize, std::string& newInputBuffer, Connection* connection);
 		~InCGI();
 
 		void	process();
@@ -33,7 +33,7 @@ class InCGI: public ASocket
 
 		size_t			nbToSend;
 		size_t			nbSent;
-		std::string&	input_buffer;
+		std::string&	inputBuffer;
 };
 
 #endif 

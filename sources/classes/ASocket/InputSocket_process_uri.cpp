@@ -28,28 +28,28 @@ static std::string	extract_query_string(std::string& uri);
 void	InputSocket::process_uri(size_t& pos)
 {
 	// std::cout << "in process uri\n";
-	size_t space_pos = this->input_buffer.find(' ', pos);
-	size_t crlf = this->input_buffer.find("\r\n", pos);
-	size_t lf = this->input_buffer.find("\n", pos);
+	size_t space_pos = this->inputBuffer.find(' ', pos);
+	size_t crlf = this->inputBuffer.find("\r\n", pos);
+	size_t lf = this->inputBuffer.find("\n", pos);
 	size_t delim = std::min(space_pos, std::min(crlf, lf));
 	if (delim == std::string::npos)
 	{
-		this->uri.append(this->input_buffer, pos, this->input_buffer.size() - pos);
+		this->uri.append(this->inputBuffer, pos, this->inputBuffer.size() - pos);
 		if (check_uri(this->uri) != SUCCESS)
 			return (setup_response(this->status, 400, this->connection));
-		pos = this->input_buffer.size();
+		pos = this->inputBuffer.size();
 	}
 	else
 	{
 		if (delim > pos)
-			this->uri.append(this->input_buffer, pos, delim - pos);
+			this->uri.append(this->inputBuffer, pos, delim - pos);
 		if (check_uri(this->uri) || this->uri == "")
 			return (setup_response(this->status, 400, this->connection));
 		this->query_string = extract_query_string(this->uri);
 		clear_uri(this->uri);
 		this->state++;
 		pos = delim;
-		if (pos < this->input_buffer.size())
+		if (pos < this->inputBuffer.size())
 			(this->*process_functions[this->state])(pos);
 	}
 	return ;

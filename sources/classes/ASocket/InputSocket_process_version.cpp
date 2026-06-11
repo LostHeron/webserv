@@ -29,24 +29,24 @@ static int	check_version(const std::string& method, const std::string& version);
 void	InputSocket::process_version(size_t& pos)
 {
 	// std::cout << "in process version\n";
-	size_t	crlf = this->input_buffer.find("\r\n", pos);
-	size_t	lf = this->input_buffer.find("\n", pos);
+	size_t	crlf = this->inputBuffer.find("\r\n", pos);
+	size_t	lf = this->inputBuffer.find("\n", pos);
 	size_t	delim = std::min(crlf, lf);
 	if (delim == std::string::npos)
 	{
-		this->version.append(this->input_buffer, pos, this->input_buffer.size() - pos);
+		this->version.append(this->inputBuffer, pos, this->inputBuffer.size() - pos);
 		if (this->version.size() > INPUTSOCKET_MAX_SIZE)
 			return (setup_response(this->status, 400, this->connection));
-		pos = this->input_buffer.size();
+		pos = this->inputBuffer.size();
 	}
 	else
 	{
 		size_t	until;
-		if (this->input_buffer[delim] == '\r')
+		if (this->inputBuffer[delim] == '\r')
 			until = delim + 2;
 		else
 			until = delim + 1;
-		this->version.append(this->input_buffer, pos, delim - pos);
+		this->version.append(this->inputBuffer, pos, delim - pos);
 
 		size_t	trailing_space_pos = this->version.find_last_not_of(" ") + 1;
 		this->version.erase(trailing_space_pos, version.size() - trailing_space_pos);
@@ -55,7 +55,7 @@ void	InputSocket::process_version(size_t& pos)
 			return (setup_response(this->status, 400, this->connection));
 		this->state++;
 		pos = until;
-		if (pos < this->input_buffer.size())
+		if (pos < this->inputBuffer.size())
 			(this->*process_functions[this->state])(pos);
 	}
 }
