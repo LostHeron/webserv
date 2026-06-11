@@ -26,7 +26,6 @@
 #include <cstddef>
 #include <fcntl.h>
 #include <sstream>
-#include <stdexcept>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
@@ -45,7 +44,8 @@
 
 InputSocket::InputSocket(int fd, Connection* connection):
 	ASocket(connection),
-	state(0)
+	state(0),
+	bodySize(0)
 {
 	this->fd = fd;
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
