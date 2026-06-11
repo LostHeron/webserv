@@ -44,7 +44,7 @@ void	InputSocket::process_request(size_t& pos)
 	delete req;
 	
 	bool iscgi = false;
-	//iscgi = true;
+	iscgi = true;
 	if (iscgi == true)
 	{
 		if (resp.getResource().first > 0)

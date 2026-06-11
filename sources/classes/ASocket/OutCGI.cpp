@@ -96,16 +96,19 @@ void OutCGI::process_headers(size_t &start)
 			// so it's right now we MUST write all header informations 
 			// to buffer of OutputSocket:
 			HeadersBuilder b;
-			b.initialize()
-				.buildStatusLine("HTTP/1.1", 200)
-				.buildDate();
-			for (string_map::const_iterator it = this->headers.begin(); it != this->headers.end(); it++)
+			b.initialize();
+			if (this->connection->getInputSocket()->getVersion() != "")
 			{
-				if (it->first  != "content-length")
-					b.buildHeaderKeyVecValue(it->first, it->second);
+				b.buildStatusLine("HTTP/1.1", 200)
+					.buildDate();
+				for (string_map::const_iterator it = this->headers.begin(); it != this->headers.end(); it++)
+				{
+					if (it->first  != "content-length")
+						b.buildHeaderKeyVecValue(it->first, it->second);
+				}
+				b.buildCRLF();
 			}
-			b.buildCRLF()
-				.buildBody(std::string(this->cgi_out_buffer, start));
+			b.buildBody(std::string(this->cgi_out_buffer, start));
 			start = this->cgi_out_buffer.size();
 			this->connection->getOutputSocket()->getOutputBuffer() = b.build();
 			break;
