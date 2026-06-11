@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/09 10:54:45 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 15:03:34 by jweber           ###   ########.fr       */
+/*   Created: 2026/06/11 16:38:25 by jweber            #+#    #+#             */
+/*   Updated: 2026/06/11 16:38:26 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 #include <vector>
 #include "EpollStruct.hpp"
-#include "HostList.hpp"
+#include "VHostList.hpp"
 
 class Connection;
 class ListenSocket;
@@ -41,7 +41,7 @@ class Server
 
 		void			setFailure(int value);
 		int				getEfd();
-		const HostList& getHostList() const;
+		const VHostList&	getHostList() const;
 
 		std::vector<Connection*>&	getConnections();
 
@@ -68,7 +68,7 @@ class Server
 		std::vector<ListenSocket*>		listenSockets;
 
 
-		HostList				host_list;
+		VHostList				host_list;
 		// some kind of structure to remember
 		// if an fd is associated with something
 		// we should do an 'accept' on or a 'read/write' from/to !

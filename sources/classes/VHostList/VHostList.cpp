@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HostList.cpp                                       :+:      :+:    :+:   */
+/*   VHostList.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 15:32:26 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/22 16:09:37 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/10 19:39:43 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,22 +16,22 @@
 #include <string>
 #include <stdexcept>
 #include "config_file.hpp"
-#include "HostList.hpp"
+#include "VHostList.hpp"
 #include "JsonLexer.hpp"
 #include "JsonObj.hpp"
-#include "ObjSchema.hpp"
+#include "VHostParser.hpp"
 
-HostList::HostList(void)
+VHostList::VHostList(void)
 {}
 
-HostList::HostList(HostList const& other) :
-    _map(other._map)
+VHostList::VHostList(VHostList const& other) :
+    _hosts(other._hosts)
 {}
 
-HostList::~HostList()
+VHostList::~VHostList()
 {}
 
-HostList    HostList::build(char const* filename)
+VHostList    VHostList::build(char const* filename)
 {
 	std::ifstream	config_file(filename);
 
@@ -63,42 +63,37 @@ HostList    HostList::build(char const* filename)
 			throw std::logic_error("Key '" + key + "' already exists");
 	}
 
-	ObjSchema	host_schema(HOST_KEY, true, true);
-	
-	host_schema_builder(host_schema);
-	host_schema.validate(obj_map);
+	std::map<uint16_t, std::vector<VirtualHost::s_config> >	host_conf_map = VHostParser::buildFromJson(obj_map);
+	VHostList												host_list;
 
-	HostList										host_list;
-	std::map<std::string, JsonObj>::const_iterator	obj_map_it = obj_map.find(HOST_KEY);
-	
-	if (obj_map_it->second.getType() == JsonObj::ARRAY)
+	for (std::map<uint16_t, std::vector<VirtualHost::s_config> >::const_iterator host_conf_it = host_conf_map.begin(); host_conf_it != host_conf_map.end(); ++host_conf_it)
 	{
-		for (std::vector<JsonObj>::const_iterator it = obj_map_it->second.getArray().begin(); it != obj_map_it->second.getArray().end(); ++it)
+		for (std::vector<VirtualHost::s_config>::const_iterator conf_it = host_conf_it->second.begin(); conf_it != host_conf_it->second.end(); ++conf_it)
 		{
-			addHost(VirtualHost::build(it->getSubObj()), host_list._map);
+			std::pair<uint16_t, VirtualHost>	host_pair(host_conf_it->first, VirtualHost(*conf_it));
+
+			VHostList::addHost(host_pair, host_list._hosts);
 		}
 	}
-	else
-		addHost(VirtualHost::build(obj_map_it->second.getSubObj()), host_list._map);
 	return (host_list);
 }
 
-std::vector<uint16_t>	HostList::getPort(void) const
+std::vector<uint16_t>	VHostList::getPort(void) const
 {
 	std::vector<uint16_t>	port_vec;
 	
-	for (std::map<uint16_t, std::vector<VirtualHost> >::const_iterator it = this->_map.begin(); it != this->_map.end(); ++it)
+	for (HostMap::const_iterator it = this->_hosts.begin(); it != this->_hosts.end(); ++it)
 	{
 		port_vec.push_back(it->first);
 	}
 	return (port_vec);
 }
 
-VirtualHost const&	HostList::getHost(uint16_t port, std::string const& name) const
+VirtualHost const&	VHostList::getHost(uint16_t port, std::string const& name) const
 {
-	std::map<uint16_t, std::vector<VirtualHost> >::const_iterator	host_list_it = this->_map.find(port);
+	HostMap::const_iterator	host_list_it = this->_hosts.find(port);
 
-	if (host_list_it == this->_map.end())
+	if (host_list_it == this->_hosts.end())
 	{
 		std::stringstream	stream;
 
@@ -116,7 +111,7 @@ VirtualHost const&	HostList::getHost(uint16_t port, std::string const& name) con
 	return (*(host_list_it->second.begin()));
 }
 
-void	HostList::addHost(std::pair<uint16_t, VirtualHost> const& vhost, std::map<uint16_t, std::vector<VirtualHost> >& host_map)
+void	VHostList::addHost(std::pair<uint16_t, VirtualHost> const& vhost, HostMap& host_map)
 {
 	std::map<uint16_t, std::vector<VirtualHost> >::iterator	host_map_it = host_map.find(vhost.first);
 
@@ -128,13 +123,13 @@ void	HostList::addHost(std::pair<uint16_t, VirtualHost> const& vhost, std::map<u
 		host_map.insert(std::pair<uint16_t, std::vector<VirtualHost> >(vhost.first, host_vec));
 		return ;
 	}
-	for (std::vector<VirtualHost>::const_iterator map_vh_it = host_map_it->second.begin(); map_vh_it != host_map_it->second.end(); ++map_vh_it)
+	for (std::vector<VirtualHost>::const_iterator host_it = host_map_it->second.begin(); host_it != host_map_it->second.end(); ++host_it)
 	{
-		for (std::vector<std::string>::const_iterator map_name_it = map_vh_it->getName().begin(); map_name_it != map_vh_it->getName().end(); ++map_name_it)
+		for (std::vector<std::string>::const_iterator host_name_it = host_it->getName().begin(); host_name_it != host_it->getName().end(); ++host_name_it)
 		{
-			for (std::vector<std::string>::const_iterator vh_name_it = vhost.second.getName().begin(); vh_name_it != vhost.second.getName().end(); ++vh_name_it)
+			for (std::vector<std::string>::const_iterator pair_name_it = vhost.second.getName().begin(); pair_name_it != vhost.second.getName().end(); ++pair_name_it)
 			{
-				if (*map_name_it == *vh_name_it)
+				if (*host_name_it == *pair_name_it)
 					throw std::invalid_argument("Corresponding names and port for two different servers");
 			}
 		}

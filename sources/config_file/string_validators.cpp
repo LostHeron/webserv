@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:21:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/27 15:14:56 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/04 18:35:12 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,27 +69,6 @@ void	request_validator(std::string const& request)
 	{
 		if (std::isupper(static_cast<unsigned char>(*it) == 0))
 			throw std::invalid_argument("Request is invalid (contains non alpha or lowercase characters)");
-	}
-}
-
-void	redirection_validator(std::string const& redir)
-{
-	std::string::size_type	first_occ = redir.find_first_of(':');
-	
-	if (first_occ == std::string::npos || redir.find_last_of(':') != first_occ || redir.substr(0, first_occ).empty() || redir.substr(first_occ + 1).empty())
-		throw std::invalid_argument("Redirection is invalid or ambiguous (expected input : 'path1:path2')");
-}
-
-void	extension_validator(std::string const& extension)
-{
-	std::string::const_iterator	it = extension.begin();
-
-	if (it == extension.end() || *it != '.' || ++it == extension.end())
-		throw std::invalid_argument("Extension is empty or invalid");
-	for (; it != extension.end(); ++it)
-	{
-		if (std::isalpha(static_cast<unsigned char>(*it)) == 0)
-			throw std::invalid_argument("Extension is invalid (contains non alpha characters)");
 	}
 }
 

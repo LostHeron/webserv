@@ -5,15 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 14:54:06 by jweber           ###   ########.fr       */
+/*   Created: 2026/06/11 16:36:39 by jweber            #+#    #+#             */
+/*   Updated: 2026/06/11 16:36:48 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "ASocket.hpp"
-#include "HostList.hpp"
 #include "ListenSocket.hpp"
+#include "VHostList.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
 #include <algorithm>
@@ -28,7 +28,7 @@ Server::Server(char *config_file):
 	isChildren(false),
 	status(SUCCESS),
 	epoll(),
-	host_list(HostList::build(config_file))
+	host_list(VHostList::build(config_file))
 {
 	if (this->epoll.fail())
 	{
@@ -119,7 +119,7 @@ int	Server::getEfd()
 	return (this->epoll.getFd());
 }
 
-const HostList& Server::getHostList() const {return (this->host_list);};
+const VHostList& Server::getHostList() const {return (this->host_list);};
 
 void	Server::remove(ASocket *abstractSocket)
 {
