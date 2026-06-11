@@ -20,6 +20,7 @@
 class	Response: public AMessage
 {
 	public:
+		typedef std::vector<std::pair<std::string, std::string>>	xxx;
 		Response(const int fd);
 		Response(uint16_t errCode, const VirtualHost &vHost);
 		Response(const Response &cpy);
@@ -43,6 +44,7 @@ class	Response: public AMessage
 		uint16_t							_status;
 		std::pair<int, std::string>			_resource;
 		std::string							_content;
+		// xxx									_cookiePairs;
 };
 
 #endif

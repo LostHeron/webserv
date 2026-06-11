@@ -14,9 +14,6 @@
 #include <cstdio>
 
 // Constructors/Destructor =====================================================
-// DELETEReq::DELETEReq(const std::string &type, const std::string &header, const std::string &body):
-// 	ARequest(type, header, body) {}
-
 DELETEReq::DELETEReq(const ARequest &cpy):
 	ARequest(cpy) {}
 
@@ -30,6 +27,7 @@ uint16_t	DELETEReq::_removeResource(std::pair<int, std::string> &resource) const
 {
 	uint16_t status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
+	std::cout << "\n\n\n ===> RESOURCE:::::: " << resource.second << "\n\n\n\n" << std::endl;
 	if (std::remove(resource.second.c_str()))
 	{
 		switch (errno)
@@ -55,7 +53,7 @@ Response	DELETEReq::execute(void)
 	std::pair<std::string, bool> configSetting = this->_vhost.getPathReq(this->_uri, this->_method);
 	resp.setResourcePath(configSetting.first);
 
-	if (!configSetting.second)
+	if (!configSetting.second) // always unauthorized
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
 	else
 		resp.setStatus(this->_removeResource(resp.getResource()));

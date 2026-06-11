@@ -63,3 +63,19 @@ int	main(int ac, char **av)
 
 	return (0);
 }
+
+
+
+set-cookies:	1=bonjour
+set-cookies:	2=23
+
+
+cookies:		1=yo; 2=salut
+
+
+if (client.jsonObj.goodClient() && client.jsonObj.hasChanged(this->_cookies))
+	client.jsonObj.update()
+else
+	client.jsonObj.create(this->_cookies)
+
+
