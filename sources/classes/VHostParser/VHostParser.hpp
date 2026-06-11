@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 15:56:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/10 19:11:47 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/11 17:45:57 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,12 @@ class VHostParser
 			void (*setDef)(T&);
 		};	
 	
-		static std::map<uint16_t, std::vector<VirtualHost::s_config> >	buildFromJson(std::map<std::string, JsonObj> const& obj_map);
+		static std::map<uint16_t, std::vector<VirtualHost::s_config> >	buildFromJson(JsonObj::SubObj const& obj_map);
 
 	private:
 	
 		template <typename Key, typename Val>
-		static std::map<Key, Val>	dispatchJson(std::map<std::string, JsonObj> const& obj_map, std::map<std::string, s_setter<Val> > const& dispatch_table, std::string const& key_name);
+		static std::map<Key, Val>	dispatchJson(JsonObj::SubObj const& obj_map, std::map<std::string, s_setter<Val> > const& dispatch_table, std::string const& key_name);
 	
 		template <typename T>
 		static bool	checkDuplicates(T const& val, std::vector<T> const& vec);

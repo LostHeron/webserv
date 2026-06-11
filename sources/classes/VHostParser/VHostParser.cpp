@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 16:06:22 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/11 16:44:44 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/11 18:08:37 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #include "VirtualHost.hpp"
 #include "ObjSchema.hpp"
 
-std::map<uint16_t, std::vector<VirtualHost::s_config> >	VHostParser::buildFromJson(std::map<std::string, JsonObj> const& host_map)
+std::map<uint16_t, std::vector<VirtualHost::s_config> >	VHostParser::buildFromJson(JsonObj::SubObj const& host_map)
 {
 	ObjSchema	host_schema(HOST_KEY, true, true);
 
@@ -38,7 +38,7 @@ std::map<uint16_t, std::vector<VirtualHost::s_config> >	VHostParser::buildFromJs
 		for (JsonObj::Array::const_iterator	obj_it = host_obj.getVal<JsonObj::Array>().begin(); obj_it != host_obj.getVal<JsonObj::Array>().end(); ++obj_it)
 		{
 			std::map<uint16_t, VirtualHost::s_config>	conf_map = VHostParser::dispatchJson<uint16_t, VirtualHost::s_config>(obj_it->getVal<JsonObj::SubObj>(), host_dispatcher, HOST_PORT_KEY);
-			
+
 			VHostParser::addVHostConf(conf_map, host_conf_map);
 		}
 	}
@@ -52,7 +52,7 @@ std::map<uint16_t, std::vector<VirtualHost::s_config> >	VHostParser::buildFromJs
 }
 
 template <typename Key, typename Val>
-std::map<Key, Val>	VHostParser::dispatchJson(std::map<std::string, JsonObj> const& obj_map, std::map<std::string, s_setter<Val> > const& dispatch_table, std::string const& key_name)
+std::map<Key, Val>	VHostParser::dispatchJson(JsonObj::SubObj const& obj_map, std::map<std::string, s_setter<Val> > const& dispatch_table, std::string const& key_name)
 {	
 	Val	output_val;
 	
@@ -60,13 +60,13 @@ std::map<Key, Val>	VHostParser::dispatchJson(std::map<std::string, JsonObj> cons
 	{
 		if (dispatch_it->first != key_name)
 		{
-			std::map<std::string, JsonObj>::const_iterator	obj_it = obj_map.find(dispatch_it->first);
+			JsonObj::SubObj::const_iterator	obj_it = obj_map.find(dispatch_it->first);
 			
 			if (obj_it != obj_map.end())
 			{
 				if (obj_it->second.getType() == JsonObj::ARRAY)
 				{
-					for (std::vector<JsonObj>::const_iterator it = obj_it->second.getVal<JsonObj::Array>().begin(); it != obj_it->second.getVal<JsonObj::Array>().end(); ++it)
+					for (JsonObj::Array::const_iterator it = obj_it->second.getVal<JsonObj::Array>().begin(); it != obj_it->second.getVal<JsonObj::Array>().end(); ++it)
 					{
 						(*dispatch_it->second.setVal)(*it, output_val);
 					}
@@ -83,9 +83,11 @@ std::map<Key, Val>	VHostParser::dispatchJson(std::map<std::string, JsonObj> cons
 		}
 	}
 
-	std::map<std::string, JsonObj>::const_iterator	obj_it = obj_map.find(key_name);
-	std::map<Key, Val>								output_map;
+	JsonObj::SubObj::const_iterator	obj_it = obj_map.find(key_name);
+	std::map<Key, Val>				output_map;
 	
+	if (obj_it == obj_map.end())
+		throw std::logic_error("Key name not found when trying to parse config");
 	if (obj_it->second.getType() == JsonObj::ARRAY)
 	{
 		for (JsonObj::Array::const_iterator it = obj_it->second.getVal<JsonObj::Array>().begin(); it != obj_it->second.getVal<JsonObj::Array>().end(); ++it)
@@ -114,34 +116,34 @@ std::map<std::string, VHostParser::s_setter<VirtualHost::s_config> >	VHostParser
 	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
 	setters.setVal = setHostRoot;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_ROOT_KEY, setters));
 	setters.setVal = setHostIndex;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_INDEX_KEY, setters));
 	setters.setVal = setHostMaxBody;
 	setters.setDef = setHostDefMaxBody;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_BODY_SIZE_KEY, setters));
 	setters.setVal = setHostInterface;
 	setters.setDef = setHostDefInterface;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_INTERFACE_KEY, setters));
 	setters.setVal = setHostDirList;
 	setters.setDef = setHostDefDirList;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_DIR_LIST_KEY, setters));
 	setters.setVal = setHostAllowedRequest;
 	setters.setDef = setHostDefAllowedRequest;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_ALLOWED_REQUEST_KEY, setters));
 	setters.setVal = setHostError;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_ERROR_KEY, setters));
 	setters.setVal = setHostLocation;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_LOCATION_KEY, setters));
 	setters.setVal = setHostCgi;
 	setters.setDef = setHostDefCgi;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_CGI_KEY, setters));
 	setters.setVal = setHostCgiExt;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_CGI_EXT_KEY, setters));
 	return (dispatch_map);
 }
 
@@ -152,25 +154,25 @@ std::map<std::string, VHostParser::s_setter<VirtualHost::Location::s_config> >	V
 	
 	setters.setVal = setLocAlias;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_ALIAS_KEY, setters));
 	setters.setVal = setLocRedir;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_REDIRECTION_KEY, setters));
 	setters.setVal = setLocIndex;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_INDEX_KEY, setters));
 	setters.setVal = setLocDirList;
 	setters.setDef = setLocDefDirList;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_DIR_LIST_KEY, setters));
 	setters.setVal = setLocAllowedRequest;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_ALLOWED_REQUEST_KEY, setters));
 	setters.setVal = setLocCgi;
 	setters.setDef = setLocDefCgi;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_CGI_KEY, setters));
 	setters.setVal = setLocCgiExt;
 	setters.setDef = NULL;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(HOST_NAME_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_CGI_EXT_KEY, setters));
 	return (dispatch_map);
 }
 
@@ -180,7 +182,7 @@ void	VHostParser::addVHostConf(std::map<uint16_t, VirtualHost::s_config> const& 
 	{
 		std::map<uint16_t, std::vector<VirtualHost::s_config> >::iterator	host_conf_it = host_conf_map.find(conf_it->first);
 		
-		if (host_conf_it != host_conf_map.end())
+		if (host_conf_it == host_conf_map.end())
 		{
 			std::vector<VirtualHost::s_config>	conf_vec;
 

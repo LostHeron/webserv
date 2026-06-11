@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 20:36:35 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/08 17:24:57 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/11 17:46:15 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ ASchema::ASchema(std::string const& name, JsonObj::e_jsonType type, bool is_requ
 ASchema::~ASchema()
 {}
 
-void	ASchema::validate(std::map<std::string, JsonObj> const& obj_map) const
+void	ASchema::validate(JsonObj::SubObj const& obj_map) const
 {
-	std::map<std::string, JsonObj>::const_iterator obj_it = obj_map.find(this->_name);
+	JsonObj::SubObj::const_iterator obj_it = obj_map.find(this->_name);
 
 	if (obj_it == obj_map.end() || (obj_it->second.getType() == JsonObj::ARRAY && obj_it->second.getVal<JsonObj::Array>().empty()))
 	{
@@ -39,7 +39,7 @@ void	ASchema::validate(std::map<std::string, JsonObj> const& obj_map) const
 	}
 	if (obj_it->second.getType() == JsonObj::ARRAY && this->_allowMultiple == true)
 	{
-		for (std::vector<JsonObj>::const_iterator arr_it = obj_it->second.getVal<JsonObj::Array>().begin(); arr_it != obj_it->second.getVal<JsonObj::Array>().end(); ++arr_it)
+		for (JsonObj::Array::const_iterator arr_it = obj_it->second.getVal<JsonObj::Array>().begin(); arr_it != obj_it->second.getVal<JsonObj::Array>().end(); ++arr_it)
 		{
 			this->checkType(*arr_it);
 			this->checkValue(*arr_it);

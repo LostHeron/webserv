@@ -6,8 +6,8 @@
         "location":[
         { 
             "name": "/images",
-            "alias":"/home/jweber/goinfre/tmp/b/",
-        },
+            "alias":"/home/jweber/goinfre/tmp/b/"
+        }
         ]
-    },
+    }
 ]

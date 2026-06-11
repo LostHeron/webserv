@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 15:32:26 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/10 19:39:43 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/11 18:09:42 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ VHostList    VHostList::build(char const* filename)
 
 	input_stream << config_file.rdbuf();
 
-	JsonLexer						lexer(input_stream.str());
-	std::map<std::string, JsonObj>	obj_map;
+	JsonLexer		lexer(input_stream.str());
+	JsonObj::SubObj	obj_map;
 
 	while (!lexer.empty())
 	{
