@@ -301,7 +301,7 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	// and it is implementation defined .. so let's see if we have
 	// time to do it
 
-	str = "QUERY_STRING=" + this->query_string;
+	str = "QUERY_STRING=" + this->queryString;
 	vec_envp.push_back(str);
 
 	str = "REMOTE_ADDR=" + get_IPv4_string_format(this->connection->getPeerAddr());

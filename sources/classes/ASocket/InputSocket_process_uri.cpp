@@ -45,7 +45,7 @@ void	InputSocket::process_uri(size_t& pos)
 			this->uri.append(this->inputBuffer, pos, delim - pos);
 		if (check_uri(this->uri) || this->uri == "")
 			return (setup_response(this->status, 400, this->connection));
-		this->query_string = extract_query_string(this->uri);
+		this->queryString = extract_query_string(this->uri);
 		clear_uri(this->uri);
 		this->state++;
 		pos = delim;

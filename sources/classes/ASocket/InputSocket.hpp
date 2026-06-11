@@ -61,7 +61,7 @@ class InputSocket: public ASocket
 
 		// identify which uri the client tries to reach
 		std::string					uri;
-		std::string					query_string;
+		std::string					queryString;
 		void						process_uri(size_t& pos);
 
 		// identify which version of HTTP the client tries to reach
