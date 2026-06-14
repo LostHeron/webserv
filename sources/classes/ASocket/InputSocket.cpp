@@ -26,7 +26,6 @@
 #include <cstddef>
 #include <fcntl.h>
 #include <sstream>
-#include <stdexcept>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
@@ -45,7 +44,8 @@
 
 InputSocket::InputSocket(int fd, Connection* connection):
 	ASocket(connection),
-	state(0)
+	state(0),
+	bodySize(0)
 {
 	this->fd = fd;
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
@@ -72,29 +72,27 @@ InputSocket::InputSocket(int fd, Connection* connection):
 
 InputSocket::~InputSocket()
 {
-	/*
-	if (associatedInCgi != NULL)
-		this->server.remove(this->associatedInCgi);
-	this->associatedInCgi = NULL;
-	if (associatedOutCgi != NULL)
-		this->server.remove(this->associatedOutCgi);
-	this->associatedOutCgi = NULL;
-	*/
+	#ifdef DEBUG
+	std::cout << "In InputSocket Destructor\n";
+	#endif
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
 const std::string					&InputSocket::getUri(void) const { return(this->uri); }
 const std::string					&InputSocket::getVersion(void) const { return(this->version); }
 const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
+string_map							&InputSocket::getHeadersNoConst(void) { return(this->headers); }
 
-void	updateInputBuffer(std::string& input_buffer, int fd, int& status);
+void	updateInputBuffer(std::string& inputBuffer, int fd, int& status);
 
 void InputSocket::process()
 {
+	#ifdef DEBUG
+	std::cout << "in InputSocket process()\n";
+#endif
 	if (this->status != SUCCESS)
 		return ;
-	std::cout << "in InputSocket process()\n";
-	updateInputBuffer(this->input_buffer, this->fd, this->status);
+	updateInputBuffer(this->inputBuffer, this->fd, this->status);
 	if (this->status != SUCCESS)
 		return ;
 
@@ -102,14 +100,16 @@ void InputSocket::process()
 	(this->*process_functions[this->state])(position);
 	if (this->fail())
 		return ;
-	if (position >= this->input_buffer.size())
-		this->input_buffer.clear();
+	if (position >= this->inputBuffer.size())
+		this->inputBuffer.clear();
+	#ifdef DEBUG
 	std::cout << *this << "\n";
+	#endif
 }
 
-void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
+void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
 {
-	if (input_buffer == "")
+	if (inputBuffer == "")
 	{
 		char buf[BUFSIZ];
 		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
@@ -130,18 +130,21 @@ void	updateInputBuffer(std::string& input_buffer, int fd, int& status)
 		}
 		else
 		{
-			input_buffer = std::string(buf, nb_read);
+			inputBuffer = std::string(buf, nb_read);
 		}
 	}
 	else
 	{
+		#ifdef DEBUG
 		std::cout << "-->ACTION: InputSocket does not read anything, buffer not empty\n";
+		#endif
 	}
 }
 
-void	setup_response(int& status, int errorCode, OutputSocket& os)
+void	setup_response(int& status, int errorCode, Connection* connection)
 {
-	Response resp(static_cast<uint16_t>(HTTPStatus::S_ERR + HTTPStatus::INTERNAL));
+	connection->setVHost();
+	Response resp(errorCode, *(connection->getVHost()) );
 	status = FINISH;
 	HeadersBuilder b;
 	b.initialize()
@@ -149,13 +152,13 @@ void	setup_response(int& status, int errorCode, OutputSocket& os)
 	 .buildDate()
 	 .buildCRLF()
 	 .buildBody(resp.getContent());
-	os.setup(resp.getResource().first, b.build());
+	connection->getOutputSocket()->setup(resp.getResource().first, b.build());
 }
 
 void	InputSocket::process_body(size_t& pos)
 {
 	if (pos != 0)
-		this->input_buffer = std::string(this->input_buffer, pos);
+		this->inputBuffer = std::string(this->inputBuffer, pos);
 	return ;
 }
 
@@ -175,15 +178,15 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	{
 		int errno_value = errno;
 		logerror("fork", errno_value);
-		this->status = FAILURE;
-		return ;
+		int a;
+		return (setup_response(a, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->connection));
 	}
-
 	if (pid == 0)
 	{
 		//here is the child !
 		try
 		{
+			this->connection->setIsChildren();
 			toCGI.closeWriteEnd();
 			fromCGI.closeReadEnd();
 			if (dup2(toCGI.getReadEnd(), STDIN_FILENO) < 0)
@@ -234,16 +237,16 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	}
 	else
 	{
+		this->getConnection()->setCgiPid(pid);
 		size_t body_size;
 		char *end;
 		if (this->headers.count("content-length") == 1) // something wrong ?
 			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
 		else
 			body_size = 0;
-		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->input_buffer, this->connection);
+		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->inputBuffer, this->connection);
 		this->connection->add(incgi, EPOLLOUT);
 		this->connection->setInCGI(incgi);
-		//this->server.add(incgi, EPOLLOUT);
 
 		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), this->connection);
 		this->connection->add(outcgi, EPOLLIN);
@@ -298,7 +301,7 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	// and it is implementation defined .. so let's see if we have
 	// time to do it
 
-	str = "QUERY_STRING=" + this->query_string;
+	str = "QUERY_STRING=" + this->queryString;
 	vec_envp.push_back(str);
 
 	str = "REMOTE_ADDR=" + get_IPv4_string_format(this->connection->getPeerAddr());
@@ -381,12 +384,15 @@ static std::string get_port_string_format(uint16_t peer_port)
 void	InputSocket::process_skip_sp(size_t& pos)
 {
 	// std::cout << "in process skip spaces\n";
-	size_t	non_sp_pos = this->input_buffer.find_first_not_of(" ", pos);
-	if (non_sp_pos == this->input_buffer.npos)
+	size_t	non_sp_pos = this->inputBuffer.find_first_not_of(" ", pos);
+	if (non_sp_pos == this->inputBuffer.npos)
+	{
+		pos = non_sp_pos;
 		return ;
+	}
 	this->state++;
 	pos = non_sp_pos;
-	if (pos < this->input_buffer.size())
+	if (pos < this->inputBuffer.size())
 		(this->*process_functions[this->state])(pos);
 	return ;
 }
@@ -401,7 +407,7 @@ std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket)
 			os << ".";
 	}
 	os << ":" << inputSocket.connection->getPeerPort() << ";\n";
-	os << "current buffer contains: '" << inputSocket.input_buffer << "'\n";
+	os << "current buffer contains: '" << inputSocket.inputBuffer << "'\n";
 	os << "method: '" << inputSocket.method << "'; ";
 	os << "uri: '" << inputSocket.uri << "'; ";
 	os << "version: '" << inputSocket.version << "'; ";

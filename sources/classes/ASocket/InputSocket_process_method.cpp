@@ -11,35 +11,33 @@
 /* ************************************************************************** */
 
 #include "InputSocket.hpp"
-#include "OutputSocket.hpp"
 #include "status.hpp"
-#include "Connection.hpp"
 #include "abnf.hpp"
 
 static int	check_method(std::string& method);
 
 void	InputSocket::process_method(size_t& pos)
 { 
-	size_t space_pos = this->input_buffer.find(' ', 0);
+	size_t space_pos = this->inputBuffer.find(' ', 0);
 	if (space_pos == std::string::npos)
 	{
 		// no space found: add everything in the 'method' field
-		this->method.append(this->input_buffer);
+		this->method.append(this->inputBuffer);
 		if (check_method(this->method) != SUCCESS)
-			return (setup_response(this->status, 400, *this->connection->getOutputSocket()));
-		pos = this->input_buffer.size();
+			return (setup_response(this->status, 400, this->connection));
+		pos = this->inputBuffer.size();
 		return ;
 	}
 	else
 	{
-		this->method.append(this->input_buffer, pos, space_pos - pos);
+		this->method.append(this->inputBuffer, pos, space_pos - pos);
 		if (check_method(this->method) != SUCCESS)
-			return (setup_response(this->status, 400, *this->connection->getOutputSocket()));
+			return (setup_response(this->status, 400, this->connection));
 		else
 		{
 			this->state++;
 			pos = space_pos + 1;
-			if (pos < this->input_buffer.size())
+			if (pos < this->inputBuffer.size())
 				(this->*process_functions[this->state])(pos);
 			return ;
 		}

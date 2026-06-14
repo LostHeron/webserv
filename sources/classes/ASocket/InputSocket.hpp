@@ -33,10 +33,11 @@ class InputSocket: public ASocket
 		
 		~InputSocket();
 
-		const std::string					&getMethod(void) const;
-		const std::string					&getUri(void) const;
-		const std::string					&getVersion(void) const;
-		const string_map					&getHeaders(void) const;
+		const std::string	&getMethod(void) const;
+		const std::string	&getUri(void) const;
+		const std::string	&getVersion(void) const;
+		const string_map	&getHeaders(void) const;
+		string_map			&getHeadersNoConst(void);
 
 		void	process();
 
@@ -51,7 +52,7 @@ class InputSocket: public ASocket
 		void (InputSocket::*process_functions[10])(size_t& pos);
 
 		// used to know which state the program is in
-		std::string			input_buffer;
+		std::string			inputBuffer;
 		int					state;	
 
 		// identify which method the client tries to reach
@@ -60,7 +61,7 @@ class InputSocket: public ASocket
 
 		// identify which uri the client tries to reach
 		std::string					uri;
-		std::string					query_string;
+		std::string					queryString;
 		void						process_uri(size_t& pos);
 
 		// identify which version of HTTP the client tries to reach
@@ -71,10 +72,11 @@ class InputSocket: public ASocket
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
 		//std::vector< std::string >					header;
-		std::string					last_line;
+		std::string					lastLine;
 		string_map					headers;
 		void						process_headers(size_t& pos);
 
+		size_t						bodySize;
 		void						process_body(size_t& pos);
 
 		void						process_skip_sp(size_t& pos);
@@ -84,6 +86,6 @@ class InputSocket: public ASocket
 		void						prepareCGI(const std::string& script_name);
 };
 
-void	setup_response(int& status, int errorCode, OutputSocket& os);
+void	setup_response(int& status, int errorCode, Connection *connection);
 
 #endif

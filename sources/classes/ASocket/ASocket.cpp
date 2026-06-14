@@ -18,7 +18,6 @@
 
 ASocket::ASocket(Connection* connection):
 	fd(-1),
-	memoryUsage(0),
 	status(SUCCESS),
 	connection(connection)
 {
@@ -146,7 +145,7 @@ int check_last_line(std::string last_line)
 
 void	remove_trailing_new_line(std::string& line)
 {
-	if (line.size() > 0 && line[line.size() - 1] == '\n')
+	if (line.size() > 0 && (line[line.size() - 1] == '\n' || line[line.size() - 1] == '\r'))
 	{
 		line.erase(line.size() - 1, 1);
 		while (line.size() > 0 && line[line.size() - 1] == '\r')

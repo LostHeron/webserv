@@ -15,10 +15,12 @@
 #include "Server.hpp"
 #include "status.hpp"
 #include "error.hpp"
+#include "Connection.hpp"
 #include <cerrno>
 #include <cstdio>
 #include <stdint.h>
 #include <iostream>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -47,11 +49,18 @@ OutputSocket::OutputSocket(int socket_fd, Connection* connection):
 		logerror("fcntl", error_value);
 	}
 	else
+	{
+		#ifdef DEBUG
 		std::cout << "successfully duplicated socket_fd\n";
+		#endif
+	}
 }
 
 OutputSocket::~OutputSocket()
 {
+	#ifdef DEBUG
+	std::cout << "In Outputsocket destructor\n";
+	#endif
 	if (this->ressourceFd >= 0)
 		close(this->ressourceFd);
 	this->ressourceFd = -1;
@@ -68,7 +77,9 @@ void	OutputSocket::setup(int newRessourceFd, const std::string& firstBuffer)
 
 void	OutputSocket::process()
 {
-	std::cout << "in OutputSocket process()\n";
+	#ifdef DEBUG
+	std::cout << "in OutputSocket process() concerning uri:'" << this->connection->getInputSocket()->getUri() << "'\n";
+	#endif
 	if (this->ready == true && this->outputBuffer == "")
 	{
 		updateOutputBuffer();
@@ -76,6 +87,13 @@ void	OutputSocket::process()
 	if (this->outputBuffer.size() > 0)
 	{
 		ssize_t nb_send = send(this->fd, this->outputBuffer.data(), this->outputBuffer.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
+		#ifdef DEBUG
+		std::cout << "OutputSocket sent " << nb_send << " bytes back to client which requested the following uri: '"
+			<< this->connection->getInputSocket()->getUri() << "'\n";
+		std::cout << "~~~~~~~~~~~~~~~~~~\n" 
+			<< std::string(this->outputBuffer.data(), nb_send)
+			<< "\n~~~~~~~~~~~~~~~~~~\n";
+		#endif
 		if (nb_send < 0)
 			std::cerr << "An error occured while sending data to server\n";
 		else
@@ -98,6 +116,7 @@ void	OutputSocket::process()
 
 void	OutputSocket::updateOutputBuffer()
 {
+	// should only be used to read data from regular file (non blocking fds)
 	char buf[BUFSIZ];
 	ssize_t nb_read = read(this->ressourceFd, buf, BUFSIZ);
 	if (nb_read < 0)

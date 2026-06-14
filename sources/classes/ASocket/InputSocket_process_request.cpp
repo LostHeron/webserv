@@ -56,17 +56,20 @@ void	InputSocket::process_request(size_t& pos)
 		OutputSocket* os = this->connection->getOutputSocket();
 
 		HeadersBuilder	b;
-		b.initialize()
-			.buildStatusLine("HTTP/1.1", resp.getStatus())
+		b.initialize();
+		if (this->version != "")
+		{
+			b.buildStatusLine("HTTP/1.1", resp.getStatus())
 		 	.buildDate()
-		 	.buildCRLF()
-		 	.buildBody(resp.getContent());
+		 	.buildCRLF();
+		}
+		b.buildBody(resp.getContent());
 
 		os->setup(resp.getResource().first, b.build());
 	}
 	
 	this->state++;
-	if (pos < this->input_buffer.size())
+	if (pos < this->inputBuffer.size())
 		(this->*process_functions[this->state])(pos);
 	return ;
 }

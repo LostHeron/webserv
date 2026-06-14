@@ -234,18 +234,46 @@ re:
 	$(MAKE) all
 
 
-debug:
-	rm webserv
-	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
+debug_info:
+	rm -f webserv
+	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
-debug_clean:
-	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
+debug_info_clean:
+	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
-debug_fclean:
-	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
+debug_info_fclean:
+	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
-debug_re:
-	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug/"
+debug_info_re:
+	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
+
+debug_print:
+	rm -f webserv
+	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_print_clean:
+	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_print_fclean:
+	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_print_re:
+	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_sanitize:
+	rm -f webserv
+	$(MAKE) all NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+debug_sanitize_clean:
+	$(MAKE) clean NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+debug_sanitize_fclean:
+	$(MAKE) fclean NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+debug_sanitize_re:
+	$(MAKE) re NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+
 
 print-%:
 	@echo $($(patsubst print-%,%,$@))

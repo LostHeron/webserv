@@ -10,32 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "status.hpp"
-#include "Connection.hpp"
+#include "typedef.hpp"
 #include <cctype>
 #include <cctype>
 #include <map>
+#include <sstream>
 #include <string>
 
+static int	no_version(int& state, InputSocket& inputSocket, int& status);
+static int	getBodySize(size_t& bodySize, string_map& headers);
 static int	check_headers(const string_map& headers);
-static void	no_version(InputSocket& inputSocket, int& status);
-
-// here depending on the version, it should exepct no header 
-// maybe header should be in key-value pairs ? like:
-// std::map<std::string, std::string>, but a map is annoying because it
-// does not allow duplicate keys, and keys can be duplicate
-// so maybe more an std::vector of std::pairs of std::string, std::string
-// maybe this is better this way ? i think we will go this way
-// but its so much verbose ...
-// or a std::map<std::string, std::vector<std::string>>
-// this ones gives flexibility, but also very verbose
-// so i do not really know ??
-// so getting here, if version is empty, then it is a 'simple-request'
-// if it is a simple request, then the method should be 'GET'
-// and if it is the case, the request is complete, and should 
-// be processed using only method and uri, then closed and all other
-// ressources send should be ignored
 
 void	InputSocket::process_headers(size_t& start)
 {
@@ -43,47 +30,61 @@ void	InputSocket::process_headers(size_t& start)
 
 	if (this->version == "")
 	{
-		return (no_version(*this, this->status));
+		if (no_version(this->state, *this, this->status) == SUCCESS)
+			(this->*process_functions[this->state])(start);
 	}
 
-	// goal, fill in the map
-	while (start < this->input_buffer.size())
+	while (start < this->inputBuffer.size())
 	{
-		if (fill_last_line(this->input_buffer, this->last_line, start, this->state) == STOP)
+		if (fill_last_line(this->inputBuffer, this->lastLine, start, this->state) == STOP)
 		{
+			if (getBodySize(this->bodySize, this->headers) != SUCCESS)
+				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
 			(this->*process_functions[this->state])(start);
 			break;
 		}
 
-		if (check_last_line(this->last_line) != SUCCESS)
+		if (check_last_line(this->lastLine) != SUCCESS)
 		{
-			return (setup_response(this->status, 400, *this->connection->getOutputSocket()));
+			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
 		}
 
-		if (this->last_line.size() > 0 && this->last_line[last_line.size() - 1] == '\n')
+		if (this->lastLine.size() > 0 && this->lastLine[this->lastLine.size() - 1] == '\n')
 		{
-			add_line_headers(this->last_line, this->headers);
+			add_line_headers(this->lastLine, this->headers);
 			if (check_headers(this->headers) != SUCCESS)
-				return (setup_response(this->status, 400, *this->connection->getOutputSocket()));
-			this->last_line.clear();
+				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
+			this->lastLine.clear();
 		}
 	}
 }
 
-static void	no_version(InputSocket& inputSocket, int& status)
+static int	no_version(int& state, InputSocket& inputSocket, int& status)
 {
 		if (inputSocket.getMethod() == "GET")
 		{
-			// do stuff to stop parsing incoming data,
-			// and process the request using only information
-			// in 'method' and in 'uri'
-			// return ...
+			state = 6;
+			return (SUCCESS);
 		}
 		else
 		{
-			return (setup_response(status, 400, *inputSocket.getConnection()->getOutputSocket()));
+			setup_response(status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, inputSocket.getConnection());
+			return (FAILURE);
 		}
-		return ;
+}
+
+int	getBodySize(size_t& bodySize, string_map& headers)
+{
+	if (headers.count("content-length") && headers["content-length"].size() > 0)
+	{
+		std::stringstream ss;
+		ss << headers["content-length"].at(0);
+		ss >> bodySize;
+		if (ss.fail())
+			return (FAILURE);
+		return (SUCCESS);
+	}
+	return (SUCCESS);
 }
 
 static int	check_headers(const string_map& headers)

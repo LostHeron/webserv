@@ -25,6 +25,7 @@
 #include "Connection/Connection.hpp"
 
 Server::Server(char *config_file):
+	isChildren(false),
 	status(SUCCESS),
 	epoll(),
 	host_list(HostList::build(config_file))
@@ -46,6 +47,7 @@ Server::Server(char *config_file):
 
 Server::~Server()
 {
+	std::cout << "In SERVER DESTRUCTOR\n";
 	for (size_t	i = 0; i < this->listenSockets.size(); i++)
 	{
 		delete (this->listenSockets[i]);
@@ -54,6 +56,16 @@ Server::~Server()
 	{
 		delete (this->connections[i]);
 	}
+}
+
+void	Server::setIsChildren()
+{
+	this->isChildren = true;
+}
+
+bool	Server::getIsChildren()
+{
+	return (this->isChildren);
 }
 
 bool	Server::fail()
@@ -92,6 +104,7 @@ void	Server::add(Connection* newConnection)
 
 void	Server::remove(Connection* toBeDeleted)
 {
+	std::cout << "REMOVING A CONNECTION !!\n";
 	std::vector<Connection *>::iterator it;
 
 	it = std::find(this->connections.begin(), this->connections.end(), toBeDeleted);

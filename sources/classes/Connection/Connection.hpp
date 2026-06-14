@@ -20,12 +20,15 @@
 #include "OutCGI.hpp"
 #include "OutCGI.hpp"
 #include "OutputSocket.hpp"
+#include "VirtualHost.hpp"
 
 class Connection
 {
 	public:
 		Connection(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
 		~Connection();
+		
+		void			setIsChildren();
 
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();
@@ -35,6 +38,9 @@ class Connection
 
 		OutCGI*			getOutCGI();
 		void			setOutCGI(OutCGI*);
+
+		int				getCgiPid();
+		void			setCgiPid(int pid);
 
 		void			add(ASocket*, int event);
 		void			remove(ASocket*);
@@ -47,25 +53,36 @@ class Connection
 
 		time_t			getStartTime() const;
 
+		const VirtualHost	*getVHost();
+		void				setVHost();
+
 	private:
 		Connection();
 		Connection(const Connection& other);
 		const Connection& operator=(const Connection& other);
 
+		// used to keep track of memory usage by each
+		// connected client, in order to chose which connection 
+		// to abort first;
+		size_t				memoryUsage;
+
 		// used to timeout request
-		time_t			startTime;
+		time_t				startTime;
 
-		uint8_t			peerAddr[4];
-		uint16_t		peerPort;
-		uint16_t		localPort;
+		const VirtualHost	*vHost;
 
-		InputSocket		inputSocket;
-		OutputSocket	outputSocket;
+		uint8_t				peerAddr[4];
+		uint16_t			peerPort;
+		uint16_t			localPort;
 
-		InCGI			*inCGI;
-		OutCGI			*outCGI;
+		InputSocket			inputSocket;
+		OutputSocket		outputSocket;
 
-		Server&			server;
+		int					cgiPid;
+		InCGI				*inCGI;
+		OutCGI				*outCGI;
+
+		Server&				server;
 };
 
 #endif

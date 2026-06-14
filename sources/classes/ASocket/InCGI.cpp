@@ -20,11 +20,11 @@
 #include <unistd.h>
 #include <cerrno>
 
-InCGI::InCGI(int fd, size_t bodySize, std::string& input_buffer, Connection* connection):
+InCGI::InCGI(int fd, size_t bodySize, std::string& newInputBuffer, Connection* connection):
 	ASocket(connection),
 	nbToSend(bodySize),
 	nbSent(0),
-	input_buffer(input_buffer)
+	inputBuffer(newInputBuffer)
 {
 	this->fd = dup(fd); 
 	if (this->fd < 0)
@@ -48,21 +48,24 @@ InCGI::InCGI(int fd, size_t bodySize, std::string& input_buffer, Connection* con
 
 void	InCGI::process()
 {
+	#ifdef DEBUG
+	std::cout << "In InCGI process\n";
+	#endif
 	/*
 	if (this->status != SUCCESS)
 		return ;
 	*/
-	if (this->input_buffer.size() > 0)
+	if (this->inputBuffer.size() > 0)
 	{
 		size_t	tmp_size;
-		if (this->nbSent + this->input_buffer.size() > this->nbToSend)
+		if (this->nbSent + this->inputBuffer.size() > this->nbToSend)
 			tmp_size = this->nbToSend - this->nbSent;
 		else
-			tmp_size = this->input_buffer.size();
+			tmp_size = this->inputBuffer.size();
 
 		if (tmp_size > 0)
 		{
-			ssize_t nb_write = write(this->fd, this->input_buffer.data(), tmp_size);
+			ssize_t nb_write = write(this->fd, this->inputBuffer.data(), tmp_size);
 			if (nb_write < 0)
 			{
 				int errno_value = errno;
@@ -72,9 +75,11 @@ void	InCGI::process()
 			}
 			else
 			{
+				#ifdef DEBUG
 				std::cout << "-->ACTION: InCgi wrote " << nb_write << " byte to pipe\n";
+				#endif
 				this->nbSent += nb_write;
-				this->input_buffer = std::string(this->input_buffer, nb_write);
+				this->inputBuffer = std::string(this->inputBuffer, nb_write);
 				if (this->nbSent >= this->nbToSend)
 				{
 					this->status = FINISH;
@@ -89,4 +94,7 @@ void	InCGI::process()
 
 InCGI::~InCGI()
 {
+	#ifdef DEBUG
+	std::cout << "In INCGI DESTRUCTOR\n";
+	#endif
 }

@@ -29,10 +29,11 @@ class EpollStruct
 	protected:
 
 	private:
-		int	epfd;
-		int	status;
 		EpollStruct(const EpollStruct& other);
 		EpollStruct& operator=(const EpollStruct& other);
+
+		int	epfd;
+		int	status;
 };
 
 #endif // !EPOLLSTRUCT_HPP

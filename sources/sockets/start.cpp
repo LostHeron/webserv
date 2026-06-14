@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "Connection/Connection.hpp"
+#include "HTTPStatus.hpp"
+#include "InputSocket.hpp"
 #include "IsChildren.hpp"
 #include "sockets.hpp"
 #include "ASocket.hpp"
@@ -70,6 +72,9 @@ void	start(Server& server)
 					catch (std::exception& e)
 					{
 						std::cerr << e.what() << "\n";
+						if (event->getConnection() != NULL)
+							server.remove(event->getConnection());
+						break;
 					}
 					catch (...)
 					{
@@ -90,6 +95,7 @@ void	start(Server& server)
 					*/
 				}
 				timeout_connections(server);
+				(void) timeout_connections;
 			}
 			catch (IsChildren& e)
 			{
@@ -113,7 +119,8 @@ static void	timeout_connections(Server& server)
 		if (current_time - connections[i]->getStartTime() > TTL_CONNECTION)
 		{
 			std::cerr << "CONNECTION GETTING TIMEDOUT!!!\n";
-			server.remove(connections[i]);
+			int	a;
+			setup_response(a, HTTPStatus::C_ERR + HTTPStatus::TIMEOUT, connections[i]);
 		}
 	}
 }
