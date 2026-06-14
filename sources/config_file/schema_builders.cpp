@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/28 14:47:01 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/11 16:45:01 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 
 static void	error_page_schema_builder(ObjSchema& error_page_schema);
 static void	location_schema_builder(ObjSchema& location_schema);
-static void	cgi_schema_builder(ObjSchema& cgi_schema);
 
 void	host_schema_builder(ObjSchema& host_schema)
 {   
@@ -58,7 +57,6 @@ void	host_schema_builder(ObjSchema& host_schema)
 
 	allowed_requests_schema->addValidator(request_validator);
 	host_schema.addField(allowed_requests_schema);
-
 	host_schema.addField(new BoolSchema(HOST_DIR_LIST_KEY, false, false));
 
 	ObjSchema*	error_schema = new ObjSchema(HOST_ERROR_KEY, false, true);
@@ -70,11 +68,12 @@ void	host_schema_builder(ObjSchema& host_schema)
 	
 	location_schema_builder(*location_schema);
 	host_schema.addField(location_schema);
+	host_schema.addField(new BoolSchema(HOST_CGI_KEY, false, false));
 
-	ObjSchema*	cgi_schema = new ObjSchema(HOST_CGI_KEY, false, true);
+	StringSchema*	cgi_ext_schema = new StringSchema(HOST_CGI_EXT_KEY, false, true);
 
-	cgi_schema_builder(*cgi_schema);
-	host_schema.addField(cgi_schema);
+	cgi_ext_schema->addValidator(non_empty_validator);
+	host_schema.addField(cgi_ext_schema);
 }
 
 static void	error_page_schema_builder(ObjSchema& error_schema)
@@ -98,10 +97,15 @@ static void	location_schema_builder(ObjSchema& location_schema)
 	name_schema->addValidator(non_empty_validator);
 	location_schema.addField(name_schema);
 
-	StringSchema*	alias_schema = new StringSchema(LOC_ALIAS_KEY, true, false);
+	StringSchema*	alias_schema = new StringSchema(LOC_ALIAS_KEY, false, false);
 
 	alias_schema->addValidator(non_empty_validator);
 	location_schema.addField(alias_schema);
+
+	StringSchema*	redirections_schema = new StringSchema(LOC_REDIRECTION_KEY, false, false);
+
+	redirections_schema->addValidator(non_empty_validator);
+	location_schema.addField(redirections_schema);
 
 	StringSchema*	index_schema = new StringSchema(LOC_INDEX_KEY, false, false);
 
@@ -113,27 +117,11 @@ static void	location_schema_builder(ObjSchema& location_schema)
 	allowed_requests_schema->addValidator(request_validator);
 	location_schema.addField(allowed_requests_schema);
 	location_schema.addField(new BoolSchema(LOC_DIR_LIST_KEY, false, false));
+	location_schema.addField(new BoolSchema(LOC_CGI_KEY, false, false));
 
-	StringSchema*	redirections_schema = new StringSchema(LOC_REDIRECTION_KEY, false, true);
+	StringSchema*	cgi_ext_schema = new StringSchema(HOST_CGI_EXT_KEY, false, true);
 
-	redirections_schema->addValidator(redirection_validator);
-	location_schema.addField(redirections_schema);
-	
-	ObjSchema*	cgi_schema = new ObjSchema(LOC_CGI_KEY, false, true);
-
-	cgi_schema_builder(*cgi_schema);
-	location_schema.addField(cgi_schema);
+	cgi_ext_schema->addValidator(non_empty_validator);
+	location_schema.addField(cgi_ext_schema);
 }
 
-static void	cgi_schema_builder(ObjSchema& cgi_schema)
-{
-	StringSchema*	extension_schema = new StringSchema(CGI_EXTENSION_KEY, true, true);
-
-	extension_schema->addValidator(non_empty_validator);
-	cgi_schema.addField(extension_schema);
-
-	StringSchema*	exec_schema = new StringSchema(CGI_EXEC_KEY, true, true);
-
-	exec_schema->addValidator(non_empty_validator);
-	cgi_schema.addField(exec_schema);
-}

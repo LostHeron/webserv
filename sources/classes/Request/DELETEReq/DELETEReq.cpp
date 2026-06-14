@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/04/13 17:38:59 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/06/11 16:41:58 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,11 @@ Response	DELETEReq::execute(void)
 {
 	Response	resp(this->_fd);
 
-	std::pair<std::string, bool> configSetting = this->_vhost.getPathReq(this->_uri, this->_method);
+	std::pair<std::string, bool> configSetting;// = this->_vhost.getPathReq(this->_uri, this->_method);
+	// TO BE CHANGED
+	configSetting.first = "/home/jweber/goinfre/tmp/test.sh";
+	configSetting.second = true;
+	
 	resp.setResourcePath(configSetting.first);
 
 	if (!configSetting.second) // always unauthorized

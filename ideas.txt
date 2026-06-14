@@ -6,3 +6,47 @@ look into default values implementation, and default server redirection if no ma
 
 need to decide what happens when trying to copy a virtual host from another one, if even possible
 logs seems to be the biggest issue : who handles logs ? who checks if logs are needed ? how to "copy" logs destination from one virtual server to another ?
+
+
+
+class VHost
+{
+	public:
+
+		struct s_config
+		{
+			/* all needed fields */
+		};
+
+		struct s_uriInfo
+		{
+			/* info returned for a specific uri */
+		};
+
+		VHost(struct s_config const& conf);
+		VHost(VHost const& other);
+		~VHost();
+
+		struct s_uriInfo const	getInfo(std::string const& uri);
+
+	private:
+
+		struct s_config config;
+
+        std::string const   mapUri(std::string const& uri);
+
+        /* probably helper functions for uriInfo */
+        /* "cache" system where previously computed URI is stored ? */
+};
+
+class VHostJson
+{
+	public :
+	
+		static VHost::s_config	build(JsonObj const&);
+
+	private:
+
+        dispatch table // how to define ?
+        /* helper member functions for build */
+};

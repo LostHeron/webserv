@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/06/02 18:54:23 by jweber            #+#    #+#              #
-#    Updated: 2026/06/05 14:21:30 by jweber           ###   ########.fr        #
+#    Created: 2026/06/11 16:35:18 by jweber            #+#    #+#              #
+#    Updated: 2026/06/11 16:35:18 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HEADERSBUILDER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(CONNECTION_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
@@ -42,7 +42,8 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(BOOLSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INTSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJSCHEMA_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR)
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTPARSER_DIR) \
 
 HTTPSTATUS_DIR :=	HTTPStatus/
 HTTPSTATUS_FILES :=	HTTPStatus.cpp
@@ -130,8 +131,11 @@ JSONLEXER_FILES := JsonLexer.cpp
 JSONOBJ_DIR := JsonObj/
 JSONOBJ_FILES := JsonObj.cpp
 
-HOSTLIST_DIR := HostList/
-HOSTLIST_FILES := HostList.cpp
+VHOSTPARSER_DIR := VHostParser/
+VHOSTPARSER_FILES := VHostParser.cpp
+
+VHOSTLIST_DIR := VHostList/
+VHOSTLIST_FILES := VHostList.cpp
 
 VIRTUALHOST_DIR := VirtualHost/
 VIRTUALHOST_FILES := VirtualHost.cpp
@@ -164,8 +168,9 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \
 				 $(addprefix $(HTMLPAGEBUILDER_DIR), $(HTMLPAGEBUILDER_FILES)) \
 				 $(addprefix $(HEADERSBUILDER_DIR), $(HEADERSBUILDER_FILES)) \
-				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \
+				 $(addprefix $(VHOSTLIST_DIR), $(VHOSTLIST_FILES)) \
 				 $(addprefix $(VIRTUALHOST_DIR), $(VIRTUALHOST_FILES)) \
+				 $(addprefix $(VHOSTPARSER_DIR), $(VHOSTPARSER_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(ASCHEMA_DIR), $(ASCHEMA_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(BOOLSCHEMA_DIR), $(BOOLSCHEMA_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(INTSCHEMA_DIR), $(INTSCHEMA_FILES)) \
