@@ -6,24 +6,21 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/05/31 17:14:34 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/11 16:42:00 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HTMLPageBuilder.hpp"
 #include "GETReq.hpp"
 #include <cstring>
-#include <errno.h>
 #include <dirent.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <utility>
 
 // Constructors/Destructor =====================================================
-// GETReq::GETReq(void):
-// 	ARequest(type, header, body) {}
-
-GETReq::GETReq(const ARequest &cpy):
-	ARequest(cpy) {}
+GETReq::GETReq(const ARequest &src):
+	ARequest(src) {}
 
 GETReq::GETReq(const GETReq &cpy):
 	ARequest(cpy) {}
@@ -31,60 +28,6 @@ GETReq::GETReq(const GETReq &cpy):
 GETReq::~GETReq(void) {}
 
 // Member functions ============================================================
-
-// tempp!!!!
-void send_file(int fd, int client)
-{
-	/*
-	int rv = 0;
-	char buf[1024 + 1];
-	do
-	{
-		buf[rv] = '\0';
-		write(client, buf, rv);
-		rv = read(fd, buf, 1024);
-	} while (rv);
-	*/
-	(void) fd;
-	(void) client;
-}
-// tempp!!!!
-
-int	GETReq::_displayDir(DIR *dir) const
-{
-	const std::string htmlHeader = "<html>\n<head><title>Index of /</title></head>\n<body>\n<h1>Index of /</h1><hr><pre>\n";
-	const std::string htmlFooter = "</pre><hr></body>\n</html>";
-	const std::string htmlHrefStart = "<a href=\"";
-	const std::string htmlHrefMid = "\">";
-	const std::string htmlHrefEnd =	"</a>\n";
-	struct dirent	*entry = readdir(dir);
-	int				fds[2];
-
-	if (pipe(fds))
-		return (-1);
-
-	write(fds[1], htmlHeader.c_str(), htmlHeader.length());
-	while (entry)
-	{
-		write(fds[1], htmlHrefStart.c_str(), htmlHrefStart.length());
-		write(fds[1], entry->d_name, std::strlen(entry->d_name));
-		// to add following line if entry is a directory
-		// write(fds[1], "/", 1);
-		write(fds[1], htmlHrefMid.c_str(), htmlHrefMid.length());
-		write(fds[1], entry->d_name, std::strlen(entry->d_name));
-		// to add following line if entry is a directory
-		// write(fds[1], "/", 1);
-		write(fds[1], htmlHrefEnd.c_str(), htmlHrefEnd.length());
-		entry = readdir(dir);
-	}
-
-	write(fds[1], htmlFooter.c_str(), htmlFooter.length());
-
-	closedir(dir);
-	close(fds[1]);
-	return (fds[0]);
-}
-
 DIR	*GETReq::_tryOpenDirectory(const char *path) const
 {
 	DIR	*dir = opendir(path);
@@ -101,55 +44,60 @@ int	GETReq::_tryOpenFile(const char *path) const
 	return (fd);
 }
 
-Response	GETReq::execute(void)
+uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::string &content) const
 {
-	Response	resp(this->_fd);
-	int			resourceFd = -1;
-	uint16_t	status = SUCCESS + OK;
+	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
-	// TEMP DEBUG
-
-	std::pair<std::string, bool> permission = _vhost.getPathReq(this->_uri, this->_method);
-	const std::string path = permission.first;
-	std::cout << "URI to fetch: " << this->_uri 
-		<< " for full path: " << path
-		<< std::endl;
-	// TEMP DEBUG
-
-	// get location AND permission = config_file
-	// COCO: std::pair<std::string real_path, bool allowed> getPathAndPermission(std::string method, std::string uri);
-	// path = pair.first;
-	// perm = pair.second;
-
-	// check dir or file, if dir return index page
-	DIR	*pathEntry = this->_tryOpenDirectory(path.c_str());
-	if (pathEntry)	
-		resourceFd = this->_displayDir(pathEntry);
+	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
+	if (directory)	
+		content = HTMLPageBuilder::dirListingPage(directory, this->_uri);
 	else
 	{
-		// std::cout << "ERRNO IS::::::   " << errno << std::endl;
 		switch (errno)
 		{
 			case (ENOTDIR):
-				if ((resourceFd = this->_tryOpenFile(path.c_str())) >= 0)
+				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
 					break;
-				break;
+				__attribute__((fallthrough));
 			case (EACCES):
-				status = C_ERR + FORBIDDEN;
+				status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
 				break;
 			case (ENOENT):
-				status = C_ERR + NOT_FOUND;
+				status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
+				break;
+			default:
+				status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
 				break;
 		}
 	}
+	return (status);
+}
 
-	// metadata settings
-	resp.setResourceFd(resourceFd);
-	resp.setStatus(status);
+Response	GETReq::execute(void)
+{
+	Response	resp(this->_fd);
 
-	// DEBUG
-	send_file(resourceFd, this->_fd);
-	// DEBUG
+	std::pair<std::string, bool> configSetting; //= this->_vhost.getPathReq(this->_uri, this->_method);
+	// TO BE CHANGED
+	configSetting.first = "/home/jweber/goinfre/tmp/test.sh";
+	configSetting.second = true;
+	resp.setResourcePath(configSetting.first);
+
+	if (!configSetting.second)
+		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+	else
+		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent()));
+
+	if (resp.getStatus() >= HTTPStatus::C_ERR)
+		resp.error(this->_vhost);
 
 	return (resp);
 }
+
+	// // TEMP DEBUG
+	// std::cout << "URI to fetch: " << this->_uri 
+	// 	<< " for real resourcePath: " << resourcePath
+	// 	<< " for method: " << this->_method 
+	// 	<< (configSetting.second ? " <ALLOWED>" : " <FORBIDEN>")
+	// 	<< std::endl;
+	// // TEMP DEBUG

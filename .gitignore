@@ -1,3 +1,4 @@
+webserv_no_valgrind
 webserv
 *.out
 *.obj
@@ -6,3 +7,5 @@ webserv
 .gdb_history
 .cache/
 .gdbinit
+*.conf
+*.log

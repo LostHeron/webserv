@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/05/27 13:40:30 by jweber            #+#    #+#              #
-#    Updated: 2026/05/31 16:53:53 by jweber           ###   ########.fr        #
+#    Created: 2026/06/11 16:35:18 by jweber            #+#    #+#              #
+#    Updated: 2026/06/11 16:35:18 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,11 +18,15 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SERVER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(LISTEN_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EPOLLSTRUCT_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HTTPSTATUS_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HTMLPAGEBUILDER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(PIPE_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HEADERSBUILDER_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(EXCEPTIONS_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VIRTUALHOST_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(HOSTLIST_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(CONNECTION_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
@@ -37,7 +41,14 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(BOOLSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(INTSCHEMA_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(OBJSCHEMA_DIR) \
-		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR)
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SCHEMA_DIR)$(STRINGSCHEMA_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTPARSER_DIR) \
+
+HTTPSTATUS_DIR :=	HTTPStatus/
+HTTPSTATUS_FILES :=	HTTPStatus.cpp
+
+HTMLPAGEBUILDER_DIR :=		HTMLPageBuilder/
+HTMLPAGEBUILDER_FILES :=	HTMLPageBuilder.cpp
 
 SCHEMA_DIR :=		Schemas/
 
@@ -82,6 +93,9 @@ POSTREQ_FILES := 	POSTReq.cpp \
 UNKNOWNREQ_DIR := 	UNKNOWNReq/
 UNKNOWNREQ_FILES := UNKNOWNReq.cpp \
 
+CONNECTION_DIR := Connection/
+CONNECTION_FILES := Connection.cpp \
+
 ASOCKET_DIR := 	ASocket/
 ASOCKET_FILES := 	ASocket.cpp \
 					ListenSocket.cpp \
@@ -94,10 +108,12 @@ ASOCKET_FILES := 	ASocket.cpp \
 					InCGI.cpp \
 					OutCGI.cpp \
 					OutputSocket.cpp \
-					ToOutSocket.cpp \
 
 PIPE_DIR := Pipe/
 PIPE_FILES := Pipe.cpp \
+
+HEADERSBUILDER_DIR := HeadersBuilder/
+HEADERSBUILDER_FILES := HeadersBuilder.cpp \
 
 EXCEPTIONS_DIR := Exceptions/
 EXCEPTIONS_FILES := IsChildren.cpp \
@@ -114,8 +130,11 @@ JSONLEXER_FILES := JsonLexer.cpp
 JSONOBJ_DIR := JsonObj/
 JSONOBJ_FILES := JsonObj.cpp
 
-HOSTLIST_DIR := HostList/
-HOSTLIST_FILES := HostList.cpp
+VHOSTPARSER_DIR := VHostParser/
+VHOSTPARSER_FILES := VHostParser.cpp
+
+VHOSTLIST_DIR := VHostList/
+VHOSTLIST_FILES := VHostList.cpp
 
 VIRTUALHOST_DIR := VirtualHost/
 VIRTUALHOST_FILES := VirtualHost.cpp
@@ -142,10 +161,15 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(PIPE_DIR), $(PIPE_FILES)) \
 				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
+				 $(addprefix $(CONNECTION_DIR), $(CONNECTION_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
-				 $(addprefix $(HOSTLIST_DIR), $(HOSTLIST_FILES)) \
+				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \
+				 $(addprefix $(HTMLPAGEBUILDER_DIR), $(HTMLPAGEBUILDER_FILES)) \
+				 $(addprefix $(HEADERSBUILDER_DIR), $(HEADERSBUILDER_FILES)) \
+				 $(addprefix $(VHOSTLIST_DIR), $(VHOSTLIST_FILES)) \
 				 $(addprefix $(VIRTUALHOST_DIR), $(VIRTUALHOST_FILES)) \
+				 $(addprefix $(VHOSTPARSER_DIR), $(VHOSTPARSER_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(ASCHEMA_DIR), $(ASCHEMA_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(BOOLSCHEMA_DIR), $(BOOLSCHEMA_FILES)) \
 				 $(addprefix $(SCHEMA_DIR)$(INTSCHEMA_DIR), $(INTSCHEMA_FILES)) \
@@ -214,18 +238,46 @@ re:
 	$(MAKE) all
 
 
-debug:
-	# rm webserv
-	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused" OBJ_DIR=".obj_debug/"
+debug_info:
+	rm -f webserv
+	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
-debug_clean:
-	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3" OBJ_DIR=".obj_debug/"
+debug_info_clean:
+	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
-debug_fclean:
-	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3" OBJ_DIR=".obj_debug/"
+debug_info_fclean:
+	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
-debug_re:
-	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3" OBJ_DIR=".obj_debug/"
+debug_info_re:
+	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
+
+debug_print:
+	rm -f webserv
+	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_print_clean:
+	$(MAKE) clean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_print_fclean:
+	$(MAKE) fclean CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_print_re:
+	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
+
+debug_sanitize:
+	rm -f webserv
+	$(MAKE) all NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+debug_sanitize_clean:
+	$(MAKE) clean NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+debug_sanitize_fclean:
+	$(MAKE) fclean NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+debug_sanitize_re:
+	$(MAKE) re NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+
+
 
 print-%:
 	@echo $($(patsubst print-%,%,$@))

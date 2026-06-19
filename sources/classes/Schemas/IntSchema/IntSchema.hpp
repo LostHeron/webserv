@@ -6,13 +6,14 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:30:18 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/12 18:32:43 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/09 16:36:27 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef INTSCHEMA_HPP
 # define INTSCHEMA_HPP
 
+# include <stdint.h>
 # include <string>
 # include "JsonObj.hpp"
 # include "ASchema.hpp"

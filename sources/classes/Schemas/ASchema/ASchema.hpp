@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/29 20:28:04 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/12 18:37:00 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/11 17:45:57 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class ASchema
 		ASchema(std::string const& name, JsonObj::e_jsonType type, bool is_required, bool allow_multiple);
 		virtual ~ASchema();
 		
-		void	validate(std::map<std::string, JsonObj> const& obj_map) const;
+		void	validate(JsonObj::SubObj const& obj_map) const;
 
 		std::string const&	getName(void) const;
 		

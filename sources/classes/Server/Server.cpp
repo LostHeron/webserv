@@ -5,14 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/09 13:51:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/28 16:10:49 by jweber           ###   ########.fr       */
+/*   Created: 2026/06/11 16:36:39 by jweber            #+#    #+#             */
+/*   Updated: 2026/06/11 16:36:48 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "ASocket.hpp"
-#include "HostList.hpp"
+#include "ListenSocket.hpp"
+#include "VHostList.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
 #include <algorithm>
@@ -21,11 +22,13 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include "Connection/Connection.hpp"
 
 Server::Server(char *config_file):
+	isChildren(false),
 	status(SUCCESS),
 	epoll(),
-	host_list(HostList::build(config_file))
+	host_list(VHostList::build(config_file))
 {
 	if (this->epoll.fail())
 	{
@@ -44,10 +47,25 @@ Server::Server(char *config_file):
 
 Server::~Server()
 {
-	for (size_t	i = 0; i < this->sockets.size(); i++)
+	std::cout << "In SERVER DESTRUCTOR\n";
+	for (size_t	i = 0; i < this->listenSockets.size(); i++)
 	{
-		delete (this->sockets[i]);
+		delete (this->listenSockets[i]);
 	}
+	for (size_t	i = 0; i < this->connections.size(); i++)
+	{
+		delete (this->connections[i]);
+	}
+}
+
+void	Server::setIsChildren()
+{
+	this->isChildren = true;
+}
+
+bool	Server::getIsChildren()
+{
+	return (this->isChildren);
 }
 
 bool	Server::fail()
@@ -64,14 +82,36 @@ void	Server::setFailure(int value)
 }
 
 // function used to add the ASocket pointer 
-void	Server::add(ASocket* abstract_socket, int event_flags)
+void	Server::add(ListenSocket* newListenSocket)
 {
-	if (this->epoll.add(abstract_socket, event_flags) != SUCCESS)
+	if (this->epoll.add(newListenSocket, EPOLLIN) != SUCCESS)
 	{
-		this->nonBlockingsFds.push_back(abstract_socket);
+		std::cerr << "could not add FD to epoll interest list!\n";
 	}
-	else
-		this->sockets.push_back(abstract_socket);
+	this->listenSockets.push_back(newListenSocket);
+}
+
+void	Server::add(ASocket *abstractSocket, int event)
+{
+	if (this->epoll.add(abstractSocket, event) != SUCCESS)
+		std::cerr << "could not add FD to epoll interest list!\n";
+}
+
+void	Server::add(Connection* newConnection)
+{
+	this->connections.push_back(newConnection);
+}
+
+void	Server::remove(Connection* toBeDeleted)
+{
+	std::cout << "REMOVING A CONNECTION !!\n";
+	std::vector<Connection *>::iterator it;
+
+	it = std::find(this->connections.begin(), this->connections.end(), toBeDeleted);
+	if (it != this->connections.end())
+		this->connections.erase(it);
+
+	delete toBeDeleted;
 }
 
 int	Server::getEfd()
@@ -79,25 +119,14 @@ int	Server::getEfd()
 	return (this->epoll.getFd());
 }
 
-const HostList& Server::getHostList() const {return (this->host_list);};
+const VHostList& Server::getHostList() const {return (this->host_list);};
 
-void	Server::remove(ASocket *asocket)
+void	Server::remove(ASocket *abstractSocket)
 {
-	this->epoll.remove(asocket);
-	std::vector<ASocket *>::iterator it;
-
-	it = std::find(this->sockets.begin(), this->sockets.end(), asocket);
-	if (it != this->sockets.end())
-		this->sockets.erase(it);
-
-	it = std::find(this->nonBlockingsFds.begin(), this->nonBlockingsFds.end(), asocket);
-	if (it != this->nonBlockingsFds.end())
-		this->nonBlockingsFds.erase(it);
-
-	delete asocket;
+	this->epoll.remove(abstractSocket);
 }
 
-std::vector<ASocket*>&	Server::getNonBlockingsFds()
+std::vector<Connection*>&	Server::getConnections()
 {
-	return (this->nonBlockingsFds);
+	return (this->connections);
 }

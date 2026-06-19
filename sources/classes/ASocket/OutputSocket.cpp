@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 14:13:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:20:07 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:30:28 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,21 @@
 #include "ASocket.hpp"
 #include "Server.hpp"
 #include "status.hpp"
+#include "error.hpp"
+#include "Connection.hpp"
+#include <cerrno>
 #include <cstdio>
 #include <stdint.h>
 #include <iostream>
+#include <string>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
 
-OutputSocket::OutputSocket(int socket_fd, Server& server):
-	ASocket(server),
+OutputSocket::OutputSocket(int socket_fd, Connection* connection):
+	ASocket(connection),
+	ressourceFd(-1),
+	ready(false),
 	isLastBuffer(false)
 {
 	this->fd = dup(socket_fd);
@@ -31,20 +38,62 @@ OutputSocket::OutputSocket(int socket_fd, Server& server):
 		this->status = FAILURE;
 		// throw ??
 	}
+	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+	}
+	else if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int error_value = errno;
+		logerror("fcntl", error_value);
+	}
 	else
+	{
+		#ifdef DEBUG
 		std::cout << "successfully duplicated socket_fd\n";
+		#endif
+	}
 }
 
 OutputSocket::~OutputSocket()
 {
+	#ifdef DEBUG
+	std::cout << "In Outputsocket destructor\n";
+	#endif
+	if (this->ressourceFd >= 0)
+		close(this->ressourceFd);
+	this->ressourceFd = -1;
+}
+
+void	OutputSocket::setup(int newRessourceFd, const std::string& firstBuffer)
+{
+	this->ressourceFd = newRessourceFd;
+	this->outputBuffer = firstBuffer;
+	if (this->ressourceFd < 0)
+		this->isLastBuffer = true;
+	this->ready = true;
 }
 
 void	OutputSocket::process()
 {
-	std::cout << "in OutputSocket process()\n";
+	#ifdef DEBUG
+	std::cout << "in OutputSocket process() concerning uri:'" << this->connection->getInputSocket()->getUri() << "'\n";
+	#endif
+	if (this->ready == true && this->outputBuffer == "")
+	{
+		updateOutputBuffer();
+	}
 	if (this->outputBuffer.size() > 0)
 	{
 		ssize_t nb_send = send(this->fd, this->outputBuffer.data(), this->outputBuffer.size(), MSG_DONTWAIT | MSG_NOSIGNAL);
+		#ifdef DEBUG
+		std::cout << "OutputSocket sent " << nb_send << " bytes back to client which requested the following uri: '"
+			<< this->connection->getInputSocket()->getUri() << "'\n";
+		std::cout << "~~~~~~~~~~~~~~~~~~\n" 
+			<< std::string(this->outputBuffer.data(), nb_send)
+			<< "\n~~~~~~~~~~~~~~~~~~\n";
+		#endif
 		if (nb_send < 0)
 			std::cerr << "An error occured while sending data to server\n";
 		else
@@ -60,9 +109,32 @@ void	OutputSocket::process()
 		// used to clean ressources associated with the ressource,
 		// change name for better understanding of the meaning
 		// like TERMINATE instead of FAILURE or something
+		// or finish ?
 		this->status = FAILURE; 
 	}
 }
+
+void	OutputSocket::updateOutputBuffer()
+{
+	// should only be used to read data from regular file (non blocking fds)
+	char buf[BUFSIZ];
+	ssize_t nb_read = read(this->ressourceFd, buf, BUFSIZ);
+	if (nb_read < 0)
+	{
+		int errno_value = errno;
+		logerror("read", errno_value);
+		this->status = FAILURE;
+	}
+	else if (nb_read == 0)
+	{
+		this->isLastBuffer = true;
+	}
+	else
+	{
+		this->outputBuffer = std::string(buf, nb_read);
+	}
+}
+
 
 std::string& OutputSocket::getOutputBuffer()
 {

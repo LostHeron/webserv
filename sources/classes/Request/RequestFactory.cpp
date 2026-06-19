@@ -49,7 +49,9 @@ Response			RequestFactory::execute(void)
 {
 	Response resp(-1);
 
+	#ifdef DEBUG
 	std::cout << "Cannot execute Factory class." << std::endl;
+	#endif
 
 	return (resp);
 }
@@ -90,5 +92,5 @@ uint8_t		RequestFactory::_checkHeader(void) const
 uint8_t		RequestFactory::_checkBody(void) const
 {
 	// if requested, check if parsed body "looks like" a valid body
-	return (0); // KO
+	return (1); // KO
 }

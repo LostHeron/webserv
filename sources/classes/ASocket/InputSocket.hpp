@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:08:18 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 15:04:52 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 # include "ASocket.hpp"
 # include "InCGI.hpp"
 # include "OutCGI.hpp"
+# include "OutputSocket.hpp"
 # include "Server.hpp"
-# include "ToOutSocket.hpp"
-# include <map>
+# include "typedef.hpp"
 # include <ostream>
 # include <vector>
 # include <string>
@@ -26,22 +26,22 @@
 
 # define INPUTSOCKET_MAX_SIZE 5000
 
-typedef std::map<std::string, std::vector<std::string> > string_map;
-
 class InputSocket: public ASocket
 {
 	public:
-		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
-		InputSocket(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
+		InputSocket(int fd, Connection* connection);
 		
 		~InputSocket();
 
-		const std::string					&getMethod(void) const;
-		const std::string					&getUri(void) const;
-		const std::string					&getVersion(void) const;
-		const string_map					&getHeaders(void) const;
+		const std::string	&getMethod(void) const;
+		const std::string	&getUri(void) const;
+		const std::string	&getVersion(void) const;
+		const string_map	&getHeaders(void) const;
+		string_map			&getHeadersNoConst(void);
 
 		void	process();
+
+		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
 		
 	protected:
 
@@ -52,12 +52,8 @@ class InputSocket: public ASocket
 		void (InputSocket::*process_functions[10])(size_t& pos);
 
 		// used to know which state the program is in
-		std::string			input_buffer;
+		std::string			inputBuffer;
 		int					state;	
-
-		uint16_t			local_port;
-		uint16_t			peer_port;
-		uint8_t				addr[4];
 
 		// identify which method the client tries to reach
 		std::string					method;
@@ -65,6 +61,7 @@ class InputSocket: public ASocket
 
 		// identify which uri the client tries to reach
 		std::string					uri;
+		std::string					queryString;
 		void						process_uri(size_t& pos);
 
 		// identify which version of HTTP the client tries to reach
@@ -75,23 +72,20 @@ class InputSocket: public ASocket
 		// represent each line, and the vector of vector of lines
 		// represent all the lines in the header
 		//std::vector< std::string >					header;
-		std::string					last_line;
+		std::string					lastLine;
 		string_map					headers;
 		void						process_headers(size_t& pos);
 
+		size_t						bodySize;
 		void						process_body(size_t& pos);
 
 		void						process_skip_sp(size_t& pos);
 		void						process_request(size_t& pos);
 
-		InCGI						*associatedInCgi;
-		OutCGI						*associatedOutCgi;
-		ToOutSocket					*associatedToOutSocket;
-		void						updateCgiEnvp(std::vector<std::string>&);
-		void						prepareCGI();
+		void						updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
+		void						prepareCGI(const std::string& script_name);
 };
 
-void		send_bad_request(int fd, int& status);
-size_t		getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims);
+void	setup_response(int& status, int errorCode, Connection *connection);
 
 #endif

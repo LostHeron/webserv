@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/09 10:54:45 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/27 17:05:54 by jweber           ###   ########.fr       */
+/*   Created: 2026/06/11 16:38:25 by jweber            #+#    #+#             */
+/*   Updated: 2026/06/11 16:38:26 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 
 #include <vector>
 #include "EpollStruct.hpp"
-#include "HostList.hpp"
+#include "VHostList.hpp"
 
-class ASocket;
+class Connection;
+class ListenSocket;
 
 class Server
 {
@@ -26,13 +27,23 @@ class Server
 		virtual ~Server();
 
 		bool			fail();
-		void			add(ASocket*, int event_flags);
+
+		void			setIsChildren();
+		bool			getIsChildren();
+
+		void			add(ListenSocket*);
+
+		void			add(ASocket*, int event);
 		void			remove(ASocket*);
+
+		void			add(Connection*);
+		void			remove(Connection*);
+
 		void			setFailure(int value);
 		int				getEfd();
-		const HostList& getHostList() const;
+		const VHostList&	getHostList() const;
 
-		std::vector<ASocket*>&	getNonBlockingsFds();
+		std::vector<Connection*>&	getConnections();
 
 	protected:
 
@@ -43,7 +54,9 @@ class Server
 		Server(const Server& other);
 		Server&	operator=(const Server& other);
 
-		int status;
+		bool	isChildren;
+
+		int		status;
 
 		// the fd associated with the epoll instance
 		// initialized with epoll_create;
@@ -51,12 +64,11 @@ class Server
 
 		// vectors of fds (sockets) associated with all listening ports
 		// initialized with socket + bind + listen;
-		std::vector<ASocket*>		sockets;
+		std::vector<Connection*>		connections;
+		std::vector<ListenSocket*>		listenSockets;
 
-		std::vector<ASocket*>		nonBlockingsFds;
 
-
-		HostList				host_list;
+		VHostList				host_list;
 		// some kind of structure to remember
 		// if an fd is associated with something
 		// we should do an 'accept' on or a 'read/write' from/to !

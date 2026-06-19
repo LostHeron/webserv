@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 13:24:31 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/31 17:18:16 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/05 14:46:50 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Server.hpp"
 #include "sockets.hpp"
 #include "status.hpp"
+#include "error.hpp"
 #include <asm-generic/socket.h>
 #include <cstring>
 #include <sys/epoll.h>
@@ -27,31 +28,38 @@
 #include <fcntl.h>
 
 ListenSocket::ListenSocket(uint16_t port, uint32_t address, Server& server):
-	ASocket(server)
+	ASocket(NULL),
+	server(server)
 {
 	this->fd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->fd < 0)
+	{
+		// socket creation !
+		int error_value = errno;
+		logerror("socket", error_value);
+		this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	{
+		int	error_value = errno;
+		logerror("fcntl O_NONBLOCK", error_value);
+		this->status = FAILURE;
+	}
+	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
+	{
+		int	error_value = errno;
+		logerror("fcntl FD_CLOEXEC", error_value);
+		this->status = FAILURE;
+	}
 
 	// to allow reusing the same port, should be disabled in prod ?
 	int	optval = 1;
-	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval)) < 0)
+	if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
 	{
 		std::cerr << strerror(errno) << "\n";
 		std::cerr << "error occured will trying to set SO_REUSEPORT!\n";
 	}
 
-	if (this->fd < 0)
-	{
-		// socket creation !
-		std::string error_msg(strerror(errno));
-		std::cerr << "socket: " << error_msg << "\n";
-		this->status = FAILURE;
-	}
-	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
-	{
-		std::string error_msg(strerror(errno));
-		std::cerr << "fcntl: " << error_msg << "\n";
-		this->status = FAILURE;
-	}
 
 	std::memset(&this->addr_data, 0, sizeof(addr_data));
 	this->addr_data.sin_family = AF_INET;
@@ -65,7 +73,9 @@ ListenSocket::~ListenSocket()
 
 void	ListenSocket::process()
 {
+	#ifdef DEBUG
 	std::cout << "in ListenSocket process()\n";
+	#endif
 	// ok and here should do stuff with the fd,
 	// and read data and start parsing request
 	int						peer_fd;
@@ -83,7 +93,9 @@ void	ListenSocket::process()
 					"AND WAS NOT EXPECTED!\n";
 		if (peer_fd < 0)
 			break;
+		#ifdef DEBUG
 		std::cout << "a connection was accepted\n";
+		#endif
 
 		CreateFd(peer_fd, ntohs(this->addr_data.sin_port), peer_addr, this->server);
 
