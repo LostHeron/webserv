@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/11 17:10:49 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/19 15:49:35 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,14 @@ class VirtualHost
 					std::vector<std::string>	cgi_ext;
 				};
 			
+				Location::s_config const	conf;
+
 				Location(Location::s_config const& conf);
 				Location(Location const& other);
 				~Location();
 			
 			private:
 			
-				Location::s_config	_conf;
-				
 				Location&	operator=(Location const& other);
 		};
 
@@ -75,16 +75,32 @@ class VirtualHost
 
 		};
 		
-		struct s_uriInfo
+		class UriInfo
 		{
-			bool						isRedir;
-			std::string					path;
-			std::string					index;
-			std::vector<std::string>	allowedRequests;
-			bool						allowDirList;
-			std::map<int, std::string>	error;
-			bool						cgi;
-			std::vector<std::string>	cgi_ext;
+			public:
+
+				friend class VirtualHost;
+			
+				UriInfo(VirtualHost::s_config conf);
+				UriInfo(UriInfo const& other);
+
+				bool				isRedir(void)	const;
+				std::string const&	getRealPath(void) const;
+				std::string const&	getIndex(void) const;
+				bool				isRequestAllowed(std::string const& req) const;
+				bool				isDirListAllowed(void) const;
+				bool				isCgiAllowed(void) const;
+				bool				isCgiExtAllowed(std::string const& cgi_ext) const;
+				
+			private:
+			
+				bool						_isRedir;
+				std::string					_path;
+				std::string&				_index;
+				std::vector<std::string>&	_allowedRequests;
+				bool						_allowDirList;
+				bool						_cgi;
+				std::vector<std::string>&	_cgi_ext;
 		};
 
 		VirtualHost(VirtualHost::s_config const& conf);
@@ -95,6 +111,7 @@ class VirtualHost
 		bool							InterfaceAllowed(uint32_t interface) const;
 		uint64_t						getBodySize(void) const;
 		std::pair<bool, std::string> 	getError(int err_code) const;
+		UriInfo							getUriInfo(std::string const& uri) const;
 		
 	private:
 		
@@ -103,6 +120,8 @@ class VirtualHost
 		VirtualHost(void);
 
 		VirtualHost&	operator=(VirtualHost const& other);
+
+		static UriInfo	buildUriInfo(std::string const& uri, std::pair<std::string, Location> const& loc_pair, UriInfo& uri_info);
 };
 		
 #endif // VIRTUALHOST_HPP
