@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/19 15:55:29 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/19 16:44:13 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "VirtualHost.hpp"
 #include "JsonObj.hpp"
 #include "config_file.hpp"
-
+#include <iostream>
 VirtualHost::VirtualHost(VirtualHost::s_config const& conf) :
 	_conf(conf)
 {
@@ -65,10 +65,11 @@ std::pair<bool, std::string>	VirtualHost::getError(int err_code) const
 
 VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 {
-	std::string										current(uri.substr(0, uri.find_last_of('/')));
+	std::string										current(uri);
 	std::map<std::string, Location>::const_iterator	loc_match_it;
 	UriInfo											uri_info(this->_conf);
 
+	std::cout << current.empty() << std::endl;
 	while (current.empty() == false)
 	{
 		loc_match_it = this->_conf.location.find(current);
@@ -80,7 +81,10 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 		current = current.substr(0, current.find_last_of('/'));
 	}
 	if (loc_match_it != this->_conf.location.end())
+	{
+		std::cout << "loc_match_it first = " << loc_match_it->first << std::endl;
 		VirtualHost::buildUriInfo(uri, *loc_match_it, uri_info);
+	}
 	else
 		uri_info._path += uri;
 	return (uri_info);

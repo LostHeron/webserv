@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   InputSocket_process_request.cpp                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
+/*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 18:07:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 16:54:44 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/19 16:33:29 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	InputSocket::process_request(size_t& pos)
 	// ach: execute request building response metadata, then Jules will handle the Client transmission
 	Response resp = req->execute();
 
-	//vhost.getUriInfo(this->uri);
+	vhost.getUriInfo(this->uri);
 	//VirtualHost::UriInfo a();
 	//std::cout << "Real Path = " << a.getRealPath() << "\n";
 	delete req;
