@@ -78,7 +78,7 @@ JsonObj::JsonObj(JsonLexer& jsonLexer)
 					throw std::invalid_argument("Missing comma between values in object");
 				jsonLexer.popToken();
 				if (jsonLexer.peekType() != JsonLexer::STRING)
-					throw std::invalid_argument("Invalid key : type is " + jsonLexer.peekType());
+					throw std::invalid_argument("Invalid key : type is ...");// + jsonLexer.peekType());
 				
 				std::string	key;
 

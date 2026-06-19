@@ -93,14 +93,15 @@ class VirtualHost
 				bool				isCgiExtAllowed(std::string const& cgi_ext) const;
 				
 			private:
-			
+				UriInfo();
+				const UriInfo& operator=(const UriInfo& other);
 				bool						_isRedir;
 				std::string					_path;
-				std::string&				_index;
-				std::vector<std::string>&	_allowedRequests;
+				std::string					_index;
+				std::vector<std::string>	_allowedRequests;
 				bool						_allowDirList;
 				bool						_cgi;
-				std::vector<std::string>&	_cgi_ext;
+				std::vector<std::string>	_cgi_ext;
 		};
 
 		VirtualHost(VirtualHost::s_config const& conf);
@@ -121,7 +122,7 @@ class VirtualHost
 
 		VirtualHost&	operator=(VirtualHost const& other);
 
-		static UriInfo	buildUriInfo(std::string const& uri, std::pair<std::string, Location> const& loc_pair, UriInfo& uri_info);
+		static void		buildUriInfo(std::string const& uri, std::pair<std::string, Location> const& loc_pair, UriInfo& uri_info);
 };
 		
 #endif // VIRTUALHOST_HPP

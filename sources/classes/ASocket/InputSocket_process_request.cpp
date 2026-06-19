@@ -41,10 +41,13 @@ void	InputSocket::process_request(size_t& pos)
 	// ach: execute request building response metadata, then Jules will handle the Client transmission
 	Response resp = req->execute();
 
+	//vhost.getUriInfo(this->uri);
+	//VirtualHost::UriInfo a();
+	//std::cout << "Real Path = " << a.getRealPath() << "\n";
 	delete req;
 	
 	bool iscgi = false;
-	iscgi = true;
+	//iscgi = true;
 	if (iscgi == true)
 	{
 		if (resp.getResource().first > 0)

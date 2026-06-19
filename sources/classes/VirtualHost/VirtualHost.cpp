@@ -86,13 +86,13 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 	return (uri_info);
 }
 
-VirtualHost::UriInfo	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Location> const& loc_pair, UriInfo& uri_info)
+void	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Location> const& loc_pair, UriInfo& uri_info)
 {	
 	if (loc_pair.second.conf.redirection.empty() == false)
 	{
 		uri_info._isRedir = true;
 		uri_info._path = loc_pair.second.conf.redirection;
-		return (uri_info);
+		return ;//(uri_info);
 	}
 	if (loc_pair.second.conf.alias.empty() == false)
 		uri_info._path = loc_pair.second.conf.alias + uri.substr(loc_pair.first.size());
