@@ -79,7 +79,7 @@ Response	GETReq::execute(void)
 
 	std::pair<std::string, bool> configSetting; //= this->_vhost.getPathReq(this->_uri, this->_method);
 	// TO BE CHANGED
-	configSetting.first = "/home/jweber/goinfre/tmp/test.sh";
+	configSetting.first = this->_vhost.getUriInfo(this->_uri).getRealPath();
 	configSetting.second = true;
 	resp.setResourcePath(configSetting.first);
 
