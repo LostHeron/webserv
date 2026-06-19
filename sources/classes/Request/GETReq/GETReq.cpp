@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/05/31 17:14:34 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/11 16:42:00 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,10 @@ Response	GETReq::execute(void)
 {
 	Response	resp(this->_fd);
 
-	std::pair<std::string, bool> configSetting = this->_vhost.getPathReq(this->_uri, this->_method);
+	std::pair<std::string, bool> configSetting; //= this->_vhost.getPathReq(this->_uri, this->_method);
+	// TO BE CHANGED
+	configSetting.first = "/home/jweber/goinfre/tmp/test.sh";
+	configSetting.second = true;
 	resp.setResourcePath(configSetting.first);
 
 	if (!configSetting.second)

@@ -1,42 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   HostList.hpp                                       :+:      :+:    :+:   */
+/*   VHostList.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/19 14:39:05 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/22 15:59:48 by cviel            ###   ########.fr       */
+/*   Created: 2026/06/10 15:14:01 by cviel             #+#    #+#             */
+/*   Updated: 2026/06/10 19:26:11 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HOSTLIST_HPP
-# define HOSTLIST_HPP
+#ifndef VHOSTLIST_HPP
+# define VHOSTLIST_HPP
 
 # include <stdint.h>
 # include "VirtualHost.hpp"
 
-class HostList
+class VHostList
 {
 	public:
 
-		HostList(HostList const& other);
-		~HostList();
+		typedef std::map<uint16_t, std::vector<VirtualHost> > HostMap;	
+	
+		VHostList(VHostList const& other);
+		~VHostList();
 
-		static HostList	build(char const* filename);
+		static VHostList	build(char const* filename);
 
 		std::vector<uint16_t>	getPort(void) const;
 		VirtualHost const&		getHost(uint16_t port, std::string const& name) const;
 
 	private:
 
-		std::map<uint16_t, std::vector<VirtualHost> >	_map;
+		HostMap	_hosts;
 
-		HostList(void);
+		VHostList(void);
 
-		HostList&	operator=(HostList const& other);
+		VHostList&	operator=(VHostList const& other);
 
-		static void	addHost(std::pair<uint16_t, VirtualHost> const& vhost, std::map<uint16_t, std::vector<VirtualHost> >& host_map);
+		static void	addHost(std::pair<uint16_t, VirtualHost> const& vhost, HostMap& host_map);
 };
 
-#endif
+#endif // VHOSTLIST_HPP

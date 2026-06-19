@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 13:54:54 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 14:28:10 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/11 16:39:18 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CONNECTION_HPP
 
 #include "ASocket.hpp"
+#include "VHostList.hpp"
 #include "InputSocket.hpp"
 #include "OutputSocket.hpp"
 #include "InCGI.hpp"
@@ -49,7 +50,7 @@ class Connection
 		uint16_t		getPeerPort();
 		uint16_t		getLocalPort();
 
-		const HostList& getHostList() const;
+		const VHostList& getHostList() const;
 
 		time_t			getStartTime() const;
 

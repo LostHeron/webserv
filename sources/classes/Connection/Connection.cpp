@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 14:21:57 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 14:29:42 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/11 16:42:27 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ uint8_t			*Connection::getPeerAddr() {return (this->peerAddr);}
 uint16_t		Connection::getPeerPort() {return (this->peerPort);}
 uint16_t		Connection::getLocalPort() {return (this->localPort);}
 
-const HostList& Connection::getHostList() const {return (this->server.getHostList());}
+const VHostList& Connection::getHostList() const {return (this->server.getHostList());}
 
 time_t			Connection::getStartTime() const {return (this->startTime);}
 

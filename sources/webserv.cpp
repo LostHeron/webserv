@@ -5,13 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/27 13:46:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 17:32:19 by jweber           ###   ########.fr       */
+/*   Created: 2026/06/11 16:38:43 by jweber            #+#    #+#             */
+/*   Updated: 2026/06/11 16:38:43 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "config_file.hpp"
-#include "HostList.hpp"
+#include "VHostList.hpp"
 #include "Server.hpp"
 #include "RequestFactory.hpp"
 #include "sockets.hpp"
