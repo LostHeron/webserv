@@ -4,6 +4,7 @@
         "listen":4343,
         "name": "host_a",
         "root":"/home/cviel",
+        "index":"shutdown.c"
         "location":
         [
             {

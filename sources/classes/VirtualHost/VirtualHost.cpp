@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/22 13:48:35 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 14:10:18 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "VirtualHost.hpp"
 #include "JsonObj.hpp"
 #include "config_file.hpp"
-
+#include <iostream>
 VirtualHost::VirtualHost(VirtualHost::s_config const& conf) :
 	_conf(conf)
 {
@@ -83,6 +83,8 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 		VirtualHost::buildUriInfo(uri, *loc_match_it, uri_info);
 	else
 		uri_info._path += uri;
+	std::cout << "URI : " << uri << std::endl;
+	std::cout << "URI INFO PATH : " << uri_info._path << std::endl;
 	return (uri_info);
 }
 
@@ -99,7 +101,7 @@ void	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Lo
 	else
 		uri_info._path += uri;
 	if (loc_pair.second.conf.index.empty() == false)
-		uri_info._path = loc_pair.second.conf.index;
+		uri_info._index = loc_pair.second.conf.index;
 	if (loc_pair.second.conf.allowedRequest.empty() == false)
 		uri_info._allowedRequests = loc_pair.second.conf.allowedRequest;
 	uri_info._allowDirList = loc_pair.second.conf.allowDirList;
