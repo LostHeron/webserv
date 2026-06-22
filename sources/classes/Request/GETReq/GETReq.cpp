@@ -44,60 +44,63 @@ int	GETReq::_tryOpenFile(const char *path) const
 	return (fd);
 }
 
-uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::string &content) const
+uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::string &content, const VirtualHost::UriInfo &uriInfo) const
 {
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
 	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
 	if (directory)	
-		content = HTMLPageBuilder::dirListingPage(directory, this->_uri);
-	else
 	{
-		switch (errno)
+		if (uriInfo.getIndex() != "")
 		{
-			case (ENOTDIR):
-				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
-					break;
-				__attribute__((fallthrough));
-			case (EACCES):
-				status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
-				break;
-			case (ENOENT):
-				status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
-				break;
-			default:
-				status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
-				break;
+			resource.second += uriInfo.getIndex();
+			directory = this->_tryOpenDirectory(resource.second.c_str());
 		}
+	}
+	
+	if (directory)	
+	{
+		if (!uriInfo.isDirListAllowed())
+			return (HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+		content = HTMLPageBuilder::dirListingPage(directory, this->_uri + uriInfo.getIndex());
+		return (status);
+	}
+	switch (errno)
+	{
+		case (ENOTDIR):
+			if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
+				break;
+			__attribute__((fallthrough));
+		case (EACCES):
+			status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
+			break;
+		case (ENOENT):
+			status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
+			break;
+		default:
+			status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
+			break;
 	}
 	return (status);
 }
 
 Response	GETReq::execute(void)
 {
-	Response	resp(this->_fd);
+	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
+	Response						resp(this->_fd, uriInfo.isCgiAllowed());
+	
 
-	std::pair<std::string, bool> configSetting; //= this->_vhost.getPathReq(this->_uri, this->_method);
-	// TO BE CHANGED
-	configSetting.first = this->_vhost.getUriInfo(this->_uri).getRealPath();
-	configSetting.second = true;
-	resp.setResourcePath(configSetting.first);
+	resp.setCGI(uriInfo.isCgiAllowed());
+	resp.setResourcePath(uriInfo.getRealPath());
 
-	if (!configSetting.second)
+
+	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
 	else
-		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent()));
+		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent(), uriInfo));
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
 
 	return (resp);
 }
-
-	// // TEMP DEBUG
-	// std::cout << "URI to fetch: " << this->_uri 
-	// 	<< " for real resourcePath: " << resourcePath
-	// 	<< " for method: " << this->_method 
-	// 	<< (configSetting.second ? " <ALLOWED>" : " <FORBIDEN>")
-	// 	<< std::endl;
-	// // TEMP DEBUG

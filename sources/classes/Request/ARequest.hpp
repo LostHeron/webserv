@@ -36,9 +36,9 @@ class	ARequest: public AMessage
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 
-		ARequest							&operator=(const ARequest &assign);
-                                			
-		virtual Response					execute(void) = 0;
+		ARequest												&operator=(const ARequest &assign);
+
+		virtual Response										execute(void) = 0;
 
 		const std::string										&getMethod(void) const;
 		const std::string										&getUri(void) const;

@@ -38,17 +38,11 @@ void	InputSocket::process_request(size_t& pos)
 	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
 	ARequest *req = facto.createElement();
 
-	// ach: execute request building response metadata, then Jules will handle the Client transmission
 	Response resp = req->execute();
 
-	vhost.getUriInfo(this->uri);
-	//VirtualHost::UriInfo a();
-	//std::cout << "Real Path = " << a.getRealPath() << "\n";
 	delete req;
 	
-	bool iscgi = false;
-	//iscgi = true;
-	if (iscgi == true)
+	if (resp.isCGI() == true)
 	{
 		if (resp.getResource().first > 0)
 			close(resp.getResource().first);

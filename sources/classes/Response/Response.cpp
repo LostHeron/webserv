@@ -14,11 +14,12 @@
 # include "HTMLPageBuilder.hpp"
 
 // Construction/Destruction ====================================================
-Response::Response(const int fd):
+Response::Response(const int fd, bool isCGI):
 	AMessage(fd),
 	_status(HTTPStatus::SUCCESS + HTTPStatus::OK),
 	_resource(std::pair<int, std::string>(-1, "")),
-	_content() {}
+	_content(""),
+	_cgi(isCGI) {}
 
 Response::Response(uint16_t errCode, const VirtualHost &vHost):
 	AMessage(-1),
@@ -31,13 +32,24 @@ Response::Response(const Response &cpy):
 	AMessage(cpy._fd),
 	_status(cpy._status),
 	_resource(cpy._resource),
-	_content(cpy._content) {}
+	_content(cpy._content),
+	_cgi(cpy._cgi) {}
 
 Response::~Response(void) {}
 
 
 // Ops overloading =============================================================
-Response			&Response::operator=(const Response &assign){ (void) assign; return (*this); }
+Response			&Response::operator=(const Response &assign)
+{
+	if (this != &assign)
+	{
+		this->_status = assign._status;
+		this->_resource = assign._resource;
+		this->_content = assign._content;
+		this->_cgi = assign._cgi;
+	}
+	return (*this);
+}
 
 // Setters =====================================================================
 void	Response::setStatus(const uint16_t status)
@@ -55,7 +67,7 @@ void	Response::setResourceFd(int fd)
 	this->_resource.first = fd;
 }
 
-void	Response::setResourcePath(std::string &path)
+void	Response::setResourcePath(std::string path)
 {
 	this->_resource.second = path;
 }
@@ -65,10 +77,16 @@ void	Response::setContent(const std::string &content)
 	this->_content = content;
 }
 
+void	Response::setCGI(const bool isCGI)
+{
+	this->_cgi = isCGI;
+}
+
 // Getters =====================================================================
 const uint16_t					&Response::getStatus(void)		const	{	return (this->_status);		}
 std::pair<int, std::string>		&Response::getResource(void)			{	return (this->_resource);	}
 std::string						&Response::getContent(void)				{ 	return (this->_content);	}
+bool							Response::isCGI(void)			const	{	return (this->_cgi);		}
 
 
 // Member functions ============================================================

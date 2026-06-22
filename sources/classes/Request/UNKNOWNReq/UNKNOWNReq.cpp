@@ -27,7 +27,7 @@ UNKNOWNReq::~UNKNOWNReq(void) {}
 // Member functions ============================================================
 Response	UNKNOWNReq::execute(void)
 {
-	Response resp(this->_fd);
+	Response resp(this->_fd, true);
 
 	std::cout << "I AM A UNKNOWN REQUEST!" << std::endl;
 

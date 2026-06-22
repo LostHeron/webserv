@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:21:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/22 13:53:26 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 13:59:07 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ static void	ip_validator(std::string const& ip_address);
 
 void	path_validator(std::string const& path)
 {
+	if (path.empty() == true)
+		throw std::invalid_argument("Path is empty");
 	if (path.front() != '/')
 		throw std::invalid_argument("Path must begin with '/'");
 	for (std::string::const_iterator it = path.begin(); it != path.end(); ++it)
@@ -31,6 +33,8 @@ void	path_validator(std::string const& path)
 
 void	index_validator(std::string const& index)
 {
+	if (index.empty() == true)
+		throw std::invalid_argument("Index is empty");
 	for (std::string::const_iterator it = index.begin(); it != index.end(); ++it)
 	{
 		if (std::isprint(static_cast<unsigned char>(*it)) == 0 || *it == '/')
