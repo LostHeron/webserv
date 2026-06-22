@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/22 14:14:14 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 17:36:59 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,14 +69,24 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 	std::map<std::string, Location>::const_iterator	loc_match_it;
 	UriInfo											uri_info(this->_conf);
 
+	if (current[current.size() - 1] != '/')
+	{
+		loc_match_it = this->_conf.location.find(current);
+		if (loc_match_it != this->_conf.location.end())
+		{
+			VirtualHost::buildUriInfo(uri, *loc_match_it, uri_info);
+			return (uri_info);
+		}
+	}
 	while (current.empty() == false)
 	{
 		loc_match_it = this->_conf.location.find(current);
-
 		if (loc_match_it != this->_conf.location.end())
-		{
 			break ;
-		}
+		current.erase(current.end() - 1);
+		loc_match_it = this->_conf.location.find(current);
+		if (loc_match_it != this->_conf.location.end())
+			break ;
 		current = current.substr(0, current.find_last_of('/'));
 	}
 	if (loc_match_it != this->_conf.location.end())
