@@ -34,7 +34,7 @@ class	Response: public AMessage
 		void								setStatus(const uint16_t status);
 		void								setResource(std::pair<int, std::string> &resource);
 		void								setResourceFd(int fd);
-		void								setResourcePath(std::string &path);
+		void								setResourcePath(std::string path);
 		void								setContent(const std::string &content);
 
 		void								error(const VirtualHost &vHost);

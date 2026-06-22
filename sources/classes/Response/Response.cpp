@@ -55,7 +55,7 @@ void	Response::setResourceFd(int fd)
 	this->_resource.first = fd;
 }
 
-void	Response::setResourcePath(std::string &path)
+void	Response::setResourcePath(std::string path)
 {
 	this->_resource.second = path;
 }
