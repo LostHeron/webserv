@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/19 17:00:01 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 13:48:35 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,12 @@ void	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Lo
 	{
 		uri_info._isRedir = true;
 		uri_info._path = loc_pair.second.conf.redirection;
-		return ;//(uri_info);
+		return ;
 	}
 	if (loc_pair.second.conf.alias.empty() == false)
 		uri_info._path = loc_pair.second.conf.alias + uri.substr(loc_pair.first.size());
+	else
+		uri_info._path += uri;
 	if (loc_pair.second.conf.index.empty() == false)
 		uri_info._path = loc_pair.second.conf.index;
 	if (loc_pair.second.conf.allowedRequest.empty() == false)

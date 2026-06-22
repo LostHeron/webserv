@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/11 16:45:01 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/22 13:55:04 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,12 @@ void	host_schema_builder(ObjSchema& host_schema)
 
 	StringSchema*	root_schema = new StringSchema(HOST_ROOT_KEY, true, false);
 	
-	name_schema->addValidator(non_empty_validator);
+	name_schema->addValidator(path_validator);
 	host_schema.addField(root_schema);
 
 	StringSchema*	index_schema = new StringSchema(HOST_INDEX_KEY, false, false);
 	
-	name_schema->addValidator(non_empty_validator);
+	name_schema->addValidator(index_validator);
 	host_schema.addField(index_schema);
 
 	IntSchema*	body_size_schema = new IntSchema(HOST_BODY_SIZE_KEY, false, false);
@@ -86,7 +86,7 @@ static void	error_page_schema_builder(ObjSchema& error_schema)
 
 	StringSchema*	err_page_schema = new StringSchema(ERROR_PAGE_KEY, true, false);
 	
-	err_page_schema->addValidator(non_empty_validator);
+	err_page_schema->addValidator(path_validator);
 	error_schema.addField(err_page_schema);
 }
 
@@ -94,22 +94,22 @@ static void	location_schema_builder(ObjSchema& location_schema)
 {
 	StringSchema*	name_schema = new StringSchema(LOC_NAME_KEY, true, false);
 
-	name_schema->addValidator(non_empty_validator);
+	name_schema->addValidator(path_validator);
 	location_schema.addField(name_schema);
 
 	StringSchema*	alias_schema = new StringSchema(LOC_ALIAS_KEY, false, false);
 
-	alias_schema->addValidator(non_empty_validator);
+	alias_schema->addValidator(path_validator);
 	location_schema.addField(alias_schema);
 
 	StringSchema*	redirections_schema = new StringSchema(LOC_REDIRECTION_KEY, false, false);
 
-	redirections_schema->addValidator(non_empty_validator);
+	redirections_schema->addValidator(path_validator);
 	location_schema.addField(redirections_schema);
 
 	StringSchema*	index_schema = new StringSchema(LOC_INDEX_KEY, false, false);
 
-	index_schema->addValidator(non_empty_validator);
+	index_schema->addValidator(index_validator);
 	location_schema.addField(index_schema);
 
 	StringSchema*	allowed_requests_schema = new StringSchema(LOC_ALLOWED_REQUEST_KEY, false, true);

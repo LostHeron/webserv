@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/19 15:49:35 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 13:41:30 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,7 @@ class VirtualHost
 				bool				isCgiExtAllowed(std::string const& cgi_ext) const;
 				
 			private:
-				UriInfo();
-				const UriInfo& operator=(const UriInfo& other);
+
 				bool						_isRedir;
 				std::string					_path;
 				std::string					_index;
@@ -102,6 +101,9 @@ class VirtualHost
 				bool						_allowDirList;
 				bool						_cgi;
 				std::vector<std::string>	_cgi_ext;
+
+				UriInfo();
+				const UriInfo& operator=(const UriInfo& other);
 		};
 
 		VirtualHost(VirtualHost::s_config const& conf);

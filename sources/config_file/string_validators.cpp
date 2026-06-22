@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:21:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/04 18:35:12 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 13:53:26 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,26 @@
 #include "config_file.hpp"
 
 static void	ip_validator(std::string const& ip_address);
+
+void	path_validator(std::string const& path)
+{
+	if (path.front() != '/')
+		throw std::invalid_argument("Path must begin with '/'");
+	for (std::string::const_iterator it = path.begin(); it != path.end(); ++it)
+	{
+		if (std::isprint(static_cast<unsigned char>(*it)) == 0)
+			throw std::invalid_argument("Path must only contain printable characters");
+	}
+}
+
+void	index_validator(std::string const& index)
+{
+	for (std::string::const_iterator it = index.begin(); it != index.end(); ++it)
+	{
+		if (std::isprint(static_cast<unsigned char>(*it)) == 0 || *it == '/')
+			throw std::invalid_argument("Path must only contain printable characters and no '/' characters");
+	}
+}
 
 void	interface_validator(std::string const& interface)
 {
