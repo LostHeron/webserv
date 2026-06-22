@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/19 15:55:29 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/19 17:00:01 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ std::pair<bool, std::string>	VirtualHost::getError(int err_code) const
 
 VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 {
-	std::string										current(uri.substr(0, uri.find_last_of('/')));
+	std::string										current(uri);
 	std::map<std::string, Location>::const_iterator	loc_match_it;
 	UriInfo											uri_info(this->_conf);
 

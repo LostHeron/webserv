@@ -46,7 +46,7 @@ fi
 
 kill -INT $WEBSERV_PID
 #rm -rf config_file.json
-rm -rf $HOME/goinfre/tmp/
+#rm -rf $HOME/goinfre/tmp/
 echo
 echo
 
