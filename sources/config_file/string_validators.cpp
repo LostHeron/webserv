@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:21:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/22 13:59:07 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 14:02:12 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	path_validator(std::string const& path)
 {
 	if (path.empty() == true)
 		throw std::invalid_argument("Path is empty");
-	if (path.front() != '/')
+	if (path[0] != '/')
 		throw std::invalid_argument("Path must begin with '/'");
 	for (std::string::const_iterator it = path.begin(); it != path.end(); ++it)
 	{
