@@ -41,7 +41,7 @@ ARequest			&ARequest::operator=(const ARequest &assign){ (void) assign; return (
 
 
 // // Getters =====================================================================
-const std::string										&ARequest::getMethod(void) const { return(this->_method); }
-const std::string										&ARequest::getUri(void) const { return(this->_uri); }
-const std::string										&ARequest::getVersion(void) const { return(this->_version); }
-const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void) const { return(this->_header); }
+const std::string										&ARequest::getMethod(void)	const	{ return(this->_method); }
+std::string												ARequest::getUri(void) 				{ return(this->_uri); }
+const std::string										&ARequest::getVersion(void) const 	{ return(this->_version); }
+const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void)	const 	{ return(this->_header); }

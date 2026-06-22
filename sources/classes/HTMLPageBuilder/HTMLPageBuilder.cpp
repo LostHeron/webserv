@@ -40,7 +40,7 @@ const std::string	HTMLPageBuilder::dirListingPage(DIR *directory, const std::str
 		std::string	target = entry->d_name;
 		if (entry->d_type == DT_DIR)
 			target += '/';
-		entries.push_back(HTMLPageBuilder::_href(target));
+		entries.push_back(HTMLPageBuilder::_href(target, uri));
 		entry = readdir(directory);
 	}
 	
@@ -78,9 +78,9 @@ inline const std::string	HTMLPageBuilder::_headerTitled(const std::string title)
 	return ("<html>\n<head><title>" + title + "</title></head>\n");
 }
 
-inline const std::string	HTMLPageBuilder::_href(const std::string target)
+inline const std::string	HTMLPageBuilder::_href(const std::string target, const std::string uri)
 {
-	return ("<a href=\"" + target + "\">" + target + "</a>");
+	return ("<a href=\"" + uri + target + "\">" + target + "</a>");
 }
 
 inline void	HTMLPageBuilder::_addTag(const std::string tag, std::vector<std::string> &content)

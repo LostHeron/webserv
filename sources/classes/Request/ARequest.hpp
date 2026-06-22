@@ -41,7 +41,7 @@ class	ARequest: public AMessage
 		virtual Response										execute(void) = 0;
 
 		const std::string										&getMethod(void) const;
-		const std::string										&getUri(void) const;
+		std::string												getUri(void);
 		const std::string										&getVersion(void) const;
 		const std::map< std::string, std::vector<std::string> >	&getHeader(void) const;
 
@@ -57,7 +57,7 @@ class	ARequest: public AMessage
 	protected:
 		const VirtualHost					&_vhost;
 		const std::string					_method;
-		const std::string				  	_uri;
+		std::string				  			_uri;
 		const std::string				  	_version;
 		const string_map					_header;
 
