@@ -32,7 +32,7 @@ class	GETReq: public ARequest // only GET ?
 		Response		execute(void);
 
 	private:
-		uint16_t	_fetchResource(std::pair<int, std::string> &resource, std::string &content, const VirtualHost::UriInfo &uriInfo) const;
+		uint16_t	_fetchResource(std::pair<int, std::string> &resource, std::string &content, const VirtualHost::UriInfo &uriInfo);
 		int			_dirListing(DIR *dir) const;
 		DIR			*_tryOpenDirectory(const char *path) const;
 		int			_tryOpenFile(const char *path) const;

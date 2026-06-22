@@ -12,6 +12,8 @@
 
 # include "Response.hpp"
 # include "HTMLPageBuilder.hpp"
+# include <unistd.h>
+# include <fcntl.h>
 
 // Construction/Destruction ====================================================
 Response::Response(const int fd, bool isCGI):
@@ -92,20 +94,20 @@ bool							Response::isCGI(void)			const	{	return (this->_cgi);		}
 // Member functions ============================================================
 void									Response::error(const VirtualHost &vHost)
 {
-	(void) vHost;
 	// check Vhost for error page
-	// if (const std::string errPage = vhost.errorPageExist(this->_status))
-	// {
-	// 	this->_resource.first = open(errPage.c_str(), O_RDONLY);
-	// 	this->_resource.second = errPage;
-	//	this->_content = "";
-	// }
-	// else
-	// {
+	const std::pair<bool, std::string>	errPage = vHost.getError(this->_status);
+	if (errPage.first)
+	{
+		this->_resource.first = open(errPage.second.c_str(), O_RDONLY);
+		if (this->_resource.first != -1)
+		{
+			this->_resource.second = errPage.second;
+			this->_content = "";
+			return;
+		}
+	}
 	this->_resource.first = -1;
 	this->_resource.second = "";
 	this->_content = HTMLPageBuilder::errorPage(this->_status);
-	// }
-	
 }
 

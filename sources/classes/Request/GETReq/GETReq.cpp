@@ -32,9 +32,7 @@ DIR	*GETReq::_tryOpenDirectory(const char *path) const
 {
 	DIR	*dir = opendir(path);
 
-	if (dir)
-		return (dir);
-	return (NULL);
+	return (dir);
 }
 
 int	GETReq::_tryOpenFile(const char *path) const
@@ -44,42 +42,51 @@ int	GETReq::_tryOpenFile(const char *path) const
 	return (fd);
 }
 
-uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::string &content, const VirtualHost::UriInfo &uriInfo) const
+uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::string &content, const VirtualHost::UriInfo &uriInfo)
 {
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
 	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
-	if (directory)	
+	if (directory)
 	{
 		if (uriInfo.getIndex() != "")
 		{
-			resource.second += uriInfo.getIndex();
+			this->_uri += uriInfo.getIndex();
+			resource.second += "/" + uriInfo.getIndex();
+
+			#	ifdef	DEBUG
+			std::cout << "URI: '" << this->_uri << "'\nResp.second (concat index): " << resource.second << std::endl;
+			#	endif
+
 			directory = this->_tryOpenDirectory(resource.second.c_str());
 		}
 	}
 	
-	if (directory)	
+	if (directory)
 	{
 		if (!uriInfo.isDirListAllowed())
 			return (HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
-		content = HTMLPageBuilder::dirListingPage(directory, this->_uri + uriInfo.getIndex());
+		content = HTMLPageBuilder::dirListingPage(directory, this->_uri);
 		return (status);
 	}
-	switch (errno)
+	else
 	{
-		case (ENOTDIR):
-			if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
+		switch (errno)
+		{
+			case (ENOTDIR):
+				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
+					break;
+				__attribute__((fallthrough));
+			case (EACCES):
+				status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
 				break;
-			__attribute__((fallthrough));
-		case (EACCES):
-			status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
-			break;
-		case (ENOENT):
-			status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
-			break;
-		default:
-			status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
-			break;
+			case (ENOENT):
+				status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
+				break;
+			default:
+				status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
+				break;
+		}
 	}
 	return (status);
 }
@@ -93,6 +100,10 @@ Response	GETReq::execute(void)
 	resp.setCGI(uriInfo.isCgiAllowed());
 	resp.setResourcePath(uriInfo.getRealPath());
 
+#	ifdef	DEBUG
+	std::cout << "is Dir List allowed ? for uri: '" << this->_uri << "'(" << uriInfo.isDirListAllowed() << ")" << std::endl;
+	std::cout << "Resp.RealPath: " << resp.getResource().second << std::endl;
+#	endif
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
