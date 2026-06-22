@@ -49,32 +49,37 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
 	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
+	if (directory)	
+	{
+		if (uriInfo.getIndex() != "")
+		{
+			resource.second += uriInfo.getIndex();
+			directory = this->_tryOpenDirectory(resource.second.c_str());
+		}
+	}
 	
 	if (directory)	
 	{
 		if (!uriInfo.isDirListAllowed())
 			return (HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
-		content = HTMLPageBuilder::dirListingPage(directory, this->_uri);
+		content = HTMLPageBuilder::dirListingPage(directory, this->_uri + uriInfo.getIndex());
 		return (status);
 	}
-	else
+	switch (errno)
 	{
-		switch (errno)
-		{
-			case (ENOTDIR):
-				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
-					break;
-				__attribute__((fallthrough));
-			case (EACCES):
-				status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
+		case (ENOTDIR):
+			if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
 				break;
-			case (ENOENT):
-				status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
-				break;
-			default:
-				status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
-				break;
-		}
+			__attribute__((fallthrough));
+		case (EACCES):
+			status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
+			break;
+		case (ENOENT):
+			status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
+			break;
+		default:
+			status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
+			break;
 	}
 	return (status);
 }
@@ -82,10 +87,12 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 Response	GETReq::execute(void)
 {
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
-	Response						resp(this->_fd);
+	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 	
 
+	resp.setCGI(uriInfo.isCgiAllowed());
 	resp.setResourcePath(uriInfo.getRealPath());
+
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);

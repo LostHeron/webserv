@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <iostream>
 #include "Connection.hpp"
 #include "ASocket.hpp"
 #include "typedef.hpp"

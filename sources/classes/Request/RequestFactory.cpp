@@ -47,7 +47,7 @@ const AFactory<ARequest>::_constructor		*RequestFactory::_getConstructors(void) 
 // Member functions =============================================================
 Response			RequestFactory::execute(void)
 {
-	Response resp(-1);
+	Response resp(-1, false);
 
 	#ifdef DEBUG
 	std::cout << "Cannot execute Factory class." << std::endl;

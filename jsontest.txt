@@ -2,7 +2,7 @@
     {
         "listen":4343,
         "name": "host_a",
-        "root":"/home/jweber/goinfre/tmp/a",
+        "root":"/home/abetemps/temp_webserv",
         "location":[
         { 
             "name": "/images",

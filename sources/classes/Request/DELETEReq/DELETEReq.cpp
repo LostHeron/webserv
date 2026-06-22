@@ -50,7 +50,7 @@ uint16_t	DELETEReq::_removeResource(std::pair<int, std::string> &resource) const
 
 Response	DELETEReq::execute(void)
 {
-	Response	resp(this->_fd);
+	Response	resp(this->_fd, false);
 
 	std::pair<std::string, bool> configSetting;// = this->_vhost.getPathReq(this->_uri, this->_method);
 	// TO BE CHANGED

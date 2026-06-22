@@ -27,7 +27,7 @@ POSTReq::~POSTReq(void) {}
 // Member functions ============================================================
 Response	POSTReq::execute(void)
 {
-	Response resp(this->_fd);
+	Response resp(this->_fd, false);
 
 	std::cout << "I AM A POST REQUEST!" << std::endl;
 
