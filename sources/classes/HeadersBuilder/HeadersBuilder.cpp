@@ -93,6 +93,24 @@ HeadersBuilder&	HeadersBuilder::buildBody(const std::string& content)
 	return (*this);
 }
 
+HeadersBuilder&	HeadersBuilder::buildCookies(const std::vector<cookie> &cookies)
+{
+	if (cookies.empty())
+		return (*this);
+
+	std::vector<cookie>::const_iterator	it;
+
+	for (it = cookies.begin(); it != cookies.end(); ++it)
+	{
+		this->response.append("Set-Cookie: ");
+		this->response.append(it->first);
+		this->response.append("=");
+		this->response.append(it->second);
+		this->response.append("\r\n");
+	}
+	return (*this);
+}
+
 std::string	HeadersBuilder::build()
 {
 	return (this->response);

@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/19 16:53:50 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/22 16:46:31 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ ARequest::~ARequest(void) {}
 // Ops overloading =============================================================
 ARequest			&ARequest::operator=(const ARequest &assign){ (void) assign; return (*this); }
 
-// // Setters =====================================================================
+// Setters =====================================================================
 
 
-// // Getters =====================================================================
+// Getters =====================================================================
 const std::string										&ARequest::getMethod(void)	const	{ return(this->_method); }
 std::string												ARequest::getUri(void) 				{ return(this->_uri); }
 const std::string										&ARequest::getVersion(void) const 	{ return(this->_version); }

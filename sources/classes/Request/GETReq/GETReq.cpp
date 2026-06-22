@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/11 16:42:00 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/22 17:25:52 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 	{
 		if (uriInfo.getIndex() != "")
 		{
-			this->_uri += uriInfo.getIndex();
+			this->_uri += uriInfo.getIndex() + "/";
 			resource.second += "/" + uriInfo.getIndex();
 
 			#	ifdef	DEBUG
@@ -91,6 +91,7 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 	return (status);
 }
 
+
 Response	GETReq::execute(void)
 {
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
@@ -100,10 +101,6 @@ Response	GETReq::execute(void)
 	resp.setCGI(uriInfo.isCgiAllowed());
 	resp.setResourcePath(uriInfo.getRealPath());
 
-#	ifdef	DEBUG
-	std::cout << "is Dir List allowed ? for uri: '" << this->_uri << "'(" << uriInfo.isDirListAllowed() << ")" << std::endl;
-	std::cout << "Resp.RealPath: " << resp.getResource().second << std::endl;
-#	endif
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
@@ -112,6 +109,25 @@ Response	GETReq::execute(void)
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
+
+	// test cookies
+	std::vector<Response::cookie> cookies;
+	std::pair<std::string, std::string> cookie;
+
+	cookie.first = "id";
+	cookie.second = "yolo";
+	cookies.push_back(cookie);
+
+	cookie.first = "eat";
+	cookie.second = "soup";
+	cookies.push_back(cookie);
+
+	cookie.first = "coco";
+	cookie.second = "jweber";
+	cookies.push_back(cookie);
+
+	resp.setCookies(cookies);
+	// test cookies
 
 	return (resp);
 }

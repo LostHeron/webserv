@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/05 15:21:27 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/06/22 17:18:43 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,13 @@ Response::Response(const int fd, bool isCGI):
 	_status(HTTPStatus::SUCCESS + HTTPStatus::OK),
 	_resource(std::pair<int, std::string>(-1, "")),
 	_content(""),
+	_cookies(),
 	_cgi(isCGI) {}
 
 Response::Response(uint16_t errCode, const VirtualHost &vHost):
 	AMessage(-1),
 	_status(errCode)
+	// cookies ???
 {
 	this->error(vHost);
 }
@@ -35,6 +37,7 @@ Response::Response(const Response &cpy):
 	_status(cpy._status),
 	_resource(cpy._resource),
 	_content(cpy._content),
+	_cookies(cpy._cookies),
 	_cgi(cpy._cgi) {}
 
 Response::~Response(void) {}
@@ -48,6 +51,7 @@ Response			&Response::operator=(const Response &assign)
 		this->_status = assign._status;
 		this->_resource = assign._resource;
 		this->_content = assign._content;
+		this->_cookies = assign._cookies;
 		this->_cgi = assign._cgi;
 	}
 	return (*this);
@@ -57,6 +61,11 @@ Response			&Response::operator=(const Response &assign)
 void	Response::setStatus(const uint16_t status)
 {
 	this->_status = status;
+}
+
+void	Response::setCookies(std::vector<Cookie> &cookies)
+{
+	this->_cookies = cookies;
 }
 
 void	Response::setResource(std::pair<int, std::string> &resource)
@@ -86,6 +95,7 @@ void	Response::setCGI(const bool isCGI)
 
 // Getters =====================================================================
 const uint16_t					&Response::getStatus(void)		const	{	return (this->_status);		}
+std::vector<Cookie>				&Response::getCookies(void)				{	return (this->_cookies);	}
 std::pair<int, std::string>		&Response::getResource(void)			{	return (this->_resource);	}
 std::string						&Response::getContent(void)				{ 	return (this->_content);	}
 bool							Response::isCGI(void)			const	{	return (this->_cgi);		}
