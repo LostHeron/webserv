@@ -19,3 +19,6 @@ bash ./05_directory_listing_off_no_index.sh
 
 echo "########################## TEST 6 ##################################"
 bash ./06_basic_test_index.sh
+
+echo "########################## TEST 6 ##################################"
+bash ./07_basic_cgi.sh
