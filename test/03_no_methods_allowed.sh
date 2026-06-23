@@ -32,7 +32,7 @@ echo -ne "in a" > $HOME/goinfre/tmp/a/index.html
 WEBSERV_PID=$!
 
 echo -ne \
-"HTTP/1.1 403 Forbidden\r\n" \
+"HTTP/1.1 403 Forbidden\r\n"\
 "\r\n"\
 "<html>\n"\
 "<head><title>403 Forbidden</title></head>\n"\
