@@ -1,48 +1,46 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    05_directory_listing_off_no_index.sh               :+:      :+:    :+:    #
+#    07_basic_cgi.sh                                    :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/06/23 10:31:25 by jweber            #+#    #+#              #
-#    Updated: 2026/06/23 12:49:45 by jweber           ###   ########.fr        #
+#    Created: 2026/06/23 12:36:53 by jweber            #+#    #+#              #
+#    Updated: 2026/06/23 12:51:17 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-echo "TEST 5: directory listing off no index"
+echo "TEST 7: basic cgi execution"
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
 [
 	{
-	    \"listen\":4343,
-	    \"name\": \"host_a\",
-	    \"root\":\"$HOME/goinfre/tmp/a\",
-		\"directory listing\": false
+		\"listen\":4343,
+		\"name\": \"host_a\",
+		\"root\":\"$HOME/goinfre/tmp/a\",
+		\"extension\": \".sh\"
 	}
 ]"
 echo $CONFIG_FILE > config_file.json
 IFS=$OLD_IFS
 
 mkdir -p $HOME/goinfre/tmp/a
-echo -ne "in a" > $HOME/goinfre/tmp/a/index.html
+echo '#!/bin/bash' > $HOME/goinfre/tmp/a/coucou.sh
+echo "echo -ne 'content-type:text/html\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
+echo "echo -ne '\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
+echo "echo -ne 'Hello, World!\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
+chmod +111 $HOME/goinfre/tmp/a/coucou.sh
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
 
 echo -ne \
-"HTTP/1.1 403 Forbidden\r\n"\
+"HTTP/1.1 200 Success\r\n" \
 "\r\n"\
-"<html>\n"\
-"<head><title>403 Forbidden</title></head>\n"\
-"<body>\n"\
-"<h1>403 Forbidden</h1>\n"\
-"\n"\
-"</body>\n"\
-"</html>\n" > expected.log
+"Hello, World!" > expected.log
 
-REQ_1="GET / HTTP/1.1\r\n\r\n"
+REQ_1="GET /coucou.sh HTTP/1.1\r\n\r\n"
 echo -ne $REQ_1 | nc localhost 4343 > log_req.log
 sed --in-place '/Date/d' log_req.log # delete date line to use diff after
 

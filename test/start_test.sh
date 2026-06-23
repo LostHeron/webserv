@@ -1,4 +1,6 @@
 #!/bin/bash
+rm -rf ../webserv
+make -C ../
 echo "interpreter = $0"
 
 echo "########################## TEST 1 ##################################"
@@ -19,3 +21,9 @@ bash ./05_directory_listing_off_no_index.sh
 
 echo "########################## TEST 6 ##################################"
 bash ./06_basic_test_index.sh
+
+echo "########################## TEST 7 ##################################"
+bash ./07_basic_cgi.sh
+
+echo "########################## TEST 8 ##################################"
+bash ./08_basic_error_page.sh
