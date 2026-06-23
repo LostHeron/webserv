@@ -1,4 +1,6 @@
 #!/bin/bash
+rm -rf ../webserv
+make -C ../
 echo "interpreter = $0"
 
 echo "########################## TEST 1 ##################################"
