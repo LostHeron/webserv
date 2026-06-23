@@ -40,6 +40,8 @@ LAST_LINE_B=$(tail -1 log_req_b.log)
 
 if [ "$LAST_LINE_A" != "in a" ] || [ "$LAST_LINE_B" != "in b" ]; then
 	echo "FAILED basic host selection test";
+	echo -ne "\nconfig file was :\n\n"
+	cat config_file.json
 else
 	echo "SUCCESS";
 fi
