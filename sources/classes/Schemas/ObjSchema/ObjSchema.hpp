@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:30:18 by cviel             #+#    #+#             */
-/*   Updated: 2026/05/12 18:35:34 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/24 13:58:54 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class ObjSchema :
 	public:
 
 		ObjSchema(std::string const& name, bool is_required, bool allow_multiple);
-		virtual ~ObjSchema();	
+		virtual ~ObjSchema();
 		
 		void	addField(ASchema* schema);
 		
