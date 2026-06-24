@@ -98,7 +98,7 @@ const uint16_t					&Response::getStatus(void)		const	{	return (this->_status);		
 std::vector<Cookie>				&Response::getCookies(void)				{	return (this->_cookies);	}
 std::pair<int, std::string>		&Response::getResource(void)			{	return (this->_resource);	}
 std::string						&Response::getContent(void)				{ 	return (this->_content);	}
-bool							Response::isCGI(void)			const	{	return (this->_cgi);		}
+bool							&Response::isCGI(void)					{	return (this->_cgi);		}
 
 
 // Member functions ============================================================

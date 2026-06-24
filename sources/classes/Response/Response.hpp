@@ -32,7 +32,7 @@ class	Response: public AMessage
 		std::vector<Cookie>					&getCookies(void);
 		std::pair<int, std::string>			&getResource(void);
 		std::string							&getContent(void);
-		bool								isCGI(void) const;
+		bool								&isCGI(void);
 
 		void								setStatus(const uint16_t status);
 		void								setCookies(std::vector<Cookie> &cookies);
@@ -50,7 +50,6 @@ class	Response: public AMessage
 		std::string							_content;
 		std::vector<Cookie>					_cookies;
 		bool								_cgi;
-		// string_map							_headers;
 };
 
 #endif

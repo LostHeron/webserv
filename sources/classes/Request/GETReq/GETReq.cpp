@@ -42,7 +42,17 @@ int	GETReq::_tryOpenFile(const char *path) const
 	return (fd);
 }
 
-uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::string &content, const VirtualHost::UriInfo &uriInfo)
+const std::string		getFileExtension(const std::string &uri)
+{
+	const size_t	pos = uri.find_last_of('.');
+
+	return (pos == std::string::npos ? "" : uri.substr(pos + 1));
+}
+
+uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
+										std::string &content, 
+										const VirtualHost::UriInfo &uriInfo,
+										bool &cgi)
 {
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
@@ -53,6 +63,8 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 		{
 			this->_uri += uriInfo.getIndex() + "/";
 			resource.second += "/" + uriInfo.getIndex();
+			if (!cgi)
+				cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
 
 			#	ifdef	DEBUG
 			std::cout << "URI: '" << this->_uri << "'\nResp.second (concat index): " << resource.second << std::endl;
@@ -96,16 +108,14 @@ Response	GETReq::execute(void)
 {
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
-	
 
-	resp.setCGI(uriInfo.isCgiAllowed());
 	resp.setResourcePath(uriInfo.getRealPath());
 
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
 	else
-		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent(), uriInfo));
+		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent(), uriInfo, resp.isCGI()));
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
