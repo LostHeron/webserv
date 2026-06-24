@@ -66,6 +66,7 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 			if (!cgi)
 				cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
 
+			else
 			#	ifdef	DEBUG
 			std::cout << "URI: '" << this->_uri << "'\nResp.second (concat index): " << resource.second << std::endl;
 			#	endif
@@ -86,7 +87,7 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 		switch (errno)
 		{
 			case (ENOTDIR):
-				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
+				if (!cgi && (resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
 					break;
 				__attribute__((fallthrough));
 			case (EACCES):
@@ -122,19 +123,19 @@ Response	GETReq::execute(void)
 
 	// test cookies
 	std::vector<Cookie> cookies;
-	// std::pair<std::string, std::string> cookie;
-	//
-	// cookie.first = "id";
-	// cookie.second = "yolo";
-	// cookies.push_back(cookie);
-	//
-	// cookie.first = "eat";
-	// cookie.second = "soup";
-	// cookies.push_back(cookie);
-	//
-	// cookie.first = "coco";
-	// cookie.second = "jweber";
-	// cookies.push_back(cookie);
+	Cookie cookie;
+
+	Cookie::kvPair pair("id", "999");
+	cookie.setKeyValue(pair);
+	cookie.setDomain("localhost");
+	cookie.setPath(this->_uri);
+	cookie.setMaxAge("3019120");
+	cookie.setExpires("Thu, 21 Oct 2021 07:28:00 GMT");
+	cookie.setHttpOnly(false);
+	cookie.setSecure(true);
+	cookie.setSameSite(Cookie::LAX);
+
+	cookies.push_back(cookie);
 
 	resp.setCookies(cookies);
 	// test cookies

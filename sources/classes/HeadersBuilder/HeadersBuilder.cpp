@@ -101,13 +101,7 @@ HeadersBuilder&	HeadersBuilder::buildCookies(const std::vector<Cookie> &cookies)
 	std::vector<Cookie>::const_iterator	it;
 
 	for (it = cookies.begin(); it != cookies.end(); ++it)
-	{
-		this->response.append("Set-Cookie: ");
-		this->response.append(it->first);
-		this->response.append("=");
-		this->response.append(it->second);
-		this->response.append("\r\n");
-	}
+		this->response.append(it->cookieToStr());
 	return (*this);
 }
 
