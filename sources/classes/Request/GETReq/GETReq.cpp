@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/22 18:00:31 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/06/24 13:25:41 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,19 +122,31 @@ Response	GETReq::execute(void)
 		resp.error(this->_vhost);
 
 	// test cookies
+	std::vector<Cookie> receivedCookies(this->_headerToCookie());
+
 	std::vector<Cookie> cookies;
 	Cookie cookie;
 
-	Cookie::kvPair pair("id", "999");
+	Cookie::kvPair pair(SESSION_COOKIE_KEY, "999");
 	cookie.setKeyValue(pair);
 	cookie.setDomain("localhost");
 	cookie.setPath(this->_uri);
-	cookie.setMaxAge("3019120");
-	cookie.setExpires("Thu, 21 Oct 2021 07:28:00 GMT");
+	cookie.setMaxAge("3010");
+	cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
 	cookie.setHttpOnly(false);
 	cookie.setSecure(true);
 	cookie.setSameSite(Cookie::LAX);
+	cookies.push_back(cookie);
 
+	pair = Cookie::kvPair("FREEDY", "jfejeofi");
+	cookie.setKeyValue(pair);
+	cookie.setDomain("localhost");
+	cookie.setPath(this->_uri);
+	// cookie.setMaxAge("3010");
+	// cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
+	cookie.setHttpOnly(true);
+	cookie.setSecure(true);
+	cookie.setSameSite(Cookie::NONE);
 	cookies.push_back(cookie);
 
 	resp.setCookies(cookies);

@@ -16,6 +16,8 @@
 # include <iostream>
 # include <cstdlib>
 
+# define	SESSION_COOKIE_KEY	"id"
+
 class		Cookie
 {
 	public:
@@ -70,5 +72,7 @@ class		Cookie
 		std::string		_secureToStr(void) const;
 		std::string		_sameSiteToStr(void) const;
 };
+
+std::ostream	&operator<<(std::ostream &os, const Cookie &cookie);
 
 #endif

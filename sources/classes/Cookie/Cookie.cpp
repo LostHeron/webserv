@@ -6,11 +6,21 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/22 17:38:03 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/24 12:20:33 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/06/24 13:25:08 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Cookie.hpp"
+
+std::ostream	&operator<<(std::ostream &os, const Cookie &cookie)
+{
+	os	<<	"--------[Cookie - start]--------\n"
+		<<	cookie.cookieToStr()
+		<<	"--------[Cookie - end]--------"
+		<< std::endl;
+
+	return (os);
+}
 
 // Static attr. initialization =================================================
 

@@ -12,7 +12,7 @@
 
 # include "ARequest.hpp"
 #include "VirtualHost.hpp"
-#include <vector>
+#include <algorithm>
 
 // Construction/Destruction ====================================================
 ARequest::ARequest(const InputSocket &IOMessage, const VirtualHost& vhost):
@@ -45,3 +45,42 @@ const std::string										&ARequest::getMethod(void)	const	{ return(this->_meth
 std::string												ARequest::getUri(void) 				{ return(this->_uri); }
 const std::string										&ARequest::getVersion(void) const 	{ return(this->_version); }
 const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void)	const 	{ return(this->_header); }
+
+// Member Functions ============================================================
+std::vector<Cookie>					ARequest::_headerToCookie(void)
+{
+	std::vector<Cookie>	cookies;
+
+	if (this->_header.count("cookie") == 0)
+		return (cookies);
+
+	std::vector<std::string>::iterator	headersIt;
+
+	for (headersIt = this->_header["cookie"].begin(); headersIt != this->_header["cookie"].end(); ++headersIt)
+	{
+
+		std::vector<std::string>	splitCookies;
+		std::string					elem(*headersIt);
+
+
+		size_t	posElem = elem.find_first_of("; ");
+		while (posElem != std::string::npos)
+		{
+			posElem = elem.find_first_of("; ");
+			splitCookies.push_back(elem.substr(0, posElem));
+			elem = elem.substr(posElem + 2);
+		}
+
+		std::vector<std::string>::iterator	elemIt;
+		for (elemIt = splitCookies.begin(); elemIt != splitCookies.end(); ++elemIt)
+		{
+			size_t		posKV = elemIt->find('=');
+			Cookie		cookie;
+
+			cookie.setKeyValue(Cookie::kvPair(elemIt->substr(0, posKV - 1), elemIt->substr(posKV + 1)));
+			cookies.push_back(cookie);
+		}
+
+	}
+	return (cookies);
+}
