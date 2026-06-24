@@ -1,55 +1,72 @@
+
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    02_location_basic_test.sh                          :+:      :+:    :+:    #
+#    07_basic_cgi.sh                                    :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/06/09 17:05:57 by jweber            #+#    #+#              #
-#    Updated: 2026/06/09 18:12:36 by jweber           ###   ########.fr        #
+#    Created: 2026/06/23 12:36:53 by jweber            #+#    #+#              #
+#    Updated: 2026/06/23 12:51:17 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-echo "TEST 2: Basic location"
+echo "TEST 8: basic error page"
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
 [
 	{
-	    \"listen\":4343,
-	    \"name\": \"host_a\",
-	    \"root\":\"$HOME/goinfre/tmp/a\",
-		\"location\":
-	    [
-	    	{
-	    	\"name\":\"/images\",
-	    	\"alias\":\"$HOME/goinfre/tmp/b/\"
-	    	}
-	    ]
+		\"listen\":4343,
+		\"name\": \"host_a\",
+		\"root\":\"$HOME/goinfre/tmp/a\",
+		\"request\": [\"\"],
+		\"error\":
+		[
+			{
+				\"code\":400,
+				\"link\": \"$HOME/goinfre/tmp/error_400.html\"
+			},
+			{
+				\"code\":403,
+				\"link\": \"$HOME/goinfre/tmp/error_403.html\"
+			}
+		]
 	}
 ]"
 echo $CONFIG_FILE > config_file.json
 IFS=$OLD_IFS
 
 mkdir -p $HOME/goinfre/tmp/a
-echo -ne "in a" > $HOME/goinfre/tmp/a/index_a.html
-mkdir -p $HOME/goinfre/tmp/b
-echo -ne "in b" > $HOME/goinfre/tmp/b/index_b.html
+
+echo "personnalized error 400" > $HOME/goinfre/tmp/error_400.html
+echo "personnalized error 403" > $HOME/goinfre/tmp/error_403.html
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
 
-echo -ne "HTTP/1.1 200 OK\r\n\r\nin a" > expected_a.log
-REQ_1="GET /index_a.html HTTP/1.1\r\nhost:host_a\r\n\r\n"
-echo -ne $REQ_1 | nc localhost 4343 > log_req_a.log
-sed --in-place '/Date/d' log_req_a.log
+echo -ne \
+"HTTP/1.1 400 Bad Request\r\n"\
+"\r\n"\
+"personnalized error 400\n" > expected_a.log
 
-#echo "sending following request"
-#echo -n "GET /index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n"
-echo -ne "HTTP/1.1 200 OK\r\n\r\nin b" > expected_b.log
-REQ_2="GET /images/index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n" 
-echo -ne $REQ_2 | nc localhost 4343 > log_req_b.log
-sed --in-place '/Date/d' log_req_b.log
+REQ_1="ahah\r\n\r\n"
+# the 'stdbuf -oL' flushes the buffer into the file,
+# without it, we had some issue where sometimes log_req_a.log
+# was empty
+echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req_a.log
+sed --in-place '/Date/d' log_req_a.log # delete date line to use diff after
+
+echo -ne \
+"HTTP/1.1 403 Forbidden\r\n"\
+"\r\n"\
+"personnalized error 403\n" > expected_b.log
+
+
+REQ_2="GET /a HTTP/1.1\r\n\r\n"
+echo -ne $REQ_2 | stdbuf -oL nc localhost 4343 > log_req_b.log
+sed --in-place '/Date/d' log_req_b.log # delete date line to use diff after
+
 
 ERROR=0
 MSG=""
@@ -58,7 +75,7 @@ DIFF_A_ERR=$?
 if [ $DIFF_A_ERR -ne 0 ] ; then
 	MSG_EXPECT=$(cat -e expected_a.log)
 	MSG_GET=$(cat -e log_req_a.log)
-	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ_2'\n~~~~~~~~~~~~~~\n"
+	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ_1'\n~~~~~~~~~~~~~~\n"
 	MSG+="expected:\n"
 	MSG+=$MSG_EXPECT
 	MSG+="\nget:\n";
@@ -81,16 +98,9 @@ if [ $DIFF_B_ERR -ne 0 ] ; then
 	ERROR+=1
 fi
 
-#echo "coucou~~~~~~~~~~~~~~~~~~~~~~~~"
-#echo "MSG_EXCPECT = $MSG_EXPECT"
-#echo "coucou~~~~~~~~~~~~~~~~~~~~~~~~"
-#echo "MSG_GET = $MSG_GET"
-#echo "coucou~~~~~~~~~~~~~~~~~~~~~~~~"
-#echo "MSG = $MSG"
-#echo "coucou~~~~~~~~~~~~~~~~~~~~~~~~"
 
 if [ $ERROR -ne 0 ]; then
-	echo -ne "FAILED basic location test\n"
+	echo -ne "FAILED\n"
 	echo -ne $MSG
 	echo -ne "\nconfig file was :\n\n"
 	cat config_file.json
@@ -99,9 +109,9 @@ else
 fi
 
 kill -INT $WEBSERV_PID
-#rm -rf config_file.json
-#rm -rf $HOME/goinfre/tmp/
-#rm -r *.log
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
 echo
 echo
 
