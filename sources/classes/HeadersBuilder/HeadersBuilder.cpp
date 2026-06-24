@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/02 16:37:04 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 17:00:56 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/22 17:59:31 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,12 +93,12 @@ HeadersBuilder&	HeadersBuilder::buildBody(const std::string& content)
 	return (*this);
 }
 
-HeadersBuilder&	HeadersBuilder::buildCookies(const std::vector<cookie> &cookies)
+HeadersBuilder&	HeadersBuilder::buildCookies(const std::vector<Cookie> &cookies)
 {
 	if (cookies.empty())
 		return (*this);
 
-	std::vector<cookie>::const_iterator	it;
+	std::vector<Cookie>::const_iterator	it;
 
 	for (it = cookies.begin(); it != cookies.end(); ++it)
 	{

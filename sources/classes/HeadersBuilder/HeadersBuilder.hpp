@@ -17,11 +17,11 @@
 # include <ctime>
 # include <string>
 # include <vector>
+# include "Cookie.hpp"
 
 class HeadersBuilder
 {
 	public:
-		typedef	std::pair<std::string, std::string>	cookie;
 		HeadersBuilder();
 		~HeadersBuilder();
 
@@ -34,7 +34,7 @@ class HeadersBuilder
 		HeadersBuilder&	buildCRLF();
 		HeadersBuilder&	buildBody(int errorCode);
 		HeadersBuilder&	buildBody(const std::string& content);
-		HeadersBuilder&	buildCookies(const std::vector<cookie> &cookies);
+		HeadersBuilder&	buildCookies(const std::vector<Cookie> &cookies);
 		std::string		build();
 	private:
 		HeadersBuilder(const HeadersBuilder& other);

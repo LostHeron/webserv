@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/22 17:25:52 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/06/22 18:00:31 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,20 +111,20 @@ Response	GETReq::execute(void)
 		resp.error(this->_vhost);
 
 	// test cookies
-	std::vector<Response::cookie> cookies;
-	std::pair<std::string, std::string> cookie;
-
-	cookie.first = "id";
-	cookie.second = "yolo";
-	cookies.push_back(cookie);
-
-	cookie.first = "eat";
-	cookie.second = "soup";
-	cookies.push_back(cookie);
-
-	cookie.first = "coco";
-	cookie.second = "jweber";
-	cookies.push_back(cookie);
+	std::vector<Cookie> cookies;
+	// std::pair<std::string, std::string> cookie;
+	//
+	// cookie.first = "id";
+	// cookie.second = "yolo";
+	// cookies.push_back(cookie);
+	//
+	// cookie.first = "eat";
+	// cookie.second = "soup";
+	// cookies.push_back(cookie);
+	//
+	// cookie.first = "coco";
+	// cookie.second = "jweber";
+	// cookies.push_back(cookie);
 
 	resp.setCookies(cookies);
 	// test cookies

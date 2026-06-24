@@ -13,6 +13,9 @@
 #ifndef		__COOKIE_HPP__
 # define	__COOKIE_HPP__
 
+# include <iostream>
+# include <cstdlib>
+
 class		Cookie
 {
 	public:
@@ -53,6 +56,6 @@ class		Cookie
 		bool			_secure;
 		char			_sameSite;
 		
-}
+};
 
 #endif

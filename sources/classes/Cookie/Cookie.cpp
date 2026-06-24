@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/22 17:38:03 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/22 17:56:48 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/06/22 18:01:57 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,17 @@ Cookie::Cookie(void):
 Cookie::~Cookie(void) {}
 
 // Getters =====================================================================
-kvPair			Cookie::getKeyValue(void)	{	return (this->_keyValue);	}
-std::string		Cookie::getDomain(void)		{	return (this->_domain);		}
-std::string		Cookie::getMaxAge(void)		{	return (this->_maxAge);		}
-std::string		Cookie::getExpires(void) 	{	return (this->_expires);	}
-bool			Cookie::gethttpOnly(void) 	{	return (this->_HttpOnly);	}
-bool			Cookie::getSecure(void) 	{	return (this->_secure);		}
-char			Cookie::getSameSite(void) 	{	return (this->_sameSite);	}
+Cookie::kvPair		Cookie::getKeyValue(void)	{	return (this->_keyValue);	}
+std::string			Cookie::getDomain(void)		{	return (this->_domain);		}
+std::string			Cookie::getMaxAge(void)		{	return (this->_maxAge);		}
+std::string			Cookie::getExpires(void) 	{	return (this->_expires);	}
+bool				Cookie::gethttpOnly(void) 	{	return (this->_HttpOnly);	}
+bool				Cookie::getSecure(void) 	{	return (this->_secure);		}
+char				Cookie::getSameSite(void) 	{	return (this->_sameSite);	}
 
 
 // Setters =====================================================================
-void			Cookie::setKeyValue(const kvPair &kv)
+void			Cookie::setKeyValue(const Cookie::kvPair &kv)
 {
 	this->_keyValue = kv;
 }
