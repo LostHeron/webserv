@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/11 16:42:00 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/24 13:25:41 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,17 @@ int	GETReq::_tryOpenFile(const char *path) const
 	return (fd);
 }
 
-uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::string &content, const VirtualHost::UriInfo &uriInfo)
+const std::string		getFileExtension(const std::string &uri)
+{
+	const size_t	pos = uri.find_last_of('.');
+
+	return (pos == std::string::npos ? "" : uri.substr(pos + 1));
+}
+
+uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
+										std::string &content, 
+										const VirtualHost::UriInfo &uriInfo,
+										bool &cgi)
 {
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
@@ -51,9 +61,12 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 	{
 		if (uriInfo.getIndex() != "")
 		{
-			this->_uri += uriInfo.getIndex();
+			this->_uri += uriInfo.getIndex() + "/";
 			resource.second += "/" + uriInfo.getIndex();
+			if (!cgi)
+				cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
 
+			else
 			#	ifdef	DEBUG
 			std::cout << "URI: '" << this->_uri << "'\nResp.second (concat index): " << resource.second << std::endl;
 			#	endif
@@ -74,7 +87,7 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 		switch (errno)
 		{
 			case (ENOTDIR):
-				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
+				if (!cgi && (resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
 					break;
 				__attribute__((fallthrough));
 			case (EACCES):
@@ -91,27 +104,53 @@ uint16_t		GETReq::_fetchResource(std::pair<int, std::string> &resource, std::str
 	return (status);
 }
 
+
 Response	GETReq::execute(void)
 {
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
-	
 
-	resp.setCGI(uriInfo.isCgiAllowed());
 	resp.setResourcePath(uriInfo.getRealPath());
 
-#	ifdef	DEBUG
-	std::cout << "is Dir List allowed ? for uri: '" << this->_uri << "'(" << uriInfo.isDirListAllowed() << ")" << std::endl;
-	std::cout << "Resp.RealPath: " << resp.getResource().second << std::endl;
-#	endif
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
 	else
-		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent(), uriInfo));
+		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent(), uriInfo, resp.isCGI()));
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
+
+	// test cookies
+	std::vector<Cookie> receivedCookies(this->_headerToCookie());
+
+	std::vector<Cookie> cookies;
+	Cookie cookie;
+
+	Cookie::kvPair pair(SESSION_COOKIE_KEY, "999");
+	cookie.setKeyValue(pair);
+	cookie.setDomain("localhost");
+	cookie.setPath(this->_uri);
+	cookie.setMaxAge("3010");
+	cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
+	cookie.setHttpOnly(false);
+	cookie.setSecure(true);
+	cookie.setSameSite(Cookie::LAX);
+	cookies.push_back(cookie);
+
+	pair = Cookie::kvPair("FREEDY", "jfejeofi");
+	cookie.setKeyValue(pair);
+	cookie.setDomain("localhost");
+	cookie.setPath(this->_uri);
+	// cookie.setMaxAge("3010");
+	// cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
+	cookie.setHttpOnly(true);
+	cookie.setSecure(true);
+	cookie.setSameSite(Cookie::NONE);
+	cookies.push_back(cookie);
+
+	resp.setCookies(cookies);
+	// test cookies
 
 	return (resp);
 }

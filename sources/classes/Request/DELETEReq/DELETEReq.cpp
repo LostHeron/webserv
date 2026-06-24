@@ -50,16 +50,13 @@ uint16_t	DELETEReq::_removeResource(std::pair<int, std::string> &resource) const
 
 Response	DELETEReq::execute(void)
 {
-	Response	resp(this->_fd, false);
+	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
+	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
-	std::pair<std::string, bool> configSetting;// = this->_vhost.getPathReq(this->_uri, this->_method);
-	// TO BE CHANGED
-	configSetting.first = "/home/jweber/goinfre/tmp/test.sh";
-	configSetting.second = true;
+	resp.setCGI(uriInfo.isCgiAllowed());
+	resp.setResourcePath(uriInfo.getRealPath());
 	
-	resp.setResourcePath(configSetting.first);
-
-	if (!configSetting.second)
+	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
 	else
 		resp.setStatus(this->_removeResource(resp.getResource()));

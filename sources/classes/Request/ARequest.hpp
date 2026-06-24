@@ -55,11 +55,12 @@ class	ARequest: public AMessage
 		};
 
 	protected:
-		const VirtualHost					&_vhost;
-		const std::string					_method;
-		std::string				  			_uri;
-		const std::string				  	_version;
-		const string_map					_header;
+		std::vector<Cookie>	_headerToCookie(void);
+		const VirtualHost	&_vhost;
+		const std::string	_method;
+		std::string			_uri;
+		const std::string	_version;
+	 	string_map			_header;
 
 };
 
