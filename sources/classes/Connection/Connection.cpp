@@ -49,10 +49,13 @@ Connection::~Connection()
 	#ifdef DEBUG
 		std::cout << "IN CONNECTION DESTRUCTOR concerning uri: '" << this->getInputSocket()->getUri() << "'\n";
 	#endif
-	//this->server.remove(&inputSocket);
-	//this->server.remove(&outputSocket);
+	if (this->getIsChildren() == false)
+	{
+		this->server.remove(&inputSocket);
+		this->server.remove(&outputSocket);
+	}
 
-	if (this->server.getIsChildren() == false && this->cgiPid > 0)
+	if (this->getIsChildren() == false && this->cgiPid > 0)
 	{
 		#ifdef DEBUG
 		std::cout << "KILLING underlying process\n";
@@ -67,13 +70,17 @@ Connection::~Connection()
 	if (this->inCGI != NULL)
 	{
 		//this->server.remove(this->inCGI);
+		//
+		if (this->getIsChildren() == false)
+			this->server.remove(this->inCGI);
 		delete this->inCGI;
 		this->inCGI = NULL;
 	}
 
 	if (this->outCGI != NULL)
 	{
-		//this->server.remove(this->outCGI);
+		if (this->getIsChildren() == false)
+			this->server.remove(this->outCGI);
 		delete this->outCGI;
 		this->outCGI = NULL;
 	}
@@ -97,12 +104,20 @@ void	Connection::remove(ASocket* abstractSocket)
 			logerror("kill", error_value);
 		}
 	}
-	this->server.remove(abstractSocket);
+	if (this->server.getIsChildren() == false)
+	{
+		this->server.remove(abstractSocket);
+	}
 }
 
 void			Connection::setIsChildren()
 {
 	this->server.setIsChildren();
+}
+
+bool			Connection::getIsChildren()
+{
+	return (this->server.getIsChildren());
 }
 
 InputSocket*	Connection::getInputSocket() {return (&this->inputSocket);}

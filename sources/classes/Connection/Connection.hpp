@@ -30,6 +30,7 @@ class Connection
 		~Connection();
 		
 		void			setIsChildren();
+		bool			getIsChildren();
 
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();
