@@ -41,6 +41,8 @@ class InputSocket: public ASocket
 
 		void	process();
 
+		void	updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
+
 		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
 		
 	protected:
@@ -82,8 +84,7 @@ class InputSocket: public ASocket
 		void						process_skip_sp(size_t& pos);
 		void						process_request(size_t& pos);
 
-		void						updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
-		void						prepareCGI(const std::string& script_name);
+		void						launch_cgi(const std::string& script_name);
 };
 
 void	setup_response(int& status, int errorCode, Connection *connection);
