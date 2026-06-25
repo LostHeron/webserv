@@ -89,7 +89,7 @@ void InputSocket::process()
 {
 	#ifdef DEBUG
 	std::cout << "in InputSocket process()\n";
-#endif
+	#endif
 	if (this->status != SUCCESS)
 		return ;
 	updateInputBuffer(this->inputBuffer, this->fd, this->status);
@@ -173,6 +173,12 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	Pipe toCGI;
 	Pipe fromCGI;
 
+	// without those, buffer might be not empty
+	// and end up in the buffer of the child,
+	// or at least, it's what seemed to be
+	std::cout << std::endl;
+	std::cerr << std::endl;
+
 	int pid = fork();
 	if (pid < 0)
 	{
@@ -213,7 +219,6 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 				formatted_envp.push_back(tmp);
 			}
 			formatted_envp.push_back(NULL);
-
 
 			char **envp = static_cast<char **>(formatted_envp.data());
 			for (size_t i = 0; envp[i] != NULL; i++)
