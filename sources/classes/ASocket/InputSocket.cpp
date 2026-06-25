@@ -245,7 +245,7 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 		this->getConnection()->setCgiPid(pid);
 		size_t body_size;
 		char *end;
-		if (this->headers.count("content-length") == 1) // something wrong ?
+		if (this->headers.count("content-length") == 1)
 			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
 		else
 			body_size = 0;
