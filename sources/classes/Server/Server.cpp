@@ -39,7 +39,6 @@ Server::Server(char *config_file):
 		const std::vector<uint16_t> &ports = this->host_list.getPort();
 		for (size_t i = 0; i < ports.size(); i++)
 		{
-			std::cout << "opening port : " << ports[i] << "\n";
 			CreateFd(ports[i], 0, *this);
 		}
 	}
@@ -47,7 +46,9 @@ Server::Server(char *config_file):
 
 Server::~Server()
 {
+	#ifdef DEBUG
 	std::cout << "In SERVER DESTRUCTOR\n";
+	#endif
 	for (size_t	i = 0; i < this->listenSockets.size(); i++)
 	{
 		delete (this->listenSockets[i]);
