@@ -35,7 +35,7 @@ class	Response: public AMessage
 		bool								&isCGI(void);
 
 		void								setStatus(const uint16_t status);
-		void								setCookies(std::vector<Cookie> &cookies);
+		void								setCookies(std::vector<Cookie> cookies);
 		void								setResource(std::pair<int, std::string> &resource);
 		void								setResourceFd(int fd);
 		void								setResourcePath(std::string path);

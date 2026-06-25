@@ -104,13 +104,27 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 	return (status);
 }
 
-
 Response	GETReq::execute(void)
 {
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
 	resp.setResourcePath(uriInfo.getRealPath());
+
+
+	const std::vector<Cookie> receivedCookies(this->_headerToCookie());
+
+	std::vector<Cookie>::const_iterator it;
+	for (it = receivedCookies.begin(); it != receivedCookies.end(); ++it)
+	{
+	}
+	resp.setCookies(this->_headerToCookie());
+
+
+# ifdef	DEBUG
+	for (it = resp.getCookies().begin(); it != resp.getCookies().end(); ++it)
+		std::cout << *it << std::endl;
+#endif
 
 
 	if (!uriInfo.isRequestAllowed(this->_method))
@@ -122,33 +136,29 @@ Response	GETReq::execute(void)
 		resp.error(this->_vhost);
 
 	// test cookies
-	std::vector<Cookie> receivedCookies(this->_headerToCookie());
-
+	//
 	std::vector<Cookie> cookies;
-	Cookie cookie;
+	Cookie cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], "98ef"));
 
-	Cookie::kvPair pair(SESSION_COOKIE_KEY, "999");
-	cookie.setKeyValue(pair);
 	cookie.setDomain("localhost");
 	cookie.setPath(this->_uri);
-	cookie.setMaxAge("3010");
 	cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
 	cookie.setHttpOnly(false);
 	cookie.setSecure(true);
 	cookie.setSameSite(Cookie::LAX);
 	cookies.push_back(cookie);
-
-	pair = Cookie::kvPair("FREEDY", "jfejeofi");
-	cookie.setKeyValue(pair);
-	cookie.setDomain("localhost");
-	cookie.setPath(this->_uri);
-	// cookie.setMaxAge("3010");
-	// cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
-	cookie.setHttpOnly(true);
-	cookie.setSecure(true);
-	cookie.setSameSite(Cookie::NONE);
-	cookies.push_back(cookie);
-
+	//
+	// pair = Cookie::kvPair(COLOR_MODE_COOKIE_KEY, "dark");
+	// cookie.setKeyValue(pair);
+	// cookie.setDomain("localhost");
+	// cookie.setPath(this->_uri);
+	// // cookie.setMaxAge("3010");
+	// // cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
+	// cookie.setHttpOnly(true);
+	// cookie.setSecure(true);
+	// cookie.setSameSite(Cookie::NONE);
+	// cookies.push_back(cookie);
+	//
 	resp.setCookies(cookies);
 	// test cookies
 

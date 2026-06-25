@@ -63,7 +63,7 @@ void	Response::setStatus(const uint16_t status)
 	this->_status = status;
 }
 
-void	Response::setCookies(std::vector<Cookie> &cookies)
+void	Response::setCookies(std::vector<Cookie> cookies)
 {
 	this->_cookies = cookies;
 }
