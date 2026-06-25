@@ -11,6 +11,7 @@
                 "name":"/",
                 "index": "coucou",
                 "alias":"/home/cviel",
+                "redirection":"http://youtube.com",
                 "request":
                 [
                     "GET",
