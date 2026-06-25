@@ -45,8 +45,11 @@ void	InputSocket::process_request(size_t& pos)
 	if (resp.isCGI() == true)
 	{
 		if (resp.getResource().first > 0)
+		{
 			close(resp.getResource().first);
-		this->prepareCGI(resp.getResource().second);
+			resp.getResource().first = -1;
+		}
+		this->launch_cgi(resp.getResource().second);
 	}
 	else
 	{

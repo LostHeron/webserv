@@ -19,7 +19,7 @@ CONFIG_FILE="\"host\":
 		\"listen\":4343,
 		\"name\": \"host_a\",
 		\"root\":\"$HOME/goinfre/tmp/a\",
-		\"extension\": \".sh\"
+		\"cgi\": true
 	}
 ]"
 echo $CONFIG_FILE > config_file.json
@@ -36,12 +36,13 @@ chmod +111 $HOME/goinfre/tmp/a/coucou.sh
 WEBSERV_PID=$!
 
 echo -ne \
-"HTTP/1.1 200 Success\r\n" \
+"HTTP/1.1 200 OK\r\n"\
+"content-type: text/html\r\n"\
 "\r\n"\
-"Hello, World!" > expected.log
+"Hello, World!\r\n" > expected.log
 
 REQ_1="GET /coucou.sh HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | nc localhost 4343 > log_req.log
+echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req.log
 sed --in-place '/Date/d' log_req.log # delete date line to use diff after
 
 ERROR=0
