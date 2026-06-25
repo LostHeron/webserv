@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:22:01 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/22 13:55:04 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/25 15:48:30 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	location_schema_builder(ObjSchema& location_schema);
 
 void	host_schema_builder(ObjSchema& host_schema)
 {   
-	IntSchema*	port_schema = new IntSchema(HOST_PORT_KEY, true, false);
+	IntSchema*	port_schema = new IntSchema(HOST_PORT_KEY, true, true);
 
 	port_schema->setMin(1);
 	port_schema->setMax(65535);

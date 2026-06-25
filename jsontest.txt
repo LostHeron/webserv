@@ -1,10 +1,10 @@
 "host":
 [
     {
-        "listen":4343,
+        "listen":[4343,4342],
         "name": "host_a",
         "root":"/home/cviel",
-        "index":"shutdown.c"
+        "index":"shutdown.c",
         "location":
         [
             {
