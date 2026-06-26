@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/01 15:43:09 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/26 10:09:42 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "InputSocket.hpp"
 #include "status.hpp"
 #include "typedef.hpp"
+#include "Connection.hpp"
 #include <cctype>
 #include <cctype>
 #include <map>
@@ -26,8 +27,6 @@ static int	check_headers(const string_map& headers);
 
 void	InputSocket::process_headers(size_t& start)
 {
-	// std::cout << "in process header\n";
-
 	if (this->version == "")
 	{
 		if (no_version(this->state, *this, this->status) == SUCCESS)
@@ -39,6 +38,7 @@ void	InputSocket::process_headers(size_t& start)
 	{
 		if (fill_last_line(this->inputBuffer, this->lastLine, start, this->state) == STOP)
 		{
+			// here the processing of headers is over
 			if (getBodySize(this->bodySize, this->headers) != SUCCESS)
 				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
 			(this->*process_functions[this->state])(start);
@@ -61,17 +61,18 @@ void	InputSocket::process_headers(size_t& start)
 }
 
 static int	no_version(int& state, InputSocket& inputSocket, int& status)
-{
-		if (inputSocket.getMethod() == "GET")
-		{
-			state = 6;
-			return (SUCCESS);
-		}
-		else
-		{
-			setup_response(status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, inputSocket.getConnection());
-			return (FAILURE);
-		}
+{	
+	inputSocket.getConnection()->setVHost();
+	if (inputSocket.getMethod() == "GET")
+	{
+		state = 6; // to go directly to the process request step !
+		return (SUCCESS);
+	}
+	else
+	{
+		setup_response(status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, inputSocket.getConnection());
+		return (FAILURE);
+	}
 }
 
 int	getBodySize(size_t& bodySize, string_map& headers)

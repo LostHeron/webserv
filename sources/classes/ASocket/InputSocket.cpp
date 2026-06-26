@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/25 14:04:26 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/26 09:44:39 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,63 +84,6 @@ const std::string					&InputSocket::getVersion(void) const { return(this->versio
 const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
 string_map							&InputSocket::getHeadersNoConst(void) { return(this->headers); }
 
-void	updateInputBuffer(std::string& inputBuffer, int fd, int& status);
-
-void InputSocket::process()
-{
-	#ifdef DEBUG
-	std::cout << "in InputSocket process()\n";
-	#endif
-	if (this->status != SUCCESS)
-		return ;
-	updateInputBuffer(this->inputBuffer, this->fd, this->status);
-	if (this->status != SUCCESS)
-		return ;
-
-	size_t	position = 0;
-	(this->*process_functions[this->state])(position);
-	if (this->fail())
-		return ;
-	if (position >= this->inputBuffer.size())
-		this->inputBuffer.clear();
-	#ifdef DEBUG
-	std::cout << *this << "\n";
-	#endif
-}
-
-void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
-{
-	if (inputBuffer == "")
-	{
-		char buf[BUFSIZ];
-		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
-		if (nb_read < 0)
-		{
-			int errno_value = errno;
-			logerror("recv", errno_value);
-			status = FAILURE;
-			return ;
-		}
-		else if (nb_read == 0)
-		{
-			status = FAILURE; 
-			// rename this, it is not failure, but
-			//	is used to make server clear ressources associated 
-			//	with this InputSocket request and associated OutputSocket
-			return ;
-		}
-		else
-		{
-			inputBuffer = std::string(buf, nb_read);
-		}
-	}
-	else
-	{
-		#ifdef DEBUG
-		std::cout << "-->ACTION: InputSocket does not read anything, buffer not empty\n";
-		#endif
-	}
-}
 
 void	setup_response(int& status, int errorCode, Connection* connection)
 {
