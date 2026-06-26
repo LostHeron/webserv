@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/26 14:51:22 by jweber            #+#    #+#              #
-#    Updated: 2026/06/26 17:41:30 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/26 17:45:09 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,9 +50,7 @@ EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
-"HTTP/1.1 204 No Content\r\n"\
-"\r\n"\
-"in a" > $EXPECTED_FILE
+"HTTP/1.1 204 No Content\r\n" > $EXPECTED_FILE
 
 REQ="DELETE /index_a.html HTTP/1.0\r\n"\
 "\r\n"
@@ -60,8 +58,8 @@ REQ="DELETE /index_a.html HTTP/1.0\r\n"\
 # without it, we had some issue where sometimes log_req_a.log
 # was empty
 echo -ne $REQ | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
-sed --in-place '/Date/d' $RESULT_FILE # delete date line to use diff after
-sed --in-place '/Set-Cookie/d' $RESULT_FILE # delete date line to use diff after
+head -1 $RESULT_FILE > tmp.log
+cat tmp.log > $RESULT_FILE
 
 
 EXPECTED_TREE=expected_tree_a.log
