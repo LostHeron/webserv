@@ -32,6 +32,7 @@ void	InputSocket::process_headers(size_t& start)
 	{
 		if (no_version(this->state, *this, this->status) == SUCCESS)
 			(this->*process_functions[this->state])(start);
+		return ;
 	}
 
 	while (start < this->inputBuffer.size())
