@@ -52,6 +52,7 @@ echo -ne \
 REQ_1="GET / HTTP/1.1\r\n\r\n"
 echo -ne $REQ_1 | nc localhost 4343 > log_req.log
 sed --in-place '/Date/d' log_req.log # delete date line to use diff after
+sed --in-place '/Set-Cookie/d' log_req.log # delete date line to use diff after
 
 ERROR=0
 MSG=""

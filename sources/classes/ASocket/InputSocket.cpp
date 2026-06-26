@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 15:05:42 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/26 09:44:39 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@
 #include "Server.hpp"
 #include "status.hpp"
 #include "error.hpp"
-#include "Connection/Connection.hpp"
+#include "Connection.hpp"
+#include "Environment.hpp"
 #include <cctype>
 #include <cstddef>
 #include <fcntl.h>
@@ -83,63 +84,6 @@ const std::string					&InputSocket::getVersion(void) const { return(this->versio
 const string_map					&InputSocket::getHeaders(void) const { return(this->headers); }
 string_map							&InputSocket::getHeadersNoConst(void) { return(this->headers); }
 
-void	updateInputBuffer(std::string& inputBuffer, int fd, int& status);
-
-void InputSocket::process()
-{
-	#ifdef DEBUG
-	std::cout << "in InputSocket process()\n";
-#endif
-	if (this->status != SUCCESS)
-		return ;
-	updateInputBuffer(this->inputBuffer, this->fd, this->status);
-	if (this->status != SUCCESS)
-		return ;
-
-	size_t	position = 0;
-	(this->*process_functions[this->state])(position);
-	if (this->fail())
-		return ;
-	if (position >= this->inputBuffer.size())
-		this->inputBuffer.clear();
-	#ifdef DEBUG
-	std::cout << *this << "\n";
-	#endif
-}
-
-void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
-{
-	if (inputBuffer == "")
-	{
-		char buf[BUFSIZ];
-		ssize_t nb_read = recv(fd, buf, BUFSIZ, MSG_DONTWAIT | MSG_NOSIGNAL);
-		if (nb_read < 0)
-		{
-			int errno_value = errno;
-			logerror("recv", errno_value);
-			status = FAILURE;
-			return ;
-		}
-		else if (nb_read == 0)
-		{
-			status = FAILURE; 
-			// rename this, it is not failure, but
-			//	is used to make server clear ressources associated 
-			//	with this InputSocket request and associated OutputSocket
-			return ;
-		}
-		else
-		{
-			inputBuffer = std::string(buf, nb_read);
-		}
-	}
-	else
-	{
-		#ifdef DEBUG
-		std::cout << "-->ACTION: InputSocket does not read anything, buffer not empty\n";
-		#endif
-	}
-}
 
 void	setup_response(int& status, int errorCode, Connection* connection)
 {
@@ -163,15 +107,19 @@ void	InputSocket::process_body(size_t& pos)
 }
 
 
-void	InputSocket::prepareCGI(const std::string& script_name)
+void launch_child_process(InputSocket &inputSocket, const std::string& script_name, Pipe& toCGI, Pipe& fromCGI);
+
+void	InputSocket::launch_cgi(const std::string& script_name)
 {
-	char	*argv[2];
-	char	str[] = "";
-	argv[0] = str; 
-	argv[1] = NULL;
 
 	Pipe toCGI;
 	Pipe fromCGI;
+
+	// without those, buffer might be not empty
+	// and end up in the buffer of the child,
+	// or at least, it's what seemed to be
+	std::cout << std::endl;
+	std::cerr << std::endl;
 
 	int pid = fork();
 	if (pid < 0)
@@ -183,64 +131,14 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 	}
 	if (pid == 0)
 	{
-		//here is the child !
-		try
-		{
-			this->connection->setIsChildren();
-			toCGI.closeWriteEnd();
-			fromCGI.closeReadEnd();
-			if (dup2(toCGI.getReadEnd(), STDIN_FILENO) < 0)
-			{
-				// handle error here
-			}
-			if (dup2(fromCGI.getWriteEnd(), STDOUT_FILENO) < 0)
-			{
-				// handle error here
-			}
-			fromCGI.closeWriteEnd();
-			toCGI.closeReadEnd();
-
-			std::vector<std::string>	vec_envp;
-			this->updateCgiEnvp(vec_envp, script_name);
-
-			std::vector< char * > formatted_envp;
-			formatted_envp.reserve(vec_envp.size() + 1);
-			for (size_t i = 0; i < vec_envp.size(); i++)
-			{
-				char *tmp = new char[vec_envp.at(i).size() + 1];
-				std::memcpy(tmp, vec_envp.at(i).data(), vec_envp.at(i).size());
-				tmp[vec_envp.at(i).size()] = '\0';
-				formatted_envp.push_back(tmp);
-			}
-			formatted_envp.push_back(NULL);
-
-
-			char **envp = static_cast<char **>(formatted_envp.data());
-			for (size_t i = 0; envp[i] != NULL; i++)
-			{
-				std::cerr << envp << "\n";
-			}
-
-			execve(script_name.c_str(), argv, envp);
-			int	errno_value = errno;
-			logerror("execve", errno_value);
-			for (size_t i = 0; i < formatted_envp.size(); i++)
-			{
-				delete [] formatted_envp.at(i);
-			}
-		}
-		catch (...)
-		{
-			throw IsChildren();
-		}
-		throw IsChildren();
+		launch_child_process(*this, script_name, toCGI, fromCGI);
 	}
 	else
 	{
 		this->getConnection()->setCgiPid(pid);
 		size_t body_size;
 		char *end;
-		if (this->headers.count("content-length") == 1) // something wrong ?
+		if (this->headers.count("content-length") == 1)
 			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
 		else
 			body_size = 0;
@@ -252,6 +150,51 @@ void	InputSocket::prepareCGI(const std::string& script_name)
 		this->connection->add(outcgi, EPOLLIN);
 		this->connection->setOutCGI(outcgi);
 	}
+	return ;
+}
+
+void	setup_child_standard_io_fds(Pipe& toCGI, Pipe& fromCGI);
+
+void launch_child_process(InputSocket &inputSocket, const std::string& script_name, Pipe& toCGI, Pipe& fromCGI)
+{
+	char	*argv[2];
+	char	str[] = "";
+	argv[0] = str; 
+	argv[1] = NULL;
+
+	try
+	{
+		inputSocket.getConnection()->setIsChildren();
+
+		setup_child_standard_io_fds(toCGI, fromCGI);
+
+		Environment env(script_name, inputSocket);
+
+		execve(script_name.c_str(), argv, env.getEnvp());
+		int	errno_value = errno;
+		logerror("execve", errno_value);
+	}
+	catch (...)
+	{
+		throw IsChildren();
+	}
+	throw IsChildren();
+}
+
+void	setup_child_standard_io_fds(Pipe& toCGI, Pipe& fromCGI)
+{
+	toCGI.closeWriteEnd();
+	fromCGI.closeReadEnd();
+	if (dup2(toCGI.getReadEnd(), STDIN_FILENO) < 0)
+	{
+		throw IsChildren();
+	}
+	if (dup2(fromCGI.getWriteEnd(), STDOUT_FILENO) < 0)
+	{
+		throw IsChildren();
+	}
+	fromCGI.closeWriteEnd();
+	toCGI.closeReadEnd();
 	return ;
 }
 

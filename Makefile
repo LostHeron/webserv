@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/11 16:35:18 by jweber            #+#    #+#              #
-#    Updated: 2026/06/11 16:35:18 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/26 09:40:24 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(CONNECTION_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ENVIRONMENT_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
@@ -104,10 +105,14 @@ UNKNOWNREQ_FILES := UNKNOWNReq.cpp \
 CONNECTION_DIR := Connection/
 CONNECTION_FILES := Connection.cpp \
 
+ENVIRONMENT_DIR := Environment/
+ENVIRONMENT_FILES := Environment.cpp \
+
 ASOCKET_DIR := 	ASocket/
 ASOCKET_FILES := 	ASocket.cpp \
 					ListenSocket.cpp \
 					InputSocket.cpp \
+					InputSocket_process.cpp \
 					InputSocket_process_method.cpp \
 					InputSocket_process_uri.cpp \
 					InputSocket_process_version.cpp \
@@ -170,6 +175,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(CONNECTION_DIR), $(CONNECTION_FILES)) \
+				 $(addprefix $(ENVIRONMENT_DIR), $(ENVIRONMENT_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(COOKIE_DIR), $(COOKIE_FILES)) \
 				 $(addprefix $(SESSION_DIR), $(SESSION_FILES)) \

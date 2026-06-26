@@ -18,6 +18,7 @@
 #include "error.hpp"
 #include <asm-generic/socket.h>
 #include <cstring>
+#include <netinet/in.h>
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -113,6 +114,8 @@ void	ListenSocket::activate()
 {
 	int	ret;
 
+
+	std::cout << "try to open port " << ntohs(this->addr_data.sin_port) << "\n";
 	ret = bind(this->fd, (struct sockaddr *)&this->addr_data, sizeof(this->addr_data));
 	if (ret < 0)
 	{

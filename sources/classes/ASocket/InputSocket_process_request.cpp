@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 18:07:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/19 16:33:29 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/26 09:13:39 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,11 @@ void	InputSocket::process_request(size_t& pos)
 	if (resp.isCGI() == true)
 	{
 		if (resp.getResource().first > 0)
+		{
 			close(resp.getResource().first);
-		this->prepareCGI(resp.getResource().second);
+			resp.getResource().first = -1;
+		}
+		this->launch_cgi(resp.getResource().second);
 	}
 	else
 	{

@@ -79,6 +79,9 @@ void	start(Server& server)
 					catch (...)
 					{
 						std::cerr << "an error occured\n";
+						if (event->getConnection() != NULL)
+							server.remove(event->getConnection());
+						break;
 					}
 					
 					// here someking of code like :

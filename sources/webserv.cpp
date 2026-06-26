@@ -25,18 +25,6 @@ int run = 1;
 
 int	main(int ac, char **av)
 {
-	// some function to read info from config file
-	// that would return a structure containing necessary information
-	
-	#ifdef INFO_WEBSERV__
-	struct rlimit r;
-	if (getrlimit(RLIMIT_AS, &r) < 0)
-		return (perror("getrlimit"), 1);
-	r.rlim_cur = 50000000;
-	if (setrlimit(RLIMIT_AS, &r) < 0)
-		return (perror("getrlimit"), 1);
-	#endif
-	
 	if (setup_signals() != SUCCESS)
 	{
 		std::cerr << "could not setup signals\n";
@@ -45,7 +33,7 @@ int	main(int ac, char **av)
 
 	if (ac > 2)
 	{
-		std::cerr << "usage: ./webserv [config_file]\n";
+		std::cerr << "usage: ./webserv [config_file=webserv.conf]\n";
 		return (1);
 	}
 	try

@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:21:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/22 14:02:12 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/25 18:39:52 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,13 @@ void	request_validator(std::string const& request)
 	}
 }
 
-void	non_empty_validator(std::string const& str)
+void	printable_validator(std::string const& str)
 {
 	if (str.empty())
 		throw std::invalid_argument("Argument is empty");
+	for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
+	{
+		if (std::isprint(static_cast<unsigned char>(*it)) == 0)
+			throw std::invalid_argument("Argument must only contain printable characters");
+	}
 }
