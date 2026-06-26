@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 10:09:42 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/26 10:23:56 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,11 @@ void	InputSocket::process_headers(size_t& start)
 		if (fill_last_line(this->inputBuffer, this->lastLine, start, this->state) == STOP)
 		{
 			// here the processing of headers is over
+			this->connection->setVHost();
 			if (getBodySize(this->bodySize, this->headers) != SUCCESS)
 				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
+			if (this->bodySize > this->connection->getVHost()->getBodySize())
+				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::TOO_LARGE, this->connection));
 			(this->*process_functions[this->state])(start);
 			break;
 		}
