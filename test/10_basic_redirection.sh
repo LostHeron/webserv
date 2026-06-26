@@ -13,7 +13,7 @@ CONFIG_FILE="\"host\":
 	{
 		\"name\": \"host_b\",
 		\"listen\":[4344],
-		\"root\":\"/home/jweber/goinfre/tmp/b\",
+		\"root\":\"$HOME/goinfre/tmp/b\",
 		\"location\":
 		{
 			\"name\":\"/\",

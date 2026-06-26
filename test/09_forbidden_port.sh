@@ -40,31 +40,6 @@ cat new_get.log > get.log
 
 echo -ne "could not launch server\n" > expected.log
 
-
-#
-#echo -ne \
-#"HTTP/1.1 400 Bad Request\r\n"\
-#"\r\n"\
-#"personnalized error 400\n" > expected_a.log
-#
-#REQ_1="ahah\r\n\r\n"
-## the 'stdbuf -oL' flushes the buffer into the file,
-## without it, we had some issue where sometimes log_req_a.log
-## was empty
-#echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req_a.log
-#sed --in-place '/Date/d' log_req_a.log # delete date line to use diff after
-#
-#echo -ne \
-#"HTTP/1.1 403 Forbidden\r\n"\
-#"\r\n"\
-#"personnalized error 403\n" > expected_b.log
-#
-#
-#REQ_2="GET /a HTTP/1.1\r\n\r\n"
-#echo -ne $REQ_2 | stdbuf -oL nc localhost 4343 > log_req_b.log
-#sed --in-place '/Date/d' log_req_b.log # delete date line to use diff after
-#
-#
 ERROR=0
 MSG=""
 DIFF_A=$(diff expected.log get.log)
@@ -109,6 +84,6 @@ fi
 #rm -rf config_file.json
 #rm -rf $HOME/goinfre/tmp/
 #rm -rf *.log
-#echo
-#echo
+echo
+echo
 
