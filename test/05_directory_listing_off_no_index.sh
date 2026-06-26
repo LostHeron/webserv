@@ -10,6 +10,11 @@
 #                                                                              #
 # **************************************************************************** #
 
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
+
 echo "TEST 5: directory listing off no index"
 OLD_IFS=$IFS
 IFS=""

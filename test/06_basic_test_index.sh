@@ -11,6 +11,10 @@
 #                                                                              #
 # **************************************************************************** #
 
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
 echo "TEST 6: basic index, with directory listing on and off"
 OLD_IFS=$IFS
 IFS=""

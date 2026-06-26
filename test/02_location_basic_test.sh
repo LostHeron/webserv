@@ -10,6 +10,10 @@
 #                                                                              #
 # **************************************************************************** #
 
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
 echo "TEST 2: Basic location"
 OLD_IFS=$IFS
 IFS=""

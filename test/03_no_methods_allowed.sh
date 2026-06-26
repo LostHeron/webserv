@@ -10,7 +10,12 @@
 #                                                                              #
 # **************************************************************************** #
 
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
 echo "TEST 3: no method allowed"
+
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
