@@ -32,7 +32,7 @@ void InputSocket::process()
 		return ;
 
 	size_t	position = 0;
-	std::cout << "this->state = " << this->state << "\n";
+	// std::cout << "this->state = " << this->state << "\n";
 	(this->*process_functions[this->state])(position);
 	if (this->fail())
 		return ;

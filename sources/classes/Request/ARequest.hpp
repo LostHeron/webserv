@@ -56,6 +56,7 @@ class	ARequest: public AMessage
 
 	protected:
 		std::map<std::string, Cookie>	_headerToCookies(void);
+		std::map<std::string, Cookie>	&_updateCookies(std::map<std::string, Cookie> &cookies);
 
 		VirtualHost				&_vhost;
 		const std::string		_method;

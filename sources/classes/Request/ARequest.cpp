@@ -58,12 +58,14 @@ std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
 
 	for (headersIt = this->_header["cookie"].begin(); headersIt != this->_header["cookie"].end(); ++headersIt)
 	{
-
 		std::vector<std::string>	splitCookies;
 		std::string					elem(*headersIt);
 
-
 		size_t	posElem = elem.find_first_of("; ");
+		if (posElem == std::string::npos)
+		{
+			splitCookies.push_back(elem);
+		}
 		while (posElem != std::string::npos)
 		{
 			posElem = elem.find_first_of("; ");
@@ -75,14 +77,30 @@ std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
 		for (elemIt = splitCookies.begin(); elemIt != splitCookies.end(); ++elemIt)
 		{
 			size_t		posKV = elemIt->find('=');
-			Cookie		cookie;
 
-			std::string	key = elemIt->substr(0, posKV - 1);
+			std::string	key = elemIt->substr(0, posKV);
 			std::string	value = elemIt->substr(posKV + 1);
 
-			cookie.setKeyValue(Cookie::kvPair(key, value));
+			Cookie		cookie(Cookie::kvPair(key, value));
 			cookies[key] = cookie;
 		}
 	}
+	return (cookies);
+}
+
+std::map<std::string, Cookie>					&ARequest::_updateCookies(std::map<std::string, Cookie> &cookies)
+{
+	std::map<std::string, Session>			&sessions = this->_vhost.getSessions();
+
+	if (cookies.count(Cookie::permanentCookies[Cookie::SESSION]) <= 0)
+	{
+		cookies[Cookie::permanentCookies[Cookie::SESSION]] = Cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], this->_vhost.buildSessionId()));
+	}
+	else
+	{
+		Session currentSession(cookies);
+		this->_vhost.addSession(currentSession);
+	}
+	
 	return (cookies);
 }

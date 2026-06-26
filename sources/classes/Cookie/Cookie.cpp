@@ -49,8 +49,8 @@ Cookie::Cookie(void):
 	_maxAge(-1),
 	_expires(""),
 	_HttpOnly(false),
-	_secure(false),
-	_sameSite(NONE),
+	_secure(true),
+	_sameSite(STRICT),
 	_permanent(false) {}
 
 Cookie::Cookie(Cookie::kvPair keyValue):
@@ -60,8 +60,8 @@ Cookie::Cookie(Cookie::kvPair keyValue):
 	_maxAge(DEFAULT_LIFETIME_SEC),
 	_expires(""),
 	_HttpOnly(false),
-	_secure(false),
-	_sameSite(NONE),
+	_secure(true),
+	_sameSite(STRICT),
 	_permanent(Cookie::isPermanentCookie(this->_keyValue.first))
 {
 	if (this->_permanent)

@@ -117,6 +117,7 @@ class VirtualHost
 		std::pair<bool, std::string> 	getError(int err_code) const;
 		UriInfo							getUriInfo(std::string const& uri) const;
 
+		std::string						buildSessionId(void);
 		std::map<std::string, Session>	&getSessions(void);
 		void							addSession(Session &session);
 		void							removeSession(const std::string	&sessionId);

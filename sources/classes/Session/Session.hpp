@@ -15,6 +15,8 @@
 
 # include "Cookie.hpp"
 
+# define SESSION_ID_CHAR	16
+
 class	Session
 {
 	public:

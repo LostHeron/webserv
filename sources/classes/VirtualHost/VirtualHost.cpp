@@ -14,6 +14,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <ctime>
 #include <stdexcept>
 #include <sstream>
 #include "VirtualHost.hpp"
@@ -201,6 +202,24 @@ bool	VirtualHost::UriInfo::isCgiExtAllowed(std::string const& cgi_ext) const
 			return (true);
 	}
 	return (false);
+}
+
+std::string						VirtualHost::buildSessionId(void)
+{
+	static const std::string	alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	std::string					id;
+	std::srand(time(0));
+
+	for (unsigned int i = 0; i < SESSION_ID_CHAR; ++i)
+		id += alphanum[rand() % alphanum.length() - 1];
+
+	std::map<std::string, Session>::iterator iter;
+	for (iter = this->_sessions.begin(); iter != this->_sessions.end(); ++iter)
+	{
+		if (id == iter->second.getSessionId())
+			id = this->buildSessionId();
+	}
+	return (id);
 }
 
 std::map<std::string, Session>	&VirtualHost::getSessions(void)

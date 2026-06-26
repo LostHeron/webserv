@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 19:44:37 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/24 13:25:41 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/06/26 19:35:53 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,12 +109,19 @@ Response	GETReq::execute(void)
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
 	resp.setResourcePath(uriInfo.getRealPath());
-	resp.setCookies(this->_headerToCookies());
+
+	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
+	resp.setCookies(this->_updateCookies(receivedCookies));
+
 
 
 # ifdef	DEBUG
+	{
+		std::cout << "AFTER UPDATE COOKIES" << std::endl;
+	std::map<std::string, Cookie>::iterator it;
 	for (it = resp.getCookies().begin(); it != resp.getCookies().end(); ++it)
-		std::cout << *it << std::endl;
+		std::cout << it->second << std::endl;
+	}	
 #endif
 
 
