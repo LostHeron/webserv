@@ -57,28 +57,24 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
 	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
-	if (directory)
+	if (directory && uriInfo.getIndex() != "")
 	{
-		if (uriInfo.getIndex() != "")
-		{
-			this->_uri += uriInfo.getIndex() + "/";
-			resource.second += "/" + uriInfo.getIndex();
-			if (!cgi)
-				cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
+		this->_uri += uriInfo.getIndex() + "/";
+		resource.second += "/" + uriInfo.getIndex();
+		if (!cgi)
+			cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
 
-			else
-			#	ifdef	DEBUG
-			std::cout << "URI: '" << this->_uri << "'\nResp.second (concat index): " << resource.second << std::endl;
-			#	endif
-
-			directory = this->_tryOpenDirectory(resource.second.c_str());
-		}
+		closedir(directory);
+		directory = this->_tryOpenDirectory(resource.second.c_str());
 	}
 	
 	if (directory)
 	{
 		if (!uriInfo.isDirListAllowed())
+		{
+			closedir(directory);
 			return (HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+		}
 		content = HTMLPageBuilder::dirListingPage(directory, this->_uri);
 		return (status);
 	}
