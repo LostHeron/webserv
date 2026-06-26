@@ -83,7 +83,9 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 		switch (errno)
 		{
 			case (ENOTDIR):
-				if (!cgi && (resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
+				if (cgi)
+					break;
+				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
 					break;
 				__attribute__((fallthrough));
 			case (EACCES):
