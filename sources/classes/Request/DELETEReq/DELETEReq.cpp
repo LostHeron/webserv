@@ -30,7 +30,7 @@ uint16_t	DELETEReq::_removeResource(std::pair<int, std::string> &resource) const
 {
 	uint16_t status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
-	if (std::remove(resource.second.c_str()))
+	if (1/*std::remove(resource.second.c_str())*/)
 	{
 		switch (errno)
 		{

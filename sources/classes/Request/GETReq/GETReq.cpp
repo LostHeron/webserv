@@ -106,8 +106,9 @@ Response	GETReq::execute(void)
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
-	resp.setResourcePath(uriInfo.getRealPath());
 	resp.setRedir(uriInfo.isRedir());
+	// if redir, set to RAW path (config file)
+	resp.setResourcePath(uriInfo.getRealPath());
 
 	const std::vector<Cookie> receivedCookies(this->_headerToCookie());
 
