@@ -97,7 +97,8 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 				status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
 				break;
 			default:
-				status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
+				if (!cgi)
+					status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
 				break;
 		}
 	}
