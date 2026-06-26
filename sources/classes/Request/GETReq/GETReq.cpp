@@ -109,7 +109,7 @@ Response	GETReq::execute(void)
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
 	resp.setResourcePath(uriInfo.getRealPath());
-
+	resp.setRedir(uriInfo.isRedir());
 
 	const std::vector<Cookie> receivedCookies(this->_headerToCookie());
 
