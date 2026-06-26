@@ -36,7 +36,7 @@ VHostList    VHostList::build(char const* filename)
 	std::ifstream	config_file(filename);
 
 	if (config_file.fail())
-		throw std::runtime_error("File stream failed to properly setup");
+		throw std::runtime_error("could not open file: '" + std::string(filename) + "'");
 
 	std::stringstream	input_stream;
 

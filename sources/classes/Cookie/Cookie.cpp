@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "Cookie.hpp"
+#include <ctime>
+#include <sstream>
 
 std::ostream	&operator<<(std::ostream &os, const Cookie &cookie)
 {
@@ -22,18 +24,56 @@ std::ostream	&operator<<(std::ostream &os, const Cookie &cookie)
 	return (os);
 }
 
-// Static attr. initialization =================================================
+// Static members ==============================================================
+const char	*Cookie::permanentCookies[PERM_COOKIES_QTY] = 
+{
+	"id",
+	"theme"
+};
+
+bool		Cookie::isPermanentCookie(const std::string &key)
+{
+	for (int i = 0; i < PERM_COOKIES_QTY; ++i)
+	{
+		if (key == Cookie::permanentCookies[i])
+			return (true);
+	}
+	return (false);
+}
 
 // Constructors/Destructors ====================================================
 Cookie::Cookie(void):
 	_keyValue("", ""),
 	_domain(""),
 	_path(""),
-	_maxAge(""),
+	_maxAge(-1),
 	_expires(""),
 	_HttpOnly(false),
 	_secure(false),
-	_sameSite(NONE) {}
+	_sameSite(NONE),
+	_permanent(false) {}
+
+Cookie::Cookie(Cookie::kvPair keyValue):
+	_keyValue(keyValue.first, keyValue.second),
+	_domain(""),
+	_path(""),
+	_maxAge(DEFAULT_LIFETIME_SEC),
+	_expires(""),
+	_HttpOnly(false),
+	_secure(false),
+	_sameSite(NONE),
+	_permanent(Cookie::isPermanentCookie(this->_keyValue.first))
+{
+	if (this->_permanent)
+	{
+		const std::time_t	timep = time(NULL) + DEFAULT_LIFETIME_SEC;
+		const struct tm		*t = std::gmtime(&timep);
+		char 				buf[1024];
+
+		strftime(buf, 1024, "%a, %d %b %Y %T UTC", t);
+		this->_expires = std::string(buf);
+	}
+}
 
 Cookie::~Cookie(void) {}
 
@@ -41,7 +81,7 @@ Cookie::~Cookie(void) {}
 Cookie::kvPair		Cookie::getKeyValue(void)	{	return (this->_keyValue);	}
 std::string			Cookie::getDomain(void)		{	return (this->_domain);		}
 std::string			Cookie::getPath(void)		{	return (this->_path);		}
-std::string			Cookie::getMaxAge(void)		{	return (this->_maxAge);		}
+long				Cookie::getMaxAge(void)		{	return (this->_maxAge);		}
 std::string			Cookie::getExpires(void) 	{	return (this->_expires);	}
 bool				Cookie::gethttpOnly(void) 	{	return (this->_HttpOnly);	}
 bool				Cookie::getSecure(void) 	{	return (this->_secure);		}
@@ -64,7 +104,7 @@ void			Cookie::setPath(const std::string &path)
 	this->_path = path;
 }
 
-void			Cookie::setMaxAge(const std::string &age)
+void			Cookie::setMaxAge(const long &age)
 {
 	this->_maxAge = age;
 }
@@ -126,22 +166,27 @@ std::string		Cookie::_pathToStr(void) const
 
 std::string		Cookie::_maxAgeToStr(void) const
 {
-	return (this->_maxAge != "" ? "; Max-Age=" + this->_maxAge : "");
+	std::stringstream	ss;
+	std::string			s_maxAge;
+	ss << this->_maxAge;
+	ss >> s_maxAge;
+
+	return (this->_maxAge != -1  && !this->_permanent ? "; Max-Age=" + s_maxAge : "");
 }
 
 std::string		Cookie::_expiresToStr(void) const
 {
-	return (this->_expires != "" ? "; Expires=" + this->_expires : "");
+	return (this->_expires != "" && this->_permanent ? "; Expires=" + this->_expires : "");
 }
 
 std::string		Cookie::_httpOnlyToStr(void) const
 {
-	return (this->_HttpOnly  ? "; HttpOnly" : "");
+	return (this->_HttpOnly ? "; HttpOnly" : "");
 }
 
 std::string		Cookie::_secureToStr(void) const
 {
-	return (this->_secure  ? "; Secure" : "");
+	return (this->_secure ? "; Secure" : "");
 }
 
 std::string		Cookie::_sameSiteToStr(void) const

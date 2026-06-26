@@ -1,3 +1,4 @@
+
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
@@ -14,49 +15,42 @@ rm -rf config_file.json
 rm -rf $HOME/goinfre/tmp/
 rm -rf *.log
 
-echo "TEST 7: basic cgi execution"
+echo "TEST 9: forbidden port"
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
 [
 	{
-		\"listen\":4343,
+		\"listen\":[20],
 		\"name\": \"host_a\",
-		\"root\":\"$HOME/goinfre/tmp/a\",
-		\"cgi\": true
+		\"root\":\"$HOME/goinfre/tmp/a\"
 	}
 ]"
 echo $CONFIG_FILE > config_file.json
 IFS=$OLD_IFS
 
 mkdir -p $HOME/goinfre/tmp/a
-echo '#!/bin/bash' > $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne 'content-type:text/html\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne '\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne 'Hello, World!\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-chmod +111 $HOME/goinfre/tmp/a/coucou.sh
 
-../webserv config_file.json >/dev/null 2>/dev/null &
+../webserv config_file.json >/dev/null 2> get.log
 WEBSERV_PID=$!
+echo $WEBSERV_PID
+if [ $WEBSERV_PID ]; then
+	kill $WEBSERV_PID
+fi
 
-echo -ne \
-"HTTP/1.1 200 OK\r\n"\
-"content-type: text/html\r\n"\
-"\r\n"\
-"Hello, World!\r\n" > expected.log
+tail -1 get.log > new_get.log
 
-REQ_1="GET /coucou.sh HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req.log
-sed --in-place '/Date/d' log_req.log # delete date line to use diff after
-sed --in-place '/Set-Cookie/d' log_req.log # delete date line to use diff after
+cat new_get.log > get.log
+
+echo -ne "could not launch server\n" > expected.log
 
 ERROR=0
 MSG=""
-DIFF_A=$(diff expected.log log_req.log)
+DIFF_A=$(diff expected.log get.log)
 DIFF_A_ERR=$?
 if [ $DIFF_A_ERR -ne 0 ] ; then
 	MSG_EXPECT=$(cat -e expected.log)
-	MSG_GET=$(cat -e log_req.log)
+	MSG_GET=$(cat -e get.log)
 	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ_1'\n~~~~~~~~~~~~~~\n"
 	MSG+="expected:\n"
 	MSG+=$MSG_EXPECT
@@ -65,8 +59,22 @@ if [ $DIFF_A_ERR -ne 0 ] ; then
 	MSG+="\n"
 	ERROR+=1
 fi
-
-
+#
+#DIFF_B=$(diff expected_b.log log_req_b.log)
+#DIFF_B_ERR=$?
+#if [ $DIFF_B_ERR -ne 0 ] ; then
+#	MSG_EXPECT=$(cat -e expected_b.log)
+#	MSG_GET=$(cat -e log_req_b.log)
+#	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ_2'\n~~~~~~~~~~~~~~\n"
+#	MSG+="expected:\n"
+#	MSG+=$MSG_EXPECT
+#	MSG+="\nget:\n";
+#	MSG+=$MSG_GET
+#	MSG+="\n"
+#	ERROR+=1
+#fi
+#
+#
 if [ $ERROR -ne 0 ]; then
 	echo -ne "FAILED\n"
 	echo -ne $MSG
@@ -75,8 +83,8 @@ if [ $ERROR -ne 0 ]; then
 else
 	echo "SUCCESS";
 fi
-
-kill -INT $WEBSERV_PID
+#
+#kill -INT $WEBSERV_PID
 #rm -rf config_file.json
 #rm -rf $HOME/goinfre/tmp/
 #rm -rf *.log

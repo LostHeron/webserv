@@ -36,16 +36,16 @@ class	ARequest: public AMessage
 		ARequest(const ARequest &cpy);
 		virtual ~ARequest(void);
 
-		ARequest												&operator=(const ARequest &assign);
+		ARequest				&operator=(const ARequest &assign);
 
-		virtual Response										execute(void) = 0;
+		virtual Response		execute(void) = 0;
 
-		const std::string										&getMethod(void) const;
-		std::string												getUri(void);
-		const std::string										&getVersion(void) const;
-		const std::map< std::string, std::vector<std::string> >	&getHeader(void) const;
+		const std::string		&getMethod(void) const;
+		std::string				getUri(void);
+		const std::string		&getVersion(void) const;
+		const string_map		&getHeader(void) const;
 
-		enum				e_reqType
+		enum					e_reqType
 		{
 			GET,
 			POST,
@@ -55,13 +55,15 @@ class	ARequest: public AMessage
 		};
 
 	protected:
-		std::vector<Cookie>	_headerToCookie(void);
-		const VirtualHost	&_vhost;
-		const std::string	_method;
-		std::string			_uri;
-		const std::string	_version;
-	 	string_map			_header;
+		std::vector<Cookie>		_headerToCookie(void);
+		// void					_updateCookies(const std::vector<Cookie> &request, std::vector<Cookie> &response) const;
+		const VirtualHost		&_vhost;
+		const std::string		_method;
+		std::string				_uri;
+		const std::string		_version;
+	 	string_map				_header;
 
+		// std::set<std::string, Cookie>
 };
 
 #endif

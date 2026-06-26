@@ -57,28 +57,24 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
 
 	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
-	if (directory)
+	if (directory && uriInfo.getIndex() != "")
 	{
-		if (uriInfo.getIndex() != "")
-		{
-			this->_uri += uriInfo.getIndex() + "/";
-			resource.second += "/" + uriInfo.getIndex();
-			if (!cgi)
-				cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
+		this->_uri += uriInfo.getIndex() + "/";
+		resource.second += "/" + uriInfo.getIndex();
+		if (!cgi)
+			cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
 
-			else
-			#	ifdef	DEBUG
-			std::cout << "URI: '" << this->_uri << "'\nResp.second (concat index): " << resource.second << std::endl;
-			#	endif
-
-			directory = this->_tryOpenDirectory(resource.second.c_str());
-		}
+		closedir(directory);
+		directory = this->_tryOpenDirectory(resource.second.c_str());
 	}
 	
 	if (directory)
 	{
 		if (!uriInfo.isDirListAllowed())
+		{
+			closedir(directory);
 			return (HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+		}
 		content = HTMLPageBuilder::dirListingPage(directory, this->_uri);
 		return (status);
 	}
@@ -87,7 +83,9 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 		switch (errno)
 		{
 			case (ENOTDIR):
-				if (!cgi && (resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
+				if (cgi)
+					break;
+				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
 					break;
 				__attribute__((fallthrough));
 			case (EACCES):
@@ -97,13 +95,13 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 				status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
 				break;
 			default:
-				status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
+				if (!cgi)
+					status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
 				break;
 		}
 	}
 	return (status);
 }
-
 
 Response	GETReq::execute(void)
 {
@@ -111,6 +109,23 @@ Response	GETReq::execute(void)
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
 	resp.setResourcePath(uriInfo.getRealPath());
+	resp.setRedir(uriInfo.isRedir());
+
+	const std::vector<Cookie> receivedCookies(this->_headerToCookie());
+
+	std::vector<Cookie>::const_iterator it;
+	for (it = receivedCookies.begin(); it != receivedCookies.end(); ++it)
+	{
+		// Cookie::checkLifetime(*it);	(static void	Cookie::checkLifetime(Cookie &cookie))
+		// Cookie::checkID(*it);		(static void	Cookie::checkSession(Cookie &cookie))
+	}
+	resp.setCookies(this->_headerToCookie());
+
+
+# ifdef	DEBUG
+	for (it = resp.getCookies().begin(); it != resp.getCookies().end(); ++it)
+		std::cout << *it << std::endl;
+#endif
 
 
 	if (!uriInfo.isRequestAllowed(this->_method))
@@ -122,34 +137,26 @@ Response	GETReq::execute(void)
 		resp.error(this->_vhost);
 
 	// test cookies
-	std::vector<Cookie> receivedCookies(this->_headerToCookie());
 
 	std::vector<Cookie> cookies;
-	Cookie cookie;
-
-	Cookie::kvPair pair(SESSION_COOKIE_KEY, "999");
-	cookie.setKeyValue(pair);
+	Cookie cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], "98ef"));
 	cookie.setDomain("localhost");
 	cookie.setPath(this->_uri);
-	cookie.setMaxAge("3010");
-	cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
 	cookie.setHttpOnly(false);
 	cookie.setSecure(true);
 	cookie.setSameSite(Cookie::LAX);
 	cookies.push_back(cookie);
 
-	pair = Cookie::kvPair("FREEDY", "jfejeofi");
-	cookie.setKeyValue(pair);
+	cookie = Cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::THEME], THEME_COOKIE_DEFAULT));
 	cookie.setDomain("localhost");
 	cookie.setPath(this->_uri);
-	// cookie.setMaxAge("3010");
-	// cookie.setExpires("Thu, 21 Oct 2028 07:28:00 GMT");
 	cookie.setHttpOnly(true);
 	cookie.setSecure(true);
 	cookie.setSameSite(Cookie::NONE);
 	cookies.push_back(cookie);
 
 	resp.setCookies(cookies);
+
 	// test cookies
 
 	return (resp);

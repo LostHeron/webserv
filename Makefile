@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/11 16:35:18 by jweber            #+#    #+#              #
-#    Updated: 2026/06/25 14:05:13 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/26 09:40:24 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -108,6 +108,7 @@ ASOCKET_DIR := 	ASocket/
 ASOCKET_FILES := 	ASocket.cpp \
 					ListenSocket.cpp \
 					InputSocket.cpp \
+					InputSocket_process.cpp \
 					InputSocket_process_method.cpp \
 					InputSocket_process_uri.cpp \
 					InputSocket_process_version.cpp \

@@ -16,7 +16,8 @@
 # include <iostream>
 # include <cstdlib>
 
-# define	SESSION_COOKIE_KEY	"id"
+# define	THEME_COOKIE_DEFAULT	"light"
+# define	DEFAULT_LIFETIME_SEC	900		// 15 minutes
 
 class		Cookie
 {
@@ -24,19 +25,30 @@ class		Cookie
 		typedef	std::pair<std::string, std::string>	kvPair;
 
 		Cookie(void);
+		Cookie(kvPair keyValue);
 		~Cookie(void);
 
-		enum	e_sameSite
+		enum			e_sameSite
 		{
 			LAX,
 			STRICT,
 			NONE
 		};
 
+		enum			e_permCookies
+		{
+			SESSION,
+			THEME,
+			PERM_COOKIES_QTY
+		};
+
+		static const char	*permanentCookies[PERM_COOKIES_QTY];
+		static bool			isPermanentCookie(const std::string &key);
+
 		kvPair			getKeyValue(void);
 		std::string		getDomain(void);
 		std::string		getPath(void);
-		std::string		getMaxAge(void);
+		long			getMaxAge(void);
 		std::string		getExpires(void);
 		bool			gethttpOnly(void);
 		bool			getSecure(void);
@@ -45,7 +57,7 @@ class		Cookie
 		void			setKeyValue(const kvPair &kv);
 		void			setDomain(const std::string &domain);
 		void			setPath(const std::string &path);
-		void			setMaxAge(const std::string &age);
+		void			setMaxAge(const long &age);
 		void			setExpires(const std::string &date);
 		void			setHttpOnly(const bool isHttpOnly);
 		void			setSecure(const bool isSecure);
@@ -57,11 +69,12 @@ class		Cookie
 		kvPair			_keyValue;
 		std::string		_domain;
 		std::string		_path;
-		std::string		_maxAge;
+		long			_maxAge;
 		std::string		_expires;
 		bool			_HttpOnly;
 		bool			_secure;
 		char			_sameSite;
+		bool			_permanent; // if part of permanent cookies key
 		
 		std::string		_keyValueToStr(void) const;
 		std::string		_domainToStr(void) const;

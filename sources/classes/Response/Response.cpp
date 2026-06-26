@@ -63,7 +63,7 @@ void	Response::setStatus(const uint16_t status)
 	this->_status = status;
 }
 
-void	Response::setCookies(std::vector<Cookie> &cookies)
+void	Response::setCookies(std::vector<Cookie> cookies)
 {
 	this->_cookies = cookies;
 }
@@ -93,12 +93,18 @@ void	Response::setCGI(const bool isCGI)
 	this->_cgi = isCGI;
 }
 
+void	Response::setRedir(const bool isRedir)
+{
+	this->_redir = isRedir;
+}
+
 // Getters =====================================================================
 const uint16_t					&Response::getStatus(void)		const	{	return (this->_status);		}
 std::vector<Cookie>				&Response::getCookies(void)				{	return (this->_cookies);	}
 std::pair<int, std::string>		&Response::getResource(void)			{	return (this->_resource);	}
 std::string						&Response::getContent(void)				{ 	return (this->_content);	}
 bool							&Response::isCGI(void)					{	return (this->_cgi);		}
+bool							Response::isRedir(void)			const	{	return (this->_redir);		}
 
 
 // Member functions ============================================================

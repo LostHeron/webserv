@@ -1,19 +1,26 @@
 ########################## TEST 1 ##################################
+
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
 echo "TEST 1: Host selection"
+
 OLD_IFS=$IFS
 IFS=""
-CONFIG_FILE="\"host\":[
-{
-    \"listen\":4343,
-    \"name\": \"host_a\",
-    \"root\":\"$HOME/goinfre/tmp/a\"
-},
-
-{
-    \"listen\":4343,
-    \"name\": \"host_b\",
-    \"root\":\"$HOME/goinfre/tmp/b\"
-}]"
+CONFIG_FILE="\"host\":
+[
+	{
+	    \"listen\":4343,
+	    \"name\": \"host_a\",
+	    \"root\":\"$HOME/goinfre/tmp/a\"
+	},
+	{
+	    \"listen\":4343,
+	    \"name\": \"host_b\",
+	    \"root\":\"$HOME/goinfre/tmp/b\"
+	}
+]"
 #echo $CONFIG_FILE
 echo $CONFIG_FILE > config_file.json
 IFS=$OLD_IFS

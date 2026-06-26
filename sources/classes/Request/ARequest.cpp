@@ -84,3 +84,22 @@ std::vector<Cookie>					ARequest::_headerToCookie(void)
 	}
 	return (cookies);
 }
+
+// void				ARequest::_updateCookies(const std::vector<Cookie> &request, std::vector<Cookie> &response) const
+// {
+// 	std::vector<Cookie>::const_iterator	it;
+//
+// 	for (it = request.begin(); it != request.end(); ++it)
+// 	{
+// 		// ID
+// 		if (expired)
+// 		{
+// 			// if expired replace
+//
+// 		}
+// 		else
+// 		{
+// 			response.setKeyValue(Cookie::kvPair(Cookie::permanentCookies[SESSION], Cookie::defineSessionId(void)));
+// 		}
+// 	}
+// }
