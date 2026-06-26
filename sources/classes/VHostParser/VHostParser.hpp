@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 15:56:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/11 17:45:57 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/25 19:08:41 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ class VHostParser
 		static std::map<std::string, s_setter<VirtualHost::s_config> >				buildHostDispatcher(void);
 		static std::map<std::string, s_setter<VirtualHost::Location::s_config> >	buildLocDispatcher(void);
 
-		static void	addVHostConf(std::map<uint16_t, VirtualHost::s_config> const& conf_map, std::map<uint16_t, std::vector<VirtualHost::s_config> >& host_conf_map);
+		static void	addVHostConf(std::map<int64_t, VirtualHost::s_config> const& conf_map, std::map<uint16_t, std::vector<VirtualHost::s_config> >& host_conf_map);
 		
 		static VirtualHost::s_ip_range	buildInterfaceRange(std::string const& ips_str);
 		static uint32_t					buildInterface(std::string const& ip_str);

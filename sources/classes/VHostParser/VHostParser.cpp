@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 16:06:22 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/11 18:08:37 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/25 19:08:56 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,14 @@ std::map<uint16_t, std::vector<VirtualHost::s_config> >	VHostParser::buildFromJs
 	{
 		for (JsonObj::Array::const_iterator	obj_it = host_obj.getVal<JsonObj::Array>().begin(); obj_it != host_obj.getVal<JsonObj::Array>().end(); ++obj_it)
 		{
-			std::map<uint16_t, VirtualHost::s_config>	conf_map = VHostParser::dispatchJson<uint16_t, VirtualHost::s_config>(obj_it->getVal<JsonObj::SubObj>(), host_dispatcher, HOST_PORT_KEY);
+			std::map<int64_t, VirtualHost::s_config>	conf_map = VHostParser::dispatchJson<int64_t, VirtualHost::s_config>(obj_it->getVal<JsonObj::SubObj>(), host_dispatcher, HOST_PORT_KEY);
 
 			VHostParser::addVHostConf(conf_map, host_conf_map);
 		}
 	}
 	else
 	{
-		std::map<uint16_t, VirtualHost::s_config>	conf_map = VHostParser::dispatchJson<uint16_t, VirtualHost::s_config>(host_obj.getVal<JsonObj::SubObj>(), host_dispatcher, HOST_PORT_KEY);
+		std::map<int64_t, VirtualHost::s_config>	conf_map = VHostParser::dispatchJson<int64_t, VirtualHost::s_config>(host_obj.getVal<JsonObj::SubObj>(), host_dispatcher, HOST_PORT_KEY);
 			
 		VHostParser::addVHostConf(conf_map, host_conf_map);
 	}
@@ -176,9 +176,9 @@ std::map<std::string, VHostParser::s_setter<VirtualHost::Location::s_config> >	V
 	return (dispatch_map);
 }
 
-void	VHostParser::addVHostConf(std::map<uint16_t, VirtualHost::s_config> const& conf_map, std::map<uint16_t, std::vector<VirtualHost::s_config> >& host_conf_map)
+void	VHostParser::addVHostConf(std::map<int64_t, VirtualHost::s_config> const& conf_map, std::map<uint16_t, std::vector<VirtualHost::s_config> >& host_conf_map)
 {
-	for (std::map<uint16_t, VirtualHost::s_config>::const_iterator conf_it = conf_map.begin(); conf_it != conf_map.end(); ++conf_it)
+	for (std::map<int64_t, VirtualHost::s_config>::const_iterator conf_it = conf_map.begin(); conf_it != conf_map.end(); ++conf_it)
 	{
 		std::map<uint16_t, std::vector<VirtualHost::s_config> >::iterator	host_conf_it = host_conf_map.find(conf_it->first);
 		
