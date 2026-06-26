@@ -30,8 +30,8 @@ inline std::string		concatVec(const std::vector<std::string> &vec)
 // PUBLIC
 const std::string	HTMLPageBuilder::dirListingPage(DIR *directory, const std::string &uri)
 {
-	std::string		content("<!DOCTYPE html>");
-	struct dirent	*entry = readdir(directory);
+	std::string					content("<!DOCTYPE html>");
+	struct dirent				*entry = readdir(directory);
 	std::vector<std::string>	entries;
 
 	content += HTMLPageBuilder::_headerTitled("Index of " + uri);
