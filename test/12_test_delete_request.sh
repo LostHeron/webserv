@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/26 14:51:22 by jweber            #+#    #+#              #
-#    Updated: 2026/06/26 16:51:18 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/26 17:41:30 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,13 +29,6 @@ CONFIG_FILE="\"host\":
 ]"
 
 echo $CONFIG_FILE > config_file.json
-IFS=$OLD_IFS
-
-mkdir -p $HOME/goinfre/tmp/a
-
-echo -ne "in a" > $HOME/goinfre/tmp/a/index_a.html
-echo -ne "in b" > $HOME/goinfre/tmp/a/index_b.html
-chmod 0 $HOME/goinfre/tmp/a/index_b.html
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
@@ -45,6 +38,14 @@ ERROR=0
 MSG=""
 
 ################ TEST 1  delete of index_a.html
+
+rm -rf $HOME/goinfre/tmp/
+mkdir -p $HOME/goinfre/tmp/a
+
+echo -ne "in a" > $HOME/goinfre/tmp/a/index_a.html
+echo -ne "in b" > $HOME/goinfre/tmp/a/index_b.html
+chmod 0 $HOME/goinfre/tmp/a/index_b.html
+
 EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
@@ -62,22 +63,50 @@ echo -ne $REQ | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
 sed --in-place '/Date/d' $RESULT_FILE # delete date line to use diff after
 sed --in-place '/Set-Cookie/d' $RESULT_FILE # delete date line to use diff after
 
+
+EXPECTED_TREE=expected_tree_a.log
+RESULT_TREE=result_tree_a.log
+
+
+echo -ne \
+"└── a\n"\
+"    └── index_b.html\n"\
+"\n"\
+"1 directory, 1 file\n" > $EXPECTED_TREE
+
+tree $HOME/goinfre/tmp > $RESULT_TREE
+tail -n +2 $RESULT_TREE > tmp.log # delete first line
+cat tmp.log > $RESULT_TREE
+
 DIFF=$(diff $EXPECTED_FILE $RESULT_FILE)
 DIFF_ERR=$?
-if [ $DIFF_ERR -ne 0 ] ; then
+DIFF=$(diff $EXPECTED_TREE $RESULT_TREE)
+DIFF_ERR_TREE=$?
+if [ $DIFF_ERR -ne 0 ] || [ $DIFF_ERR_TREE -ne 0 ]; then
 	MSG_EXPECT=$(cat -e $EXPECTED_FILE)
 	MSG_RESULT=$(cat -e $RESULT_FILE)
 	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ'\n~~~~~~~~~~~~~~\n"
-	MSG+="expected:\n"
+	MSG+="\n\nexpected:\n"
 	MSG+=$MSG_EXPECT
-	MSG+="\nget:\n";
+	MSG+="\n\nresult:\n";
 	MSG+=$MSG_RESULT
+	MSG+="\n\nexpected_tree:\n"
+	MSG+=$(cat $EXPECTED_TREE)
+	MSG+="\n\nresult_tree:\n";
+	MSG+=$(cat $RESULT_TREE)
 	MSG+="\n"
 	ERROR+=1
 fi
 
 ################ TEST 2  delete of index_b.html which is chmod 0
-# and should then be forbidden
+
+rm -rf $HOME/goinfre/tmp/
+mkdir -p $HOME/goinfre/tmp/a
+
+echo -ne "in a" > $HOME/goinfre/tmp/a/index_a.html
+echo -ne "in b" > $HOME/goinfre/tmp/a/index_b.html
+chmod 0 $HOME/goinfre/tmp/a/index_b.html
+
 EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
@@ -90,57 +119,115 @@ REQ="DELETE /index_b.html HTTP/1.0\r\n"\
 # without it, we had some issue where sometimes log_req_a.log
 # was empty
 echo -ne $REQ | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
-head -1 $RESULT_FILE > tmp_file.log
-cat tmp_file.log > $RESULT_FILE
+head -1 $RESULT_FILE > tmp.log # keep only first line
+cat tmp.log > $RESULT_FILE
+
+
+EXPECTED_TREE=expected_tree_a.log
+RESULT_TREE=result_tree_a.log
+
+echo -ne \
+"└── a\n"\
+"    ├── index_a.html\n"\
+"    └── index_b.html\n"\
+"\n"\
+"1 directory, 2 files\n" > $EXPECTED_TREE
+
+tree $HOME/goinfre/tmp > $RESULT_TREE
+tail -n +2 $RESULT_TREE > tmp.log # delete first line
+cat tmp.log > $RESULT_TREE
 
 DIFF=$(diff $EXPECTED_FILE $RESULT_FILE)
 DIFF_ERR=$?
-if [ $DIFF_ERR -ne 0 ] ; then
+DIFF=$(diff $EXPECTED_TREE $RESULT_TREE)
+DIFF_ERR_TREE=$?
+if [ $DIFF_ERR -ne 0 ] || [ $DIFF_ERR_TREE -ne 0 ]; then
 	MSG_EXPECT=$(cat -e $EXPECTED_FILE)
 	MSG_RESULT=$(cat -e $RESULT_FILE)
 	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ'\n~~~~~~~~~~~~~~\n"
-	MSG+="expected:\n"
+	MSG+="\n\nexpected:\n"
 	MSG+=$MSG_EXPECT
-	MSG+="\nget:\n";
+	MSG+="\n\nresult:\n";
 	MSG+=$MSG_RESULT
+	MSG+="\n\nexpected_tree:\n"
+	MSG+=$(cat $EXPECTED_TREE)
+	MSG+="\n\nresult_tree:\n";
+	MSG+=$(cat $RESULT_TREE)
 	MSG+="\n"
 	ERROR+=1
 fi
 
-################ TEST 3  delete of index_not_existing.html
-# and should then be not found
+################# TEST 3  delete of index_not_existing.html
+
+
+
+rm -rf $HOME/goinfre/tmp/
+mkdir -p $HOME/goinfre/tmp/a
+
+echo -ne "in a" > $HOME/goinfre/tmp/a/index_a.html
+echo -ne "in b" > $HOME/goinfre/tmp/a/index_b.html
+chmod 0 $HOME/goinfre/tmp/a/index_b.html
+
 EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
 "HTTP/1.1 404 Not Found\r\n" > $EXPECTED_FILE
 
-REQ="DELETE /index_not_existing.html HTTP/1.0\r\n"\
+REQ="DELETE /index_no_existing.html HTTP/1.0\r\n"\
 "\r\n"
 # the 'stdbuf -oL' flushes the buffer into the file,
 # without it, we had some issue where sometimes log_req_a.log
 # was empty
 echo -ne $REQ | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
-head -1 $RESULT_FILE > tmp_file.log
-cat tmp_file.log > $RESULT_FILE
+head -1 $RESULT_FILE > tmp.log # keep only first line
+cat tmp.log > $RESULT_FILE
+
+
+EXPECTED_TREE=expected_tree_a.log
+RESULT_TREE=result_tree_a.log
+
+echo -ne \
+"└── a\n"\
+"    ├── index_a.html\n"\
+"    └── index_b.html\n"\
+"\n"\
+"1 directory, 2 files\n" > $EXPECTED_TREE
+
+tree $HOME/goinfre/tmp > $RESULT_TREE
+tail -n +2 $RESULT_TREE > tmp.log # delete first line
+cat tmp.log > $RESULT_TREE
 
 DIFF=$(diff $EXPECTED_FILE $RESULT_FILE)
 DIFF_ERR=$?
-if [ $DIFF_ERR -ne 0 ] ; then
+DIFF=$(diff $EXPECTED_TREE $RESULT_TREE)
+DIFF_ERR_TREE=$?
+if [ $DIFF_ERR -ne 0 ] || [ $DIFF_ERR_TREE -ne 0 ]; then
 	MSG_EXPECT=$(cat -e $EXPECTED_FILE)
 	MSG_RESULT=$(cat -e $RESULT_FILE)
 	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ'\n~~~~~~~~~~~~~~\n"
-	MSG+="expected:\n"
+	MSG+="\n\nexpected:\n"
 	MSG+=$MSG_EXPECT
-	MSG+="\nget:\n";
+	MSG+="\n\nresult:\n";
 	MSG+=$MSG_RESULT
+	MSG+="\n\nexpected_tree:\n"
+	MSG+=$(cat $EXPECTED_TREE)
+	MSG+="\n\nresult_tree:\n";
+	MSG+=$(cat $RESULT_TREE)
 	MSG+="\n"
 	ERROR+=1
 fi
 
+################# TEST 4  delete of / which is a directory
 
-################ TEST 3  delete of / which is a directory
-# and should then be forbidden
+
+rm -rf $HOME/goinfre/tmp/
+mkdir -p $HOME/goinfre/tmp/a
+
+echo -ne "in a" > $HOME/goinfre/tmp/a/index_a.html
+echo -ne "in b" > $HOME/goinfre/tmp/a/index_b.html
+chmod 0 $HOME/goinfre/tmp/a/index_b.html
+
 EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
@@ -153,19 +240,40 @@ REQ="DELETE / HTTP/1.0\r\n"\
 # without it, we had some issue where sometimes log_req_a.log
 # was empty
 echo -ne $REQ | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
-head -1 $RESULT_FILE > tmp_file.log
-cat tmp_file.log > $RESULT_FILE
+head -1 $RESULT_FILE > tmp.log # keep only first line
+cat tmp.log > $RESULT_FILE
+
+
+EXPECTED_TREE=expected_tree_a.log
+RESULT_TREE=result_tree_a.log
+
+echo -ne \
+"└── a\n"\
+"    ├── index_a.html\n"\
+"    └── index_b.html\n"\
+"\n"\
+"1 directory, 2 files\n" > $EXPECTED_TREE
+
+tree $HOME/goinfre/tmp > $RESULT_TREE
+tail -n +2 $RESULT_TREE > tmp.log # delete first line
+cat tmp.log > $RESULT_TREE
 
 DIFF=$(diff $EXPECTED_FILE $RESULT_FILE)
 DIFF_ERR=$?
-if [ $DIFF_ERR -ne 0 ] ; then
+DIFF=$(diff $EXPECTED_TREE $RESULT_TREE)
+DIFF_ERR_TREE=$?
+if [ $DIFF_ERR -ne 0 ] || [ $DIFF_ERR_TREE -ne 0 ]; then
 	MSG_EXPECT=$(cat -e $EXPECTED_FILE)
 	MSG_RESULT=$(cat -e $RESULT_FILE)
 	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ'\n~~~~~~~~~~~~~~\n"
-	MSG+="expected:\n"
+	MSG+="\n\nexpected:\n"
 	MSG+=$MSG_EXPECT
-	MSG+="\nget:\n";
+	MSG+="\n\nresult:\n";
 	MSG+=$MSG_RESULT
+	MSG+="\n\nexpected_tree:\n"
+	MSG+=$(cat $EXPECTED_TREE)
+	MSG+="\n\nresult_tree:\n";
+	MSG+=$(cat $RESULT_TREE)
 	MSG+="\n"
 	ERROR+=1
 fi
