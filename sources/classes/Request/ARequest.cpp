@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ARequest.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
+/*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/01 19:31:13 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/22 16:46:31 by abetemps         ###   ########.fr       */
+/*   Created: 2026/06/26 18:36:52 by abetemps          #+#    #+#             */
+/*   Updated: 2026/06/26 18:38:03 by abetemps         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 // Construction/Destruction ====================================================
 ARequest::ARequest(const InputSocket &IOMessage, const VirtualHost& vhost):
 	AMessage(IOMessage.getFd()),
-	_vhost(vhost),
+	_vhost(const_cast<VirtualHost &>(vhost)),
 	_method(IOMessage.getMethod()),
 	_uri(IOMessage.getUri()),
 	_version(IOMessage.getVersion()),
@@ -47,9 +47,9 @@ const std::string										&ARequest::getVersion(void) const 	{ return(this->_ve
 const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void)	const 	{ return(this->_header); }
 
 // Member Functions ============================================================
-std::vector<Cookie>					ARequest::_headerToCookie(void)
+std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
 {
-	std::vector<Cookie>	cookies;
+	std::map<std::string, Cookie>	cookies;
 
 	if (this->_header.count("cookie") == 0)
 		return (cookies);
@@ -77,29 +77,12 @@ std::vector<Cookie>					ARequest::_headerToCookie(void)
 			size_t		posKV = elemIt->find('=');
 			Cookie		cookie;
 
-			cookie.setKeyValue(Cookie::kvPair(elemIt->substr(0, posKV - 1), elemIt->substr(posKV + 1)));
-			cookies.push_back(cookie);
-		}
+			std::string	key = elemIt->substr(0, posKV - 1);
+			std::string	value = elemIt->substr(posKV + 1);
 
+			cookie.setKeyValue(Cookie::kvPair(key, value));
+			cookies[key] = cookie;
+		}
 	}
 	return (cookies);
 }
-
-// void				ARequest::_updateCookies(const std::vector<Cookie> &request, std::vector<Cookie> &response) const
-// {
-// 	std::vector<Cookie>::const_iterator	it;
-//
-// 	for (it = request.begin(); it != request.end(); ++it)
-// 	{
-// 		// ID
-// 		if (expired)
-// 		{
-// 			// if expired replace
-//
-// 		}
-// 		else
-// 		{
-// 			response.setKeyValue(Cookie::kvPair(Cookie::permanentCookies[SESSION], Cookie::defineSessionId(void)));
-// 		}
-// 	}
-// }

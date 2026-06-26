@@ -55,15 +55,13 @@ class	ARequest: public AMessage
 		};
 
 	protected:
-		std::vector<Cookie>		_headerToCookie(void);
-		// void					_updateCookies(const std::vector<Cookie> &request, std::vector<Cookie> &response) const;
-		const VirtualHost		&_vhost;
+		std::map<std::string, Cookie>	_headerToCookies(void);
+
+		VirtualHost				&_vhost;
 		const std::string		_method;
 		std::string				_uri;
 		const std::string		_version;
 	 	string_map				_header;
-
-		// std::set<std::string, Cookie>
 };
 
 #endif

@@ -202,3 +202,21 @@ bool	VirtualHost::UriInfo::isCgiExtAllowed(std::string const& cgi_ext) const
 	}
 	return (false);
 }
+
+std::map<std::string, Session>	&VirtualHost::getSessions(void)
+{
+	return (this->_sessions);
+}
+
+void							VirtualHost::addSession(Session &session)
+{
+	std::string sessionId = session.getSessionId();
+	if (sessionId != "")
+		this->_sessions[sessionId] = session;
+}
+
+void							VirtualHost::removeSession(const std::string &sessionId)
+{
+	if (sessionId != "")
+		this->_sessions.erase(sessionId);
+}

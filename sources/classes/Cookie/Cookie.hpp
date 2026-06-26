@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <cstdlib>
+# include <map>
 
 # define	THEME_COOKIE_DEFAULT	"light"
 # define	DEFAULT_LIFETIME_SEC	900		// 15 minutes
@@ -74,7 +75,7 @@ class		Cookie
 		bool			_HttpOnly;
 		bool			_secure;
 		char			_sameSite;
-		bool			_permanent; // if part of permanent cookies key
+		bool			_permanent;
 		
 		std::string		_keyValueToStr(void) const;
 		std::string		_domainToStr(void) const;

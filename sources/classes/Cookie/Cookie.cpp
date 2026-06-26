@@ -203,4 +203,3 @@ std::string		Cookie::_sameSiteToStr(void) const
 			return ("");
 	}
 }
-

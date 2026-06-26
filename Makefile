@@ -32,6 +32,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFACTORY_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(COOKIE_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SESSION_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(GETREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(POSTREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(DELETEREQ_DIR) \
@@ -47,6 +48,9 @@ INCLUDES = -I includes\
 
 HTTPSTATUS_DIR :=	HTTPStatus/
 HTTPSTATUS_FILES :=	HTTPStatus.cpp
+
+SESSION_DIR :=		Session/
+SESSION_FILES :=	Session.cpp
 
 HTMLPAGEBUILDER_DIR :=		HTMLPageBuilder/
 HTMLPAGEBUILDER_FILES :=	HTMLPageBuilder.cpp
@@ -168,6 +172,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(CONNECTION_DIR), $(CONNECTION_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(COOKIE_DIR), $(COOKIE_FILES)) \
+				 $(addprefix $(SESSION_DIR), $(SESSION_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
 				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \
 				 $(addprefix $(HTMLPAGEBUILDER_DIR), $(HTMLPAGEBUILDER_FILES)) \

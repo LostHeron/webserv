@@ -107,17 +107,7 @@ Response	GETReq::execute(void)
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
 	resp.setResourcePath(uriInfo.getRealPath());
-
-
-	const std::vector<Cookie> receivedCookies(this->_headerToCookie());
-
-	std::vector<Cookie>::const_iterator it;
-	for (it = receivedCookies.begin(); it != receivedCookies.end(); ++it)
-	{
-		// Cookie::checkLifetime(*it);	(static void	Cookie::checkLifetime(Cookie &cookie))
-		// Cookie::checkID(*it);		(static void	Cookie::checkSession(Cookie &cookie))
-	}
-	resp.setCookies(this->_headerToCookie());
+	resp.setCookies(this->_headerToCookies());
 
 
 # ifdef	DEBUG
@@ -133,29 +123,6 @@ Response	GETReq::execute(void)
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
-
-	// test cookies
-
-	std::vector<Cookie> cookies;
-	Cookie cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], "98ef"));
-	cookie.setDomain("localhost");
-	cookie.setPath(this->_uri);
-	cookie.setHttpOnly(false);
-	cookie.setSecure(true);
-	cookie.setSameSite(Cookie::LAX);
-	cookies.push_back(cookie);
-
-	cookie = Cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::THEME], THEME_COOKIE_DEFAULT));
-	cookie.setDomain("localhost");
-	cookie.setPath(this->_uri);
-	cookie.setHttpOnly(true);
-	cookie.setSecure(true);
-	cookie.setSameSite(Cookie::NONE);
-	cookies.push_back(cookie);
-
-	resp.setCookies(cookies);
-
-	// test cookies
 
 	return (resp);
 }
