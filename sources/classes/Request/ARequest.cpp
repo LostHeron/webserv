@@ -47,6 +47,28 @@ const std::string										&ARequest::getVersion(void) const 	{ return(this->_ve
 const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void)	const 	{ return(this->_header); }
 
 // Member Functions ============================================================
+DIR						*ARequest::_tryOpenDirectory(const char *path) const
+{
+	DIR	*dir = opendir(path);
+
+	return (dir);
+}
+
+int						ARequest::_tryOpenFile(const char *path) const
+{
+	int	fd = open(path, O_RDONLY);
+
+	return (fd);
+}
+
+const std::string		ARequest::_getFileExtension(const std::string &path)
+{
+	const size_t	pos = path.find_last_of('.');
+
+	return (pos == std::string::npos ? "" : path.substr(pos + 1));
+}
+
+
 Response										ARequest::buildResponse(void)
 {
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
@@ -57,10 +79,14 @@ Response										ARequest::buildResponse(void)
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));
 
+	if (uriInfo.isRedir())
+		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
+
 	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
 	else
 		this->_execute(resp, uriInfo);
+
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);

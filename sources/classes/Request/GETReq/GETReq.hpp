@@ -32,9 +32,6 @@ class	GETReq: public ARequest // only GET ?
 
 	private:
 		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
-		int			_dirListing(DIR *dir) const;
-		DIR			*_tryOpenDirectory(const char *path) const;
-		int			_tryOpenFile(const char *path) const;
 };
 
 #endif

@@ -13,10 +13,8 @@
 #include "HTMLPageBuilder.hpp"
 #include "GETReq.hpp"
 #include <cstring>
-#include <dirent.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <utility>
 
 // Constructors/Destructor =====================================================
 GETReq::GETReq(const ARequest &src):
@@ -28,27 +26,6 @@ GETReq::GETReq(const GETReq &cpy):
 GETReq::~GETReq(void) {}
 
 // Member functions ============================================================
-DIR	*GETReq::_tryOpenDirectory(const char *path) const
-{
-	DIR	*dir = opendir(path);
-
-	return (dir);
-}
-
-int	GETReq::_tryOpenFile(const char *path) const
-{
-	int	fd = open(path, O_RDONLY);
-
-	return (fd);
-}
-
-const std::string		getFileExtension(const std::string &uri)
-{
-	const size_t	pos = uri.find_last_of('.');
-
-	return (pos == std::string::npos ? "" : uri.substr(pos + 1));
-}
-
 void	GETReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
 	uint16_t						&status = resp.getStatus();
@@ -61,7 +38,7 @@ void	GETReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 		this->_uri += uriInfo.getIndex() + "/";
 		resource.second += "/" + uriInfo.getIndex();
 		if (!resp.isCGI())
-			resp.setCGI(uriInfo.isCgiExtAllowed(getFileExtension(this->_uri)));
+			resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(this->_uri)));
 
 		closedir(directory);
 		directory = this->_tryOpenDirectory(resource.second.c_str());

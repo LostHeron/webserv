@@ -20,6 +20,7 @@
 # include <errno.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <dirent.h>
 
 
 typedef HTTPStatus::e_reqStatus	e_reqStatus;
@@ -55,6 +56,9 @@ class	ARequest: public AMessage
 		};
 
 	protected:
+		DIR								*_tryOpenDirectory(const char *path) const;
+		int								_tryOpenFile(const char *path) const;
+		const std::string				_getFileExtension(const std::string &path);
 		virtual void					_execute(Response &res, const VirtualHost::UriInfo &uriInfo) = 0;
 		std::map<std::string, Cookie>	_headerToCookies(void);
 		std::map<std::string, Cookie>	&_updateCookies(std::map<std::string, Cookie> &cookies);
