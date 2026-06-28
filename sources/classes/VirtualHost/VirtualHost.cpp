@@ -239,3 +239,29 @@ void							VirtualHost::removeSession(const std::string &sessionId)
 	if (sessionId != "")
 		this->_sessions.erase(sessionId);
 }
+
+void							VirtualHost::removeOldSessions(void)
+{
+	const time_t								now = time(NULL);
+	std::map<std::string, Session>::iterator	iter;
+	for (iter = this->_sessions.begin(); iter != this->_sessions.end(); ++iter)
+	{
+		Cookie			&sessionIdCookie = iter->second.getSessionCookies()[Cookie::permanentCookies[Cookie::SESSION]];
+		std::string		sessionId = iter->first;
+		if (std::difftime(now, sessionIdCookie.getInitializationDate()) >= sessionIdCookie.getMaxAge())
+			this->removeSession(sessionId);
+	}
+}
+
+void							VirtualHost::updateSession(const std::string &id, std::map<std::string, Cookie> &cookies)
+{
+	Session	&session = this->_sessions[id];
+
+	session.deleteOldCookies();
+
+	std::map<std::string, Cookie>::iterator	iter;
+	for (iter = cookies.begin(); iter != cookies.end(); ++iter)
+	{
+		session.updateCookie(iter->second);
+	}
+}

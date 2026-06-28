@@ -32,6 +32,32 @@ std::map<std::string, Cookie>	&Session::getSessionCookies(void)
 	return (this->_cookies);
 }
 
-// void							Session::addCookie(Cookie &cookie);
-// void							Session::updateCookie(Cookie &cookie);
-// void							Session::removeCookie(std::string &key);
+void							Session::updateCookie(Cookie &cookie)
+{
+	if (this->_cookies.count(cookie.getKeyValue().first) != 1)
+		this->addCookie(cookie);
+	else
+		this->_cookies[cookie.getKeyValue().first] = cookie;
+}
+
+void							Session::addCookie(Cookie &cookie)
+{
+	this->_cookies[cookie.getKeyValue().first] = cookie;
+}
+
+void							Session::removeCookie(const std::string &key)
+{
+	this->_cookies.erase(key);
+}
+
+void							Session::deleteOldCookies(void)
+{
+	const time_t							now = time(NULL);
+	std::map<std::string, Cookie>::iterator	iter;
+
+	for (iter = this->_cookies.begin(); iter != this->_cookies.end(); ++iter)
+	{
+		if (std::difftime(now, iter->second.getInitializationDate()) >= iter->second.getMaxAge())
+			this->removeCookie(iter->first);
+	}
+}

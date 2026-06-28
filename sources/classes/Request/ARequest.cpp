@@ -63,9 +63,7 @@ std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
 
 		size_t	posElem = elem.find_first_of("; ");
 		if (posElem == std::string::npos)
-		{
 			splitCookies.push_back(elem);
-		}
 		while (posElem != std::string::npos)
 		{
 			posElem = elem.find_first_of("; ");
@@ -92,14 +90,23 @@ std::map<std::string, Cookie>					&ARequest::_updateCookies(std::map<std::string
 {
 	std::map<std::string, Session>			&sessions = this->_vhost.getSessions();
 
-	if (cookies.count(Cookie::permanentCookies[Cookie::SESSION]) <= 0)
+	this->_vhost.removeOldSessions();
+
+	if (cookies.count(Cookie::permanentCookies[Cookie::SESSION]) != 1)
 	{
 		cookies[Cookie::permanentCookies[Cookie::SESSION]] = Cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], this->_vhost.buildSessionId()));
 	}
-	else
+
+	const std::string id = cookies[Cookie::permanentCookies[Cookie::SESSION]].getKeyValue().second;
+	if (sessions.count(id) != 1)
 	{
 		Session currentSession(cookies);
+
 		this->_vhost.addSession(currentSession);
+	}
+	else
+	{
+		this->_vhost.updateSession(id, cookies);
 	}
 	
 	return (cookies);

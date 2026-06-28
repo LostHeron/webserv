@@ -27,12 +27,13 @@ class	Session
 		std::string						getSessionId(void);
 		std::map<std::string, Cookie>	&getSessionCookies(void);
 
-		// void							addCookie(Cookie &cookie);
-		// void							updateCookie(Cookie &cookie);
-		// void							removeCookie(std::string &key);
+		void							updateCookie(Cookie &cookie);
+		void							deleteOldCookies(void);
+		void							addCookie(Cookie &cookie);
+		void							removeCookie(const std::string &key);
 
 	private:
-		std::map<std::string, Cookie>		_cookies;
+		std::map<std::string, Cookie>	_cookies;
 };
 
 #endif

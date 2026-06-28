@@ -15,6 +15,7 @@
 
 # include <iostream>
 # include <cstdlib>
+# include <ctime>
 # include <map>
 
 # define	THEME_COOKIE_DEFAULT	"light"
@@ -54,6 +55,7 @@ class		Cookie
 		bool			gethttpOnly(void);
 		bool			getSecure(void);
 		char			getSameSite(void);
+		time_t			getInitializationDate(void);
 
 		void			setKeyValue(const kvPair &kv);
 		void			setDomain(const std::string &domain);
@@ -63,6 +65,7 @@ class		Cookie
 		void			setHttpOnly(const bool isHttpOnly);
 		void			setSecure(const bool isSecure);
 		void			setSameSite(const char sameSiteFlag);
+		void			setInitializationDate(const time_t &time);
 
 		std::string		cookieToStr(void) const;
 
@@ -76,6 +79,7 @@ class		Cookie
 		bool			_secure;
 		char			_sameSite;
 		bool			_permanent;
+		time_t			_initializationDate;
 		
 		std::string		_keyValueToStr(void) const;
 		std::string		_domainToStr(void) const;

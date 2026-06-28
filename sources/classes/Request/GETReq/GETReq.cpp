@@ -117,7 +117,6 @@ Response	GETReq::execute(void)
 
 # ifdef	DEBUG
 	{
-		std::cout << "AFTER UPDATE COOKIES" << std::endl;
 	std::map<std::string, Cookie>::iterator it;
 	for (it = resp.getCookies().begin(); it != resp.getCookies().end(); ++it)
 		std::cout << it->second << std::endl;
