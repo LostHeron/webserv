@@ -94,7 +94,7 @@ void	Response::setCGI(const bool isCGI)
 }
 
 // Getters =====================================================================
-const uint16_t					&Response::getStatus(void)		const	{	return (this->_status);		}
+uint16_t						&Response::getStatus(void)				{	return (this->_status);		}
 std::map<std::string, Cookie>	&Response::getCookies(void)				{	return (this->_cookies);	}
 std::pair<int, std::string>		&Response::getResource(void)			{	return (this->_resource);	}
 std::string						&Response::getContent(void)				{ 	return (this->_content);	}

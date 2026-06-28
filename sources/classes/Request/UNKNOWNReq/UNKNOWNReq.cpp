@@ -25,11 +25,12 @@ UNKNOWNReq::UNKNOWNReq(const UNKNOWNReq &cpy):
 UNKNOWNReq::~UNKNOWNReq(void) {}
 
 // Member functions ============================================================
-Response	UNKNOWNReq::execute(void)
+void	UNKNOWNReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	Response resp(this->_fd, true);
+	resp.setCGI(true);
 
-	std::cout << "I AM A UNKNOWN REQUEST!" << std::endl;
+	(void) uriInfo;
 
-	return (resp);
+	std::cout << "I AM AN UNKNOWN REQUEST!" << std::endl;
+
 }

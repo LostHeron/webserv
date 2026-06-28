@@ -47,6 +47,28 @@ const std::string										&ARequest::getVersion(void) const 	{ return(this->_ve
 const std::map<std::string, std::vector<std::string> >	&ARequest::getHeader(void)	const 	{ return(this->_header); }
 
 // Member Functions ============================================================
+Response										ARequest::buildResponse(void)
+{
+	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
+	Response						resp(this->_fd, uriInfo.isCgiAllowed());
+
+	resp.setResourcePath(uriInfo.getRealPath());
+
+	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
+	resp.setCookies(this->_updateCookies(receivedCookies));
+
+	if (!uriInfo.isRequestAllowed(this->_method))
+		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+	else
+		this->_execute(resp, uriInfo);
+
+	if (resp.getStatus() >= HTTPStatus::C_ERR)
+		resp.error(this->_vhost);
+
+	return (resp);
+
+}
+
 std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
 {
 	std::map<std::string, Cookie>	cookies;

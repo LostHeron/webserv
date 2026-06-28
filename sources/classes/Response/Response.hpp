@@ -28,7 +28,7 @@ class	Response: public AMessage
 
 		Response							&operator=(const Response &assign);
 
-		const uint16_t						&getStatus(void) const;
+		uint16_t							&getStatus(void);
 		std::map<std::string, Cookie>		&getCookies(void);
 		std::pair<int, std::string>			&getResource(void);
 		std::string							&getContent(void);

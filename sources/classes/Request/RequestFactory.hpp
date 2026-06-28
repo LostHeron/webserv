@@ -35,11 +35,11 @@ class	RequestFactory:
 
 		RequestFactory				&operator=(const RequestFactory &assign);
 
-		Response					execute(void);
 		ARequest					*createElement(void) const;
 
 
 	private:
+		void						_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
 		const _constructor			*_getConstructors(void) const;
 		int8_t						_determineElement(void) const;
 

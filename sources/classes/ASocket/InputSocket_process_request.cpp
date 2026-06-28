@@ -37,7 +37,7 @@ void	InputSocket::process_request(size_t& pos)
 	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
 	ARequest *req = facto.createElement();
 
-	Response resp = req->execute();
+	Response resp = req->buildResponse();
 
 	delete req;
 	

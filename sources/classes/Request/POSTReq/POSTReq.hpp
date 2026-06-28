@@ -26,7 +26,8 @@ class	POSTReq: public ARequest // only POST ?
 
 		// POSTReq		&operator=(const POSTReq &assign);
 
-		Response		execute(void);
+	private:
+		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
 };
 
 #endif

@@ -49,20 +49,19 @@ const std::string		getFileExtension(const std::string &uri)
 	return (pos == std::string::npos ? "" : uri.substr(pos + 1));
 }
 
-uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
-										std::string &content, 
-										const VirtualHost::UriInfo &uriInfo,
-										bool &cgi)
+void	GETReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	uint16_t	status = HTTPStatus::SUCCESS + HTTPStatus::OK;
+	uint16_t						&status = resp.getStatus();
+	std::pair<int, std::string>		&resource = resp.getResource();
+	std::string						&content = resp.getContent();
 
 	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
 	if (directory && uriInfo.getIndex() != "")
 	{
 		this->_uri += uriInfo.getIndex() + "/";
 		resource.second += "/" + uriInfo.getIndex();
-		if (!cgi)
-			cgi = uriInfo.isCgiExtAllowed(getFileExtension(this->_uri));
+		if (!resp.isCGI())
+			resp.setCGI(uriInfo.isCgiExtAllowed(getFileExtension(this->_uri)));
 
 		closedir(directory);
 		directory = this->_tryOpenDirectory(resource.second.c_str());
@@ -73,17 +72,18 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 		if (!uriInfo.isDirListAllowed())
 		{
 			closedir(directory);
-			return (HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+			status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
+			return;
 		}
 		content = HTMLPageBuilder::dirListingPage(directory, this->_uri);
-		return (status);
+		return;
 	}
 	else
 	{
 		switch (errno)
 		{
 			case (ENOTDIR):
-				if (cgi)
+				if (resp.isCGI())
 					break;
 				if ((resource.first = this->_tryOpenFile(resource.second.c_str())) >= 0)
 					break;
@@ -95,42 +95,9 @@ uint16_t		GETReq::_fetchResource(	std::pair<int, std::string> &resource,
 				status = HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND;
 				break;
 			default:
-				if (!cgi)
+				if (!resp.isCGI())
 					status = HTTPStatus::S_ERR + HTTPStatus::INTERNAL;
 				break;
 		}
 	}
-	return (status);
-}
-
-Response	GETReq::execute(void)
-{
-	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
-	Response						resp(this->_fd, uriInfo.isCgiAllowed());
-
-	resp.setResourcePath(uriInfo.getRealPath());
-
-	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
-	resp.setCookies(this->_updateCookies(receivedCookies));
-
-
-
-# ifdef	DEBUG
-	{
-	std::map<std::string, Cookie>::iterator it;
-	for (it = resp.getCookies().begin(); it != resp.getCookies().end(); ++it)
-		std::cout << it->second << std::endl;
-	}	
-#endif
-
-
-	if (!uriInfo.isRequestAllowed(this->_method))
-		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
-	else
-		resp.setStatus(this->_fetchResource(resp.getResource(), resp.getContent(), uriInfo, resp.isCGI()));
-
-	if (resp.getStatus() >= HTTPStatus::C_ERR)
-		resp.error(this->_vhost);
-
-	return (resp);
 }

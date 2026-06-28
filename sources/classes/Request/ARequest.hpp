@@ -38,7 +38,7 @@ class	ARequest: public AMessage
 
 		ARequest				&operator=(const ARequest &assign);
 
-		virtual Response		execute(void) = 0;
+		Response				buildResponse(void);
 
 		const std::string		&getMethod(void) const;
 		std::string				getUri(void);
@@ -55,6 +55,7 @@ class	ARequest: public AMessage
 		};
 
 	protected:
+		virtual void					_execute(Response &res, const VirtualHost::UriInfo &uriInfo) = 0;
 		std::map<std::string, Cookie>	_headerToCookies(void);
 		std::map<std::string, Cookie>	&_updateCookies(std::map<std::string, Cookie> &cookies);
 
