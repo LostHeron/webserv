@@ -74,12 +74,13 @@ Response										ARequest::buildResponse(void)
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
+	resp.setRedir(uriInfo.isRedir());
 	resp.setResourcePath(uriInfo.getRealPath());
 
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));
 
-	if (uriInfo.isRedir())
+	if (resp.isRedir())
 		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
 
 	if (!uriInfo.isRequestAllowed(this->_method))

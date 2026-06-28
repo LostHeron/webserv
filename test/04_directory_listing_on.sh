@@ -1,14 +1,18 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    03_no_methods_allowed.sh                           :+:      :+:    :+:    #
+#    04_directory_listing_on.sh                         :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/23 10:31:25 by jweber            #+#    #+#              #
-#    Updated: 2026/06/23 10:31:58 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/26 17:58:42 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
 
 echo "TEST 4: directory listing on"
 OLD_IFS=$IFS
@@ -50,7 +54,7 @@ echo -ne \
 
 
 REQ_1="GET / HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | nc localhost 4343 > log_req.log
+echo -ne $REQ_1 | stdbuf -o0 nc localhost 4343 > log_req.log
 sed --in-place '/Date/d' log_req.log # delete date line to use diff after
 sed --in-place '/Set-Cookie/d' log_req.log # delete date line to use diff after
 

@@ -1,3 +1,18 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    10_basic_redirection.sh                            :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2026/06/26 16:30:38 by jweber            #+#    #+#              #
+#    Updated: 2026/06/26 17:59:22 by jweber           ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
 
 echo "TEST 10: basic redirection"
 
@@ -13,7 +28,7 @@ CONFIG_FILE="\"host\":
 	{
 		\"name\": \"host_b\",
 		\"listen\":[4344],
-		\"root\":\"/home/jweber/goinfre/tmp/b\",
+		\"root\":\"$HOME/goinfre/tmp/b\",
 		\"location\":
 		{
 			\"name\":\"/\",
@@ -43,7 +58,7 @@ REQ_1="GET /index.html HTTP/1.1\r\n\r\n"
 # the 'stdbuf -oL' flushes the buffer into the file,
 # without it, we had some issue where sometimes log_req_a.log
 # was empty
-echo -ne $REQ_1 | stdbuf -oL nc localhost 4344 > log_req_a.log
+echo -ne $REQ_1 | stdbuf -o0 nc localhost 4344 > log_req_a.log
 sed --in-place '/Date/d' log_req_a.log # delete date line to use diff after
 sed --in-place '/Set-Cookie/d' log_req_a.log # delete date line to use diff after
 

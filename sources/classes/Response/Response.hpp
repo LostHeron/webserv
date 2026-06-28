@@ -33,6 +33,7 @@ class	Response: public AMessage
 		std::pair<int, std::string>			&getResource(void);
 		std::string							&getContent(void);
 		bool								&isCGI(void);
+		bool								isRedir(void) const;
 
 		void								setStatus(const uint16_t status);
 		void								setCookies(std::map<std::string, Cookie> cookies);
@@ -41,6 +42,7 @@ class	Response: public AMessage
 		void								setResourcePath(std::string path);
 		void								setContent(const std::string &content);
 		void								setCGI(const bool isCGI);
+		void								setRedir(const bool isRedir);
 
 		void								error(const VirtualHost &vHost);
 
@@ -50,6 +52,7 @@ class	Response: public AMessage
 		std::string							_content;
 		std::map<std::string, Cookie>		_cookies;
 		bool								_cgi;
+		bool								_redir;
 };
 
 #endif

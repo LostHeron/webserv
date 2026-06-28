@@ -11,6 +11,10 @@
 #                                                                              #
 # **************************************************************************** #
 
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
 echo "TEST 8: basic error page"
 OLD_IFS=$IFS
 IFS=""
