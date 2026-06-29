@@ -14,7 +14,7 @@ rm -rf config_file.json
 rm -rf $HOME/goinfre/tmp/
 rm -rf *.log
 
-echo "TEST 7: basic cgi execution"
+echo "TEST 7: basic cgi execution with 'cgi' field in configuration file"
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":

@@ -15,7 +15,7 @@ rm -rf config_file.json
 rm -rf $HOME/goinfre/tmp/
 rm -rf *.log
 
-echo "TEST 7 bis: too large body"
+echo "TEST 7 bis: try cgi with 'extention' field in configuration file"
 
 OLD_IFS=$IFS
 IFS=""
