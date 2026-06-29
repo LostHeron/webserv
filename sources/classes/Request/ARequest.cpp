@@ -86,7 +86,7 @@ Response										ARequest::buildResponse(void)
 		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
 
 	if (!uriInfo.isRequestAllowed(this->_method))
-		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_ALLOWED_METHOD);
 	else if (!resp.isCGI())
 		this->_execute(resp, uriInfo);
 
