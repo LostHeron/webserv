@@ -22,7 +22,8 @@ Response::Response(const int fd, bool isCGI):
 	_resource(std::pair<int, std::string>(-1, "")),
 	_content(""),
 	_cookies(),
-	_cgi(isCGI) {}
+	_cgi(isCGI),
+	_redir(false) {}
 
 Response::Response(uint16_t errCode, const VirtualHost &vHost):
 	AMessage(-1),
@@ -38,7 +39,8 @@ Response::Response(const Response &cpy):
 	_resource(cpy._resource),
 	_content(cpy._content),
 	_cookies(cpy._cookies),
-	_cgi(cpy._cgi) {}
+	_cgi(cpy._cgi),
+	_redir(cpy._redir) {}
 
 Response::~Response(void) {}
 
@@ -53,6 +55,7 @@ Response			&Response::operator=(const Response &assign)
 		this->_content = assign._content;
 		this->_cookies = assign._cookies;
 		this->_cgi = assign._cgi;
+		this->_redir = assign._redir;
 	}
 	return (*this);
 }
@@ -63,7 +66,7 @@ void	Response::setStatus(const uint16_t status)
 	this->_status = status;
 }
 
-void	Response::setCookies(std::vector<Cookie> cookies)
+void	Response::setCookies(std::map<std::string, Cookie> cookies)
 {
 	this->_cookies = cookies;
 }
@@ -99,8 +102,8 @@ void	Response::setRedir(const bool isRedir)
 }
 
 // Getters =====================================================================
-const uint16_t					&Response::getStatus(void)		const	{	return (this->_status);		}
-std::vector<Cookie>				&Response::getCookies(void)				{	return (this->_cookies);	}
+uint16_t						&Response::getStatus(void)				{	return (this->_status);		}
+std::map<std::string, Cookie>	&Response::getCookies(void)				{	return (this->_cookies);	}
 std::pair<int, std::string>		&Response::getResource(void)			{	return (this->_resource);	}
 std::string						&Response::getContent(void)				{ 	return (this->_content);	}
 bool							&Response::isCGI(void)					{	return (this->_cgi);		}

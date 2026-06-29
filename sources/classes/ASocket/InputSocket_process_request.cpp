@@ -24,7 +24,6 @@
 void	InputSocket::process_request(size_t& pos)
 {
 	std::string requested_server_name;
-	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled inputsocket 
 	if (this->headers.count("host"))
 	{
 		if (this->headers["host"].size() > 0)
@@ -40,7 +39,7 @@ void	InputSocket::process_request(size_t& pos)
 	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
 	ARequest *req = facto.createElement();
 
-	Response resp = req->execute();
+	Response resp = req->buildResponse();
 
 	delete req;
 	

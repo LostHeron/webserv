@@ -29,7 +29,7 @@ class	DELETEReq: public ARequest // only DELETE ?
 		Response		execute(void);
 
 	private:
-		uint16_t	_removeResource(std::pair<int, std::string> &resource) const;
+		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
 };
 
 #endif

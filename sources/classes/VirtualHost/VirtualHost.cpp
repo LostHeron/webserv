@@ -14,6 +14,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <ctime>
 #include <stdexcept>
 #include <sstream>
 #include "VirtualHost.hpp"
@@ -201,4 +202,70 @@ bool	VirtualHost::UriInfo::isCgiExtAllowed(std::string const& cgi_ext) const
 			return (true);
 	}
 	return (false);
+}
+
+std::string						VirtualHost::buildSessionId(void)
+{
+	static const std::string	alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	std::string					id;
+	std::srand(time(0));
+
+	for (unsigned int i = 0; i < SESSION_ID_CHAR; ++i)
+		id += alphanum[rand() % (alphanum.length() - 1)];
+	return (id);
+}
+
+bool						VirtualHost::isIdAvailable(std::string &id)
+{
+	std::map<std::string, Session>::iterator iter;
+	for (iter = this->_sessions.begin(); iter != this->_sessions.end(); ++iter)
+	{
+		if (id == iter->second.getSessionId())
+			return (false);
+	}
+	return (true);
+}
+
+std::map<std::string, Session>	&VirtualHost::getSessions(void)
+{
+	return (this->_sessions);
+}
+
+void							VirtualHost::addSession(Session &session)
+{
+	std::string sessionId = session.getSessionId();
+	if (sessionId != "")
+		this->_sessions[sessionId] = session;
+}
+
+void							VirtualHost::removeSession(const std::string &sessionId)
+{
+	if (sessionId != "")
+		this->_sessions.erase(sessionId);
+}
+
+void							VirtualHost::removeOldSessions(void)
+{
+	const time_t								now = time(NULL);
+	std::map<std::string, Session>::iterator	iter;
+	for (iter = this->_sessions.begin(); iter != this->_sessions.end(); ++iter)
+	{
+		Cookie			&sessionIdCookie = iter->second.getSessionCookies()[Cookie::permanentCookies[Cookie::SESSION]];
+		std::string		sessionId = iter->first;
+		if (std::difftime(now, sessionIdCookie.getInitializationDate()) >= sessionIdCookie.getMaxAge())
+			this->removeSession(sessionId);
+	}
+}
+
+void							VirtualHost::updateSession(const std::string &id, std::map<std::string, Cookie> &cookies)
+{
+	Session	&session = this->_sessions[id];
+
+	session.deleteOldCookies();
+
+	std::map<std::string, Cookie>::iterator	iter;
+	for (iter = cookies.begin(); iter != cookies.end(); ++iter)
+	{
+		session.updateCookie(iter->second);
+	}
 }

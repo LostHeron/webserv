@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "Cookie.hpp"
-#include <ctime>
 #include <sstream>
 
 std::ostream	&operator<<(std::ostream &os, const Cookie &cookie)
@@ -49,9 +48,10 @@ Cookie::Cookie(void):
 	_maxAge(-1),
 	_expires(""),
 	_HttpOnly(false),
-	_secure(false),
-	_sameSite(NONE),
-	_permanent(false) {}
+	_secure(true),
+	_sameSite(STRICT),
+	_permanent(false),
+	_initializationDate(time(NULL)) {}
 
 Cookie::Cookie(Cookie::kvPair keyValue):
 	_keyValue(keyValue.first, keyValue.second),
@@ -60,9 +60,10 @@ Cookie::Cookie(Cookie::kvPair keyValue):
 	_maxAge(DEFAULT_LIFETIME_SEC),
 	_expires(""),
 	_HttpOnly(false),
-	_secure(false),
-	_sameSite(NONE),
-	_permanent(Cookie::isPermanentCookie(this->_keyValue.first))
+	_secure(true),
+	_sameSite(STRICT),
+	_permanent(Cookie::isPermanentCookie(this->_keyValue.first)),
+	_initializationDate(time(NULL))
 {
 	if (this->_permanent)
 	{
@@ -78,14 +79,15 @@ Cookie::Cookie(Cookie::kvPair keyValue):
 Cookie::~Cookie(void) {}
 
 // Getters =====================================================================
-Cookie::kvPair		Cookie::getKeyValue(void)	{	return (this->_keyValue);	}
-std::string			Cookie::getDomain(void)		{	return (this->_domain);		}
-std::string			Cookie::getPath(void)		{	return (this->_path);		}
-long				Cookie::getMaxAge(void)		{	return (this->_maxAge);		}
-std::string			Cookie::getExpires(void) 	{	return (this->_expires);	}
-bool				Cookie::gethttpOnly(void) 	{	return (this->_HttpOnly);	}
-bool				Cookie::getSecure(void) 	{	return (this->_secure);		}
-char				Cookie::getSameSite(void) 	{	return (this->_sameSite);	}
+Cookie::kvPair		Cookie::getKeyValue(void)			{	return (this->_keyValue);			}
+std::string			Cookie::getDomain(void)				{	return (this->_domain);				}
+std::string			Cookie::getPath(void)				{	return (this->_path);				}
+long				Cookie::getMaxAge(void)				{	return (this->_maxAge);				}
+std::string			Cookie::getExpires(void) 			{	return (this->_expires);			}
+bool				Cookie::gethttpOnly(void) 			{	return (this->_HttpOnly);			}
+bool				Cookie::getSecure(void) 			{	return (this->_secure);				}
+char				Cookie::getSameSite(void) 			{	return (this->_sameSite);			}
+time_t				Cookie::getInitializationDate(void)	{	return (this->_initializationDate);	}
 
 
 // Setters =====================================================================
@@ -129,6 +131,10 @@ void			Cookie::setSameSite(const char sameSiteFlag)
 	this->_sameSite = sameSiteFlag;
 }
 
+void			Cookie::setInitializationDate(const time_t &time)
+{
+	this->_initializationDate = time;
+}
 
 // Member functions ============================================================
 std::string	Cookie::cookieToStr(void) const
@@ -203,4 +209,3 @@ std::string		Cookie::_sameSiteToStr(void) const
 			return ("");
 	}
 }
-

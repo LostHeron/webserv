@@ -26,7 +26,8 @@ class	UNKNOWNReq: public ARequest // only UNKNOWN ?
 
 		// UNKNOWNReq		&operator=(const UNKNOWNReq &assign);
 
-		Response		execute(void);
+	private:
+		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
 };
 
 #endif

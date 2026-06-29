@@ -25,11 +25,10 @@ UNKNOWNReq::UNKNOWNReq(const UNKNOWNReq &cpy):
 UNKNOWNReq::~UNKNOWNReq(void) {}
 
 // Member functions ============================================================
-Response	UNKNOWNReq::execute(void)
+void	UNKNOWNReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	Response resp(this->_fd, true);
+	(void) uriInfo;
 
-	std::cout << "I AM A UNKNOWN REQUEST!" << std::endl;
-
-	return (resp);
+	resp.setCGI(true);
+	resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_ALLOWED_METHOD);
 }

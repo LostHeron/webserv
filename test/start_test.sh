@@ -1,4 +1,14 @@
 #!/bin/bash
+
+CDIR=$(pwd)
+LAST_DIR=$(echo ${CDIR##*/})
+if [ $LAST_DIR != "test" ]; then
+	echo "you must be in directory test to launch tests"
+	exit 1
+else
+	echo "starting test"
+fi
+
 rm -rf ../webserv
 make -C ../
 echo "interpreter = $0"

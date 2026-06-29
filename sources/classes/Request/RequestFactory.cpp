@@ -45,15 +45,10 @@ const AFactory<ARequest>::_constructor		*RequestFactory::_getConstructors(void) 
 }
 
 // Member functions =============================================================
-Response			RequestFactory::execute(void)
+void				RequestFactory::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	Response resp(-1, false);
-
-	#ifdef DEBUG
-	std::cout << "Cannot execute Factory class." << std::endl;
-	#endif
-
-	return (resp);
+	(void) resp;
+	(void) uriInfo;
 }
 
 ARequest		*RequestFactory::createElement(void) const
