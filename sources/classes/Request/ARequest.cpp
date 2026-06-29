@@ -65,7 +65,7 @@ const std::string		ARequest::_getFileExtension(const std::string &path)
 {
 	const size_t	pos = path.find_last_of('.');
 
-	return (pos == std::string::npos ? "" : path.substr(pos + 1));
+	return (pos == std::string::npos ? "" : path.substr(pos));
 }
 
 
@@ -76,6 +76,8 @@ Response										ARequest::buildResponse(void)
 
 	resp.setRedir(uriInfo.isRedir());
 	resp.setResourcePath(uriInfo.getRealPath());
+	if (!resp.isCGI())
+		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(this->_uri)));
 
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));
@@ -85,7 +87,7 @@ Response										ARequest::buildResponse(void)
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
-	else
+	else if (!resp.isCGI())
 		this->_execute(resp, uriInfo);
 
 

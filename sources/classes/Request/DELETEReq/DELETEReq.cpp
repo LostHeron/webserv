@@ -31,7 +31,13 @@ void	DELETEReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 
 	status = HTTPStatus::SUCCESS + HTTPStatus::NO_CONTENT;
 
-	if (std::remove(resource.second.c_str()))
+	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
+	if (directory)
+	{
+		status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
+		closedir(directory);
+	}
+	else if (std::remove(resource.second.c_str()))
 	{
 		switch (errno)
 		{
