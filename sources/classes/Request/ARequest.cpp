@@ -143,7 +143,12 @@ std::map<std::string, Cookie>					&ARequest::_updateCookies(std::map<std::string
 
 	if (cookies.count(Cookie::permanentCookies[Cookie::SESSION]) != 1)
 	{
-		cookies[Cookie::permanentCookies[Cookie::SESSION]] = Cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], this->_vhost.buildSessionId()));
+		std::string	id;
+		do
+			id = this->_vhost.buildSessionId();
+		while (!this->_vhost.isIdAvailable(id));
+
+		cookies[Cookie::permanentCookies[Cookie::SESSION]] = Cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], id));
 	}
 
 	const std::string id = cookies[Cookie::permanentCookies[Cookie::SESSION]].getKeyValue().second;

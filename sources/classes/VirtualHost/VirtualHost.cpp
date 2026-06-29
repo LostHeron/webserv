@@ -212,14 +212,18 @@ std::string						VirtualHost::buildSessionId(void)
 
 	for (unsigned int i = 0; i < SESSION_ID_CHAR; ++i)
 		id += alphanum[rand() % (alphanum.length() - 1)];
+	return (id);
+}
 
+bool						VirtualHost::isIdAvailable(std::string &id)
+{
 	std::map<std::string, Session>::iterator iter;
 	for (iter = this->_sessions.begin(); iter != this->_sessions.end(); ++iter)
 	{
 		if (id == iter->second.getSessionId())
-			id = this->buildSessionId();
+			return (false);
 	}
-	return (id);
+	return (true);
 }
 
 std::map<std::string, Session>	&VirtualHost::getSessions(void)

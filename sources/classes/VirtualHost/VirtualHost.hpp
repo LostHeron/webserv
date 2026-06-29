@@ -118,6 +118,7 @@ class VirtualHost
 		UriInfo							getUriInfo(std::string const& uri) const;
 
 		std::string						buildSessionId(void);
+		bool							isIdAvailable(std::string &id);
 		std::map<std::string, Session>	&getSessions(void);
 		void							addSession(Session &session);
 		void							removeSession(const std::string	&sessionId);

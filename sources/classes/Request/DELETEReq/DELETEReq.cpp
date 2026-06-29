@@ -29,6 +29,8 @@ void	DELETEReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 	uint16_t 					&status = resp.getStatus();
 	std::pair<int, std::string>	&resource = resp.getResource();
 
+	status = HTTPStatus::SUCCESS + HTTPStatus::NO_CONTENT;
+
 	if (std::remove(resource.second.c_str()))
 	{
 		switch (errno)
