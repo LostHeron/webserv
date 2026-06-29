@@ -27,8 +27,7 @@ POSTReq::~POSTReq(void) {}
 // Member functions ============================================================
 void	POSTReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	(void) resp; 
-	(void) uriInfo;
-	std::cout << "I AM A POST REQUEST!" << std::endl;
+	GETReq	req(*this);
 
+	req->_execute(resp, uriInfo);
 }
