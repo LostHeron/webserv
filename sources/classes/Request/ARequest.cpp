@@ -119,7 +119,7 @@ Response										ARequest::buildResponse(void)
 
 	std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
 	this->_splitCGIPathInfo(resp);
-	if (!resp.isCGI() && errno != EACCES && errno != ENOENT)
+	if (!resp.isCGI())
 	{
 		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resp.getResource().second)));
 		if (!resp.isCGI())
