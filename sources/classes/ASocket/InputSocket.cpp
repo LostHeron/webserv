@@ -103,7 +103,10 @@ void	setup_response(int& status, int errorCode, Connection* connection)
 void	InputSocket::process_body(size_t& pos)
 {
 	if (pos != 0)
+	{
 		this->inputBuffer = std::string(this->inputBuffer, pos);
+		pos = 0; // to avoid InputSocket::process clear the string
+	}
 	return ;
 }
 
