@@ -56,18 +56,21 @@ class	ARequest: public AMessage
 		};
 
 	protected:
+		const std::string				_getFileExtension(const std::string &path);
 		DIR								*_tryOpenDirectory(const char *path) const;
 		int								_tryOpenFile(const char *path) const;
-		const std::string				_getFileExtension(const std::string &path);
 		virtual void					_execute(Response &res, const VirtualHost::UriInfo &uriInfo) = 0;
 		std::map<std::string, Cookie>	_headerToCookies(void);
 		std::map<std::string, Cookie>	&_updateCookies(std::map<std::string, Cookie> &cookies);
 
-		VirtualHost				&_vhost;
-		const std::string		_method;
-		std::string				_uri;
-		const std::string		_version;
-	 	string_map				_header;
+		VirtualHost						&_vhost;
+		const std::string				_method;
+		std::string						_uri;
+		const std::string				_version;
+	 	string_map						_header;
+
+	private:
+		void							_splitCGIPathInfo(Response &resp) const;
 };
 
 #endif

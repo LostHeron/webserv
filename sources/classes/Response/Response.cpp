@@ -96,6 +96,11 @@ void	Response::setCGI(const bool isCGI)
 	this->_cgi = isCGI;
 }
 
+void	Response::setPathInfo(const std::string &pathInfo)
+{
+	this->_pathInfo = pathInfo;
+}
+
 void	Response::setRedir(const bool isRedir)
 {
 	this->_redir = isRedir;
@@ -107,6 +112,7 @@ std::map<std::string, Cookie>	&Response::getCookies(void)				{	return (this->_co
 std::pair<int, std::string>		&Response::getResource(void)			{	return (this->_resource);	}
 std::string						&Response::getContent(void)				{ 	return (this->_content);	}
 bool							&Response::isCGI(void)					{	return (this->_cgi);		}
+std::string						&Response::getPathInfo(void)			{	return (this->_pathInfo);	}
 bool							Response::isRedir(void)			const	{	return (this->_redir);		}
 
 

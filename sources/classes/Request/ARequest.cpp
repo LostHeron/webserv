@@ -12,7 +12,7 @@
 
 # include "ARequest.hpp"
 #include "VirtualHost.hpp"
-#include <algorithm>
+#include <sys/stat.h>
 
 // Construction/Destruction ====================================================
 ARequest::ARequest(const InputSocket &IOMessage, const VirtualHost& vhost):
@@ -61,13 +61,35 @@ int						ARequest::_tryOpenFile(const char *path) const
 	return (fd);
 }
 
-const std::string		ARequest::_getFileExtension(const std::string &path)
+const std::string						ARequest::_getFileExtension(const std::string &path)
 {
 	const size_t	pos = path.find_last_of('.');
 
 	return (pos == std::string::npos ? "" : path.substr(pos));
 }
 
+void									ARequest::_splitCGIPathInfo(Response &resp) const
+{
+	std::string	&pathInfo = resp.getPathInfo();
+	std::string	&respResourcePath = resp.getResource().second;
+	std::string	resourcePath;
+	size_t	pos = respResourcePath.find_first_of("/");
+	while (pos != std::string::npos)
+	{
+		resourcePath = respResourcePath.substr(0, pos);
+		struct stat st;
+		if (stat(resourcePath.c_str(), &st) == 0)
+		{
+			if (st.st_mode & S_IFREG)
+			{
+				pathInfo = respResourcePath.substr(pos + 1);
+				break;
+			}
+		}
+		pos = respResourcePath.find("/", pos + 1);
+	}
+	respResourcePath = resourcePath;
+}
 
 Response										ARequest::buildResponse(void)
 {
@@ -92,7 +114,8 @@ Response										ARequest::buildResponse(void)
 	}
 	else if (!resp.isCGI())
 		this->_execute(resp, uriInfo);
-
+	else
+		this->_splitCGIPathInfo(resp);
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
