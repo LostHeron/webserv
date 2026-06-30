@@ -84,11 +84,8 @@ void									ARequest::_splitCGIPathInfo(Response &resp)
 		{
 			if (st.st_mode & S_IFREG)
 			{
-				if (resp.isCGI())
-				{
-					pathInfo = respResourcePath.substr(pos + 1);
-					respResourcePath = resourcePath;
-				}
+				pathInfo = respResourcePath.substr(pos + 1);
+				respResourcePath = resourcePath;
 				// std::cout << "\n\n\n-------------\nresource path= '"<< resourcePath << "'" << std::endl;
 				// std::cout << "pathinfo= '"<< pathInfo << "'\n--------------\n\n\n\n" << std::endl;
 				return;
