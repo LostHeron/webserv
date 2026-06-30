@@ -88,7 +88,7 @@ void									ARequest::_splitCGIPathInfo(Response &resp) const
 				respResourcePath = resourcePath;
 				// std::cout << "\n\n\n-------------\nresource path= '"<< resourcePath << "'" << std::endl;
 				// std::cout << "pathinfo= '"<< pathInfo << "'\n--------------\n\n\n\n" << std::endl;
-				return ;
+				return;
 			}
 		}
 		else
@@ -97,12 +97,11 @@ void									ARequest::_splitCGIPathInfo(Response &resp) const
 			{
 				case (EACCES):
 					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
-					break;
+					return;
 				case (ENOENT):
 					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND);
-					break;
+					return;
 			}
-			return;
 		}
 		pos = respResourcePath.find("/", pos + 1);
 	}
@@ -122,6 +121,8 @@ Response										ARequest::buildResponse(void)
 	this->_splitCGIPathInfo(resp);
 	if (!resp.isCGI())
 		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resp.getResource().second)));
+	if (!resp.isCGI())
+		resp.setResourcePath(uriInfo.getRealPath());
 
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));
