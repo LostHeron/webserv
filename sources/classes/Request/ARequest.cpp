@@ -87,7 +87,10 @@ void									ARequest::_splitCGIPathInfo(Response &resp) const
 			}
 		}
 		else
+		{
 			resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND);
+			return;
+		}
 		pos = respResourcePath.find("/", pos + 1);
 	}
 	respResourcePath = resourcePath;
