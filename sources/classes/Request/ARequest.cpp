@@ -107,7 +107,6 @@ void									ARequest::_splitCGIPathInfo(Response &resp)
 		}
 		pos = respResourcePath.find("/", pos + 1);
 	}
-	// respResourcePath = resourcePath;
 }
 
 Response										ARequest::buildResponse(void)
@@ -118,13 +117,23 @@ Response										ARequest::buildResponse(void)
 	resp.setRedir(uriInfo.isRedir());
 	resp.setResourcePath(uriInfo.getRealPath());
 
-	// std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
-	//
+	std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
 	this->_splitCGIPathInfo(resp);
-	if (!resp.isCGI())
+	if (!resp.isCGI() && errno != EACCES && errno != ENOENT)
+	{
 		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resp.getResource().second)));
-	if (!resp.isCGI())
-		resp.setResourcePath(uriInfo.getRealPath());
+		if (!resp.isCGI())
+			resp.setResourcePath(uriInfo.getRealPath());
+	}
+	std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
+
+	struct stat st;
+	if (stat(resp.getResource().second.c_str(), &st) != 0)
+	{
+		resp.setCGI(false);
+	}
+
+	std::cout << "CGIIIIIIIIIIIIIIIIIII -> " << resp.isCGI() << std::endl;
 
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));
