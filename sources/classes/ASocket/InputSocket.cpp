@@ -142,9 +142,12 @@ void	InputSocket::launch_cgi(const std::string& script_name)
 			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
 		else
 			body_size = 0;
-		InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->inputBuffer, this->connection);
-		this->connection->add(incgi, EPOLLOUT);
-		this->connection->setInCGI(incgi);
+		if (body_size != 0)
+		{
+			InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->inputBuffer, this->connection);
+			this->connection->add(incgi, EPOLLOUT);
+			this->connection->setInCGI(incgi);
+		}
 
 		OutCGI *outcgi = new OutCGI(fromCGI.getReadEnd(), this->connection);
 		this->connection->add(outcgi, EPOLLIN);
@@ -229,7 +232,8 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	str = "GATEWAY_INTERFACE=CGI/1.1";
 	vec_envp.push_back(str);
 
-	// str = "PATH_INFO..."
+	str = "PATH_INFO=/";
+	vec_envp.push_back(str);
 	// not implemented yet, seems annoying to do
 	// example : /cgi-bin/somescript/coucou
 	// -> PATH_INFO = /coucou
@@ -256,8 +260,10 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	str = "REQUEST_METHOD=" + this->method;
 	vec_envp.push_back(str);
 
+	/*
 	str = "SCRIPT_NAME=" + this->uri;
 	vec_envp.push_back(str);
+	*/
 
 	str = "SCRIPT_FILENAME=" + script_name;
 	vec_envp.push_back(str);
@@ -268,7 +274,7 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	str = "SERVER_PORT=" + get_port_string_format(this->connection->getLocalPort());
 	vec_envp.push_back(str);
 
-	str = "SERVER_PROTOCOLE=HTTP/1.1";
+	str = "SERVER_PROTOCOL=HTTP/1.1";
 	vec_envp.push_back(str);
 
 	str = "SERVER_SOFTWARE=ft_webserv";
