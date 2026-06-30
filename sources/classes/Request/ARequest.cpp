@@ -119,8 +119,9 @@ Response										ARequest::buildResponse(void)
 
 	// std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
 	//
+	this->_splitCGIPathInfo(resp);
 	if (!resp.isCGI())
-		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(this->_uri)));
+		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resp.getResource().second)));
 
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));
@@ -135,12 +136,9 @@ Response										ARequest::buildResponse(void)
 	}
 	else if (!resp.isCGI())
 		this->_execute(resp, uriInfo);
-	else
-	{
-		this->_splitCGIPathInfo(resp);
-		// std::cout << "resource.second: " << resp.getResource().second << std::endl;
-		// std::cout << "status: " << resp.getStatus() << std::endl;
-	}
+
+	// std::cout << "resource.second: " << resp.getResource().second << std::endl;
+	// std::cout << "status: " << resp.getStatus() << std::endl;
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
