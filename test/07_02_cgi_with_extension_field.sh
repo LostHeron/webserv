@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/30 16:00:41 by jweber            #+#    #+#              #
-#    Updated: 2026/06/30 16:08:55 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/30 16:27:58 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,6 +77,36 @@ function tests()
 	fi
 }
 
+function tests_first_line()
+{
+	EXPECTED=$1
+	REQUEST=$2
+	TEST_NUMBER=$3
+
+	EXPECTED_FILE=expected_$TEST_NUMBER.log
+	RESULT_FILE=result_$TEST_NUMBER.log
+
+	echo -ne $EXPECTED > $EXPECTED_FILE
+
+	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
+	head -1 $RESULT_FILE > tmp.log
+	cat tmp.log > $RESULT_FILE
+
+	DIFF_A=$(diff $RESULT_FILE $EXPECTED_FILE)
+	DIFF_A_ERR=$?
+	if [ $DIFF_A_ERR -ne 0 ] ; then
+		MSG_EXPECT=$(cat -e $EXPECTED_FILE)
+		MSG_GET=$(cat -e $RESULT_FILE)
+		MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQUEST'\n~~~~~~~~~~~~~~\n"
+		MSG+="expected:\n"
+		MSG+=$MSG_EXPECT
+		MSG+="\nget:\n";
+		MSG+=$MSG_GET
+		MSG+="\n"
+		ERROR+=1
+	fi
+}
+
 ################ TEST 1 with no path info
 
 EXPECTED_VAR="HTTP/1.1 200 OK\r\n"\
@@ -89,7 +119,7 @@ REQUEST_VAR="GET /coucou.sh HTTP/1.1\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "a"
 
-################ TEST 2 with no path info
+################ TEST 2 with path info that should be /index.html
 
 EXPECTED_VAR="HTTP/1.1 200 OK\r\n"\
 "content-type: text/html\r\n"\
@@ -100,6 +130,14 @@ EXPECTED_VAR="HTTP/1.1 200 OK\r\n"\
 REQUEST_VAR="GET /coucou.sh/index.html HTTP/1.1\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "b"
+
+################ TEST 3 with a path not found 
+
+EXPECTED_VAR="HTTP/1.1 404 Not Found\r\n"
+
+REQUEST_VAR="GET /none_existin_file.sh HTTP/1.1\r\n\r\n"
+
+tests_first_line $EXPECTED_VAR $REQUEST_VAR "b"
 
 ################# RESULT + clear
 
