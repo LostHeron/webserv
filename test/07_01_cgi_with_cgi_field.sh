@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/06/23 12:36:53 by jweber            #+#    #+#              #
-#    Updated: 2026/06/30 16:00:47 by jweber           ###   ########.fr        #
+#    Created: 2026/06/30 16:17:45 by jweber            #+#    #+#              #
+#    Updated: 2026/06/30 16:25:50 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,8 @@ rm -rf config_file.json
 rm -rf $HOME/goinfre/tmp/
 rm -rf *.log
 
-echo "TEST 7: basic cgi execution with 'cgi' field in configuration file"
+echo "TEST 7: try cgi with 'cgi' field in configuration file"
+
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
@@ -27,45 +28,119 @@ CONFIG_FILE="\"host\":
 	}
 ]"
 echo $CONFIG_FILE > config_file.json
-IFS=$OLD_IFS
 
 mkdir -p $HOME/goinfre/tmp/a
-echo '#!/bin/bash' > $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne 'content-type:text/html\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne '\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne 'Hello, World!\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
+
+echo -ne \
+'#!/bin/bash\n'\
+'echo "content-type:text/html"\n'\
+'echo \n'\
+'echo "Hello, World!"\n'\
+'echo "PATH_INFO=$PATH_INFO"\n' > $HOME/goinfre/tmp/a/coucou.sh
 chmod +111 $HOME/goinfre/tmp/a/coucou.sh
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
 
-echo -ne \
-"HTTP/1.1 200 OK\r\n"\
-"content-type: text/html\r\n"\
-"\r\n"\
-"Hello, World!\r\n" > expected.log
-
-REQ_1="GET /coucou.sh HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req.log
-sed --in-place '/Date/d' log_req.log # delete date line to use diff after
-sed --in-place '/Set-Cookie/d' log_req.log # delete date line to use diff after
-
+# initialisation 
 ERROR=0
 MSG=""
-DIFF_A=$(diff expected.log log_req.log)
-DIFF_A_ERR=$?
-if [ $DIFF_A_ERR -ne 0 ] ; then
-	MSG_EXPECT=$(cat -e expected.log)
-	MSG_GET=$(cat -e log_req.log)
-	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ_1'\n~~~~~~~~~~~~~~\n"
-	MSG+="expected:\n"
-	MSG+=$MSG_EXPECT
-	MSG+="\nget:\n";
-	MSG+=$MSG_GET
-	MSG+="\n"
-	ERROR+=1
-fi
 
+function tests()
+{
+	EXPECTED=$1
+	REQUEST=$2
+	TEST_NUMBER=$3
+
+	EXPECTED_FILE=expected_$TEST_NUMBER.log
+	RESULT_FILE=result_$TEST_NUMBER.log
+
+	echo -ne $EXPECTED > $EXPECTED_FILE
+
+	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
+	sed --in-place '/Date/d' $RESULT_FILE
+	sed --in-place '/Set-Cookie/d' $RESULT_FILE # delete date line to use diff after
+
+	DIFF_A=$(diff $RESULT_FILE $EXPECTED_FILE)
+	DIFF_A_ERR=$?
+	if [ $DIFF_A_ERR -ne 0 ] ; then
+		MSG_EXPECT=$(cat -e $EXPECTED_FILE)
+		MSG_GET=$(cat -e $RESULT_FILE)
+		MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQUEST'\n~~~~~~~~~~~~~~\n"
+		MSG+="expected:\n"
+		MSG+=$MSG_EXPECT
+		MSG+="\nget:\n";
+		MSG+=$MSG_GET
+		MSG+="\n"
+		ERROR+=1
+	fi
+}
+
+function tests_first_line()
+{
+	EXPECTED=$1
+	REQUEST=$2
+	TEST_NUMBER=$3
+
+	EXPECTED_FILE=expected_$TEST_NUMBER.log
+	RESULT_FILE=result_$TEST_NUMBER.log
+
+	echo -ne $EXPECTED > $EXPECTED_FILE
+
+	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
+	head -1 $RESULT_FILE > tmp.log
+	cat tmp.log > $RESULT_FILE
+
+	DIFF_A=$(diff $RESULT_FILE $EXPECTED_FILE)
+	DIFF_A_ERR=$?
+	if [ $DIFF_A_ERR -ne 0 ] ; then
+		MSG_EXPECT=$(cat -e $EXPECTED_FILE)
+		MSG_GET=$(cat -e $RESULT_FILE)
+		MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQUEST'\n~~~~~~~~~~~~~~\n"
+		MSG+="expected:\n"
+		MSG+=$MSG_EXPECT
+		MSG+="\nget:\n";
+		MSG+=$MSG_GET
+		MSG+="\n"
+		ERROR+=1
+	fi
+}
+
+
+################ TEST 1 with no path info
+
+EXPECTED_VAR="HTTP/1.1 200 OK\r\n"\
+"content-type: text/html\r\n"\
+"\r\n"\
+"Hello, World!\n"\
+"PATH_INFO=/\n"
+
+REQUEST_VAR="GET /coucou.sh HTTP/1.1\r\n\r\n"
+
+tests $EXPECTED_VAR $REQUEST_VAR "a"
+
+################ TEST 2 with path info that should be /index.html
+
+EXPECTED_VAR="HTTP/1.1 200 OK\r\n"\
+"content-type: text/html\r\n"\
+"\r\n"\
+"Hello, World!\n"\
+"PATH_INFO=/index.html\n"
+
+REQUEST_VAR="GET /coucou.sh/index.html HTTP/1.1\r\n\r\n"
+
+tests $EXPECTED_VAR $REQUEST_VAR "b"
+
+
+################ TEST 3 with a path not found 
+
+EXPECTED_VAR="HTTP/1.1 404 Not Found\r\n"
+
+REQUEST_VAR="GET /none_existin_file.sh HTTP/1.1\r\n\r\n"
+
+tests_first_line $EXPECTED_VAR $REQUEST_VAR "b"
+
+################# RESULT + clear
 
 if [ $ERROR -ne 0 ]; then
 	echo -ne "FAILED\n"
@@ -76,10 +151,10 @@ else
 	echo "SUCCESS";
 fi
 
+IFS=$OLD_IFS
 kill -INT $WEBSERV_PID
 #rm -rf config_file.json
 #rm -rf $HOME/goinfre/tmp/
 #rm -rf *.log
 echo
 echo
-
