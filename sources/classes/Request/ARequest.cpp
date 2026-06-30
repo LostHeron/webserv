@@ -97,9 +97,11 @@ void									ARequest::_splitCGIPathInfo(Response &resp)
 			{
 				case (EACCES):
 					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+					resp.setCGI(false);
 					return;
 				case (ENOENT):
 					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND);
+					resp.setCGI(false);
 					return;
 			}
 		}
