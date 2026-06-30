@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    03_no_methods_allowed.sh                           :+:      :+:    :+:    #
+#    07_02_cgi_with_extension_field.sh                  :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/06/23 10:31:25 by jweber            #+#    #+#              #
-#    Updated: 2026/06/26 17:58:09 by jweber           ###   ########.fr        #
+#    Created: 2026/06/30 16:00:41 by jweber            #+#    #+#              #
+#    Updated: 2026/06/30 16:08:55 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,28 +14,36 @@ rm -rf config_file.json
 rm -rf $HOME/goinfre/tmp/
 rm -rf *.log
 
-echo "TEST 3: no method allowed"
+echo "TEST 7 bis: try cgi with 'extension' field in configuration file"
 
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
 [
 	{
-		\"listen\":4343,
 		\"name\": \"host_a\",
+		\"listen\":[4343],
 		\"root\":\"$HOME/goinfre/tmp/a\",
-		\"request\":[\"\"]
+		\"extension\":[\".sh\"]
 	}
 ]"
 
 echo $CONFIG_FILE > config_file.json
 
+mkdir -p $HOME/goinfre/tmp/a
+
+echo -ne \
+'#!/bin/bash\n'\
+'echo "content-type:text/html"\n'\
+'echo \n'\
+'echo "Hello, World!"\n'\
+'echo "PATH_INFO=$PATH_INFO"\n' > $HOME/goinfre/tmp/a/coucou.sh
+chmod +111 $HOME/goinfre/tmp/a/coucou.sh
+
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
 
-mkdir -p $HOME/goinfre/tmp/a
-echo -ne "in a" > $HOME/goinfre/tmp/a/index.html
-
+# initialisation 
 ERROR=0
 MSG=""
 
@@ -51,8 +59,8 @@ function tests()
 	echo -ne $EXPECTED > $EXPECTED_FILE
 
 	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
-	head -1 $RESULT_FILE > tmp.log
-	cat tmp.log > $RESULT_FILE
+	sed --in-place '/Date/d' $RESULT_FILE
+	sed --in-place '/Set-Cookie/d' $RESULT_FILE # delete date line to use diff after
 
 	DIFF_A=$(diff $RESULT_FILE $EXPECTED_FILE)
 	DIFF_A_ERR=$?
@@ -69,40 +77,31 @@ function tests()
 	fi
 }
 
+################ TEST 1 with no path info
 
-########### test_1 with GET method
+EXPECTED_VAR="HTTP/1.1 200 OK\r\n"\
+"content-type: text/html\r\n"\
+"\r\n"\
+"Hello, World!\n"\
+"PATH_INFO=/\n"
 
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+REQUEST_VAR="GET /coucou.sh HTTP/1.1\r\n\r\n"
 
-REQUEST_VAR="GET /index.html HTTP/1.1\r\n\r\n"
+tests $EXPECTED_VAR $REQUEST_VAR "a"
 
-tests $EXPECTED_VAR $REQUEST_VAR "1"
+################ TEST 2 with no path info
 
-######  test 2 with POST method
+EXPECTED_VAR="HTTP/1.1 200 OK\r\n"\
+"content-type: text/html\r\n"\
+"\r\n"\
+"Hello, World!\n"\
+"PATH_INFO=/index.html\n"
 
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+REQUEST_VAR="GET /coucou.sh/index.html HTTP/1.1\r\n\r\n"
 
-REQUEST_VAR="POST /index.html HTTP/1.1\r\n\r\n"
+tests $EXPECTED_VAR $REQUEST_VAR "b"
 
-tests $EXPECTED_VAR $REQUEST_VAR "2"
-
-######  test 3 with DELETE method
-
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
-
-REQUEST_VAR="POST /index.html HTTP/1.1\r\n\r\n"
-
-tests $EXPECTED_VAR $REQUEST_VAR "3"
-
-######  test 3 with NOT_KNOWN method
-
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
-
-REQUEST_VAR="NOTKNOWN /index.html HTTP/1.1\r\n\r\n"
-
-tests $EXPECTED_VAR $REQUEST_VAR "4"
-
-###### display results 
+################# RESULT + clear
 
 if [ $ERROR -ne 0 ]; then
 	echo -ne "FAILED\n"
@@ -120,4 +119,3 @@ kill -INT $WEBSERV_PID
 #rm -rf *.log
 echo
 echo
-

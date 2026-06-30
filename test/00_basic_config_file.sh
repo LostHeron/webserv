@@ -92,7 +92,7 @@ cat tmp_file.log > $RESULT_FILE
 #sed --in-place '/Set-Cookie/d' $RESULT_FILE # delete date line to use diff after
 
 echo -ne \
-"HTTP/1.1 403 Forbidden\r\n" > $EXPECTED_FILE
+"HTTP/1.1 405 Method Not Allowed\r\n" > $EXPECTED_FILE
 
 
 DIFF=$(diff $EXPECTED_FILE $RESULT_FILE)
@@ -125,7 +125,7 @@ cat tmp_file.log > $RESULT_FILE
 #sed --in-place '/Set-Cookie/d' $RESULT_FILE # delete date line to use diff after
 
 echo -ne \
-"HTTP/1.1 403 Forbidden\r\n" > $EXPECTED_FILE
+"HTTP/1.1 405 Method Not Allowed\r\n" > $EXPECTED_FILE
 
 
 DIFF=$(diff $EXPECTED_FILE $RESULT_FILE)

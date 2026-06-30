@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    02_location_basic_test.sh                          :+:      :+:    :+:    #
+#    07_03_same_as_07_02_without_cgi.sh                 :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/06/09 17:05:57 by jweber            #+#    #+#              #
-#    Updated: 2026/06/26 17:58:19 by jweber           ###   ########.fr        #
+#    Created: 2026/06/30 16:01:43 by jweber            #+#    #+#              #
+#    Updated: 2026/06/30 16:08:45 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,35 +14,35 @@ rm -rf config_file.json
 rm -rf $HOME/goinfre/tmp/
 rm -rf *.log
 
-echo "TEST 2: Basic location"
+echo "TEST 7 tris: same as 07 02 but without extension"
+
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
 [
 	{
-	    \"listen\":4343,
-	    \"name\": \"host_a\",
-	    \"root\":\"$HOME/goinfre/tmp/a\",
-		\"request\":[\"GET\",\"POST\"],
-		\"location\":
-	    [
-	    	{
-	    	\"name\":\"/images\",
-	    	\"alias\":\"$HOME/goinfre/tmp/b/\"
-	    	}
-	    ]
+		\"name\": \"host_a\",
+		\"listen\":[4343],
+		\"root\":\"$HOME/goinfre/tmp/a\"
 	}
 ]"
+
 echo $CONFIG_FILE > config_file.json
 
 mkdir -p $HOME/goinfre/tmp/a
-echo -ne "in a" > $HOME/goinfre/tmp/a/index_a.html
-mkdir -p $HOME/goinfre/tmp/b
-echo -ne "in b" > $HOME/goinfre/tmp/b/index_b.html
+
+echo -ne \
+'#!/bin/bash\n'\
+'echo "content-type:text/html"\n'\
+'echo \n'\
+'echo "Hello, World!"\n'\
+'echo "PATH_INFO=$PATH_INFO"\n' > $HOME/goinfre/tmp/a/coucou.sh
+chmod +111 $HOME/goinfre/tmp/a/coucou.sh
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
 
+# initialisation 
 ERROR=0
 MSG=""
 
@@ -76,38 +76,63 @@ function tests()
 	fi
 }
 
-############### test 1
 
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin a"
-REQUEST_VAR="GET /index_a.html HTTP/1.1\r\nhost:host_a\r\n\r\n"
+function tests_first_line()
+{
+	EXPECTED=$1
+	REQUEST=$2
+	TEST_NUMBER=$3
+
+	EXPECTED_FILE=expected_$TEST_NUMBER.log
+	RESULT_FILE=result_$TEST_NUMBER.log
+
+	echo -ne $EXPECTED > $EXPECTED_FILE
+
+	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
+	head -1 $RESULT_FILE > tmp.log
+	cat tmp.log > $RESULT_FILE
+
+	DIFF_A=$(diff $RESULT_FILE $EXPECTED_FILE)
+	DIFF_A_ERR=$?
+	if [ $DIFF_A_ERR -ne 0 ] ; then
+		MSG_EXPECT=$(cat -e $EXPECTED_FILE)
+		MSG_GET=$(cat -e $RESULT_FILE)
+		MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQUEST'\n~~~~~~~~~~~~~~\n"
+		MSG+="expected:\n"
+		MSG+=$MSG_EXPECT
+		MSG+="\nget:\n";
+		MSG+=$MSG_GET
+		MSG+="\n"
+		ERROR+=1
+	fi
+}
+
+################ TEST 1 with no path info
+
+EXPECTED_VAR='HTTP/1.1 200 OK\r\n'\
+'\r\n'\
+'#!/bin/bash\n'\
+'echo "content-type:text/html"\n'\
+'echo \n'\
+'echo "Hello, World!"\n'\
+'echo "PATH_INFO=$PATH_INFO"\n'
+
+REQUEST_VAR="GET /coucou.sh HTTP/1.1\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "a"
 
-################# test 2
+################ TEST 2 with no path info
 
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin b"
-REQUEST_VAR="GET /images/index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n" 
+EXPECTED_VAR="HTTP/1.1 404 Not Found\r\n"\
 
-tests $EXPECTED_VAR $REQUEST_VAR "b"
+REQUEST_VAR="GET /coucou.sh/index.html HTTP/1.1\r\n\r\n"
 
-############### test 1
+tests_first_line $EXPECTED_VAR $REQUEST_VAR "b"
 
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin a"
-REQUEST_VAR="POST /index_a.html HTTP/1.1\r\nhost:host_a\r\n\r\n"
-
-tests $EXPECTED_VAR $REQUEST_VAR "a"
-
-################# test 2
-
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin b"
-REQUEST_VAR="POST /images/index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n" 
-
-tests $EXPECTED_VAR $REQUEST_VAR "b"
-
-############# display result
+################# RESULT + clear
 
 if [ $ERROR -ne 0 ]; then
-	echo -ne "FAILED basic location test\n"
+	echo -ne "FAILED\n"
 	echo -ne $MSG
 	echo -ne "\nconfig file was :\n\n"
 	cat config_file.json
@@ -115,11 +140,10 @@ else
 	echo "SUCCESS";
 fi
 
-kill -INT $WEBSERV_PID
 IFS=$OLD_IFS
+kill -INT $WEBSERV_PID
 #rm -rf config_file.json
 #rm -rf $HOME/goinfre/tmp/
-#rm -r *.log
+#rm -rf *.log
 echo
 echo
-

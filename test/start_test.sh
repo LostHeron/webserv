@@ -36,10 +36,13 @@ echo "########################## TEST 6 ##################################"
 bash ./06_basic_test_index.sh
 
 echo "########################## TEST 7 ##################################"
-bash ./07_basic_cgi.sh
+bash ./07_01_cgi_with_cgi_field.sh
 
 echo "########################## TEST 7 bis ##################################"
-bash ./07_bis_second_cgi_test.sh
+bash ./07_02_cgi_with_extension_field.sh
+
+echo "########################## TEST 7 tris ##################################"
+bash ./07_03_same_as_07_02_without_cgi.sh
 
 echo "########################## TEST 8 ##################################"
 bash ./08_basic_error_page.sh

@@ -38,19 +38,19 @@ WEBSERV_PID=$!
 echo -ne \
 "HTTP/1.1 200 OK\r\n"\
 "\r\n"\
-"<html>\n"\
+"<!DOCTYPE html><html>\n"\
 "<head><title>Index of /</title></head>\n"\
 "<h1>Index of /</h1>\n"\
 "<body>\n"\
 "<ul>\n"\
-"<li><a href=\"../\">../</a></li>\n"\
-"<li><a href=\"./\">./</a></li>\n"\
-"<li><a href=\"index.html\">index.html</a></li>\n"\
+"<li><a href=\"/../\">../</a></li>\n"\
+"<li><a href=\"/./\">./</a></li>\n"\
+"<li><a href=\"/index.html\">index.html</a></li>\n"\
 "\n"\
 "</ul>\n"\
 "\n"\
 "</body>\n"\
-"</html>\n" > expected.log
+"</html>\n"> expected.log
 
 
 REQ_1="GET / HTTP/1.1\r\n\r\n"

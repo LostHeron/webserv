@@ -19,9 +19,9 @@ char **Environment::getEnvp(void)
 	return (this->envp);
 }
 
-Environment::Environment(const std::string& script_name, InputSocket& inputSocket)
+Environment::Environment(const std::string& script_name, const std::string& pathInfo, InputSocket& inputSocket)
 {
-	inputSocket.updateCgiEnvp(vec_envp, script_name);
+	inputSocket.updateCgiEnvp(vec_envp, script_name, pathInfo);
 
 	formatted_envp.reserve(vec_envp.size() + 1);
 	for (size_t i = 0; i < vec_envp.size(); i++)
