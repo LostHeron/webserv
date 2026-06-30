@@ -27,47 +27,82 @@ CONFIG_FILE="\"host\":
 		\"request\":[\"\"]
 	}
 ]"
-echo $CONFIG_FILE > config_file.json
-IFS=$OLD_IFS
 
-mkdir -p $HOME/goinfre/tmp/a
-echo -ne "in a" > $HOME/goinfre/tmp/a/index.html
+echo $CONFIG_FILE > config_file.json
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
 
-echo -ne \
-"HTTP/1.1 403 Forbidden\r\n"\
-"\r\n"\
-"<html>\n"\
-"<head><title>403 Forbidden</title></head>\n"\
-"<body>\n"\
-"<h1>403 Forbidden</h1>\n"\
-"\n"\
-"</body>\n"\
-"</html>\n" > expected.log
-
-REQ_1="GET /index.html HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | stdbuf -o0 nc localhost 4343 > log_req.log
-sed --in-place '/Date/d' log_req.log # delete date line to use diff after
-sed --in-place '/Set-Cookie/d' log_req.log # delete date line to use diff after
+mkdir -p $HOME/goinfre/tmp/a
+echo -ne "in a" > $HOME/goinfre/tmp/a/index.html
 
 ERROR=0
 MSG=""
-DIFF_A=$(diff expected.log log_req.log)
-DIFF_A_ERR=$?
-if [ $DIFF_A_ERR -ne 0 ] ; then
-	MSG_EXPECT=$(cat -e expected.log)
-	MSG_GET=$(cat -e log_req.log)
-	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ_1'\n~~~~~~~~~~~~~~\n"
-	MSG+="expected:\n"
-	MSG+=$MSG_EXPECT
-	MSG+="\nget:\n";
-	MSG+=$MSG_GET
-	MSG+="\n"
-	ERROR+=1
-fi
 
+function tests()
+{
+	EXPECTED=$1
+	REQUEST=$2
+	TEST_NUMBER=$3
+
+	EXPECTED_FILE=expected_$TEST_NUMBER.log
+	RESULT_FILE=result_$TEST_NUMBER.log
+
+	echo -ne $EXPECTED > $EXPECTED_FILE
+
+	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
+	head -1 $RESULT_FILE > tmp.log
+	cat tmp.log > $RESULT_FILE
+
+	DIFF_A=$(diff $RESULT_FILE $EXPECTED_FILE)
+	DIFF_A_ERR=$?
+	if [ $DIFF_A_ERR -ne 0 ] ; then
+		MSG_EXPECT=$(cat -e $EXPECTED_FILE)
+		MSG_GET=$(cat -e $RESULT_FILE)
+		MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQUEST'\n~~~~~~~~~~~~~~\n"
+		MSG+="expected:\n"
+		MSG+=$MSG_EXPECT
+		MSG+="\nget:\n";
+		MSG+=$MSG_GET
+		MSG+="\n"
+		ERROR+=1
+	fi
+}
+
+
+########### test_1 with GET method
+
+EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+
+REQUEST_VAR="GET /index.html HTTP/1.1\r\n\r\n"
+
+tests $EXPECTED_VAR $REQUEST_VAR "1"
+
+######  test 2 with POST method
+
+EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+
+REQUEST_VAR="POST /index.html HTTP/1.1\r\n\r\n"
+
+tests $EXPECTED_VAR $REQUEST_VAR "2"
+
+######  test 3 with DELETE method
+
+EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+
+REQUEST_VAR="POST /index.html HTTP/1.1\r\n\r\n"
+
+tests $EXPECTED_VAR $REQUEST_VAR "3"
+
+######  test 3 with NOT_KNOWN method
+
+EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+
+REQUEST_VAR="NOTKNOWN /index.html HTTP/1.1\r\n\r\n"
+
+tests $EXPECTED_VAR $REQUEST_VAR "4"
+
+###### display results 
 
 if [ $ERROR -ne 0 ]; then
 	echo -ne "FAILED\n"
@@ -78,6 +113,7 @@ else
 	echo "SUCCESS";
 fi
 
+IFS=$OLD_IFS
 kill -INT $WEBSERV_PID
 #rm -rf config_file.json
 #rm -rf $HOME/goinfre/tmp/
