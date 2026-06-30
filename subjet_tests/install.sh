@@ -34,7 +34,7 @@ echo "\"host\":
 		\"request\":[\"GET\"],
 		\"extension\":[\".bla\"],
 	    \"root\":\"$PWD/YoupiBanane\",
-		\"max body\": 100,
+		\"max body\": 1000000000000,
 		\"location\":
 		[
 			{
@@ -47,7 +47,7 @@ echo "\"host\":
 				\"alias\":\"$PWD/YoupiBanane\",
 				\"extension\":[\".bla\"],
 				\"index\":\"youpi.bad_extension\",
-				\"request\":[\"GET\"]
+				\"request\":[\"GET\", \"POST\"]
 			}
 		]
 	}
