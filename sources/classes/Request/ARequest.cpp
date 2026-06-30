@@ -68,7 +68,7 @@ const std::string						ARequest::_getFileExtension(const std::string &path)
 	return (pos == std::string::npos ? "" : path.substr(pos));
 }
 
-void									ARequest::_splitCGIPathInfo(Response &resp, const VirtualHost::UriInfo &uriInfo)
+void									ARequest::_splitCGIPathInfo(Response &resp)
 {
 	std::string	&pathInfo = resp.getPathInfo();
 	std::string	&respResourcePath = resp.getResource().second;
@@ -84,7 +84,6 @@ void									ARequest::_splitCGIPathInfo(Response &resp, const VirtualHost::UriI
 		{
 			if (st.st_mode & S_IFREG)
 			{
-				resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resourcePath)));
 				if (resp.isCGI())
 				{
 					pathInfo = respResourcePath.substr(pos + 1);
@@ -92,7 +91,7 @@ void									ARequest::_splitCGIPathInfo(Response &resp, const VirtualHost::UriI
 				}
 				// std::cout << "\n\n\n-------------\nresource path= '"<< resourcePath << "'" << std::endl;
 				// std::cout << "pathinfo= '"<< pathInfo << "'\n--------------\n\n\n\n" << std::endl;
-				return ;
+				return;
 			}
 		}
 		else
@@ -101,12 +100,11 @@ void									ARequest::_splitCGIPathInfo(Response &resp, const VirtualHost::UriI
 			{
 				case (EACCES):
 					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
-					break;
+					return;
 				case (ENOENT):
 					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND);
-					break;
+					return;
 			}
-			return;
 		}
 		pos = respResourcePath.find("/", pos + 1);
 	}
@@ -123,9 +121,11 @@ Response										ARequest::buildResponse(void)
 
 	// std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
 	//
-	this->_splitCGIPathInfo(resp, uriInfo);
-	// if (!resp.isCGI())
-	// 	resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resp.getResource().second)));
+	this->_splitCGIPathInfo(resp);
+	if (!resp.isCGI())
+		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resp.getResource().second)));
+	if (!resp.isCGI())
+		resp.setResourcePath(uriInfo.getRealPath());
 
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));

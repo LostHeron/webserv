@@ -70,7 +70,7 @@ class	ARequest: public AMessage
 	 	string_map						_header;
 
 	private:
-		void							_splitCGIPathInfo(Response &resp, const VirtualHost::UriInfo &uriInfo);
+		void							_splitCGIPathInfo(Response &resp);
 };
 
 #endif
