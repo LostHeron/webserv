@@ -29,6 +29,6 @@ void	UNKNOWNReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
 	(void) uriInfo;
 
-	resp.setCGI(true);
+	// resp.setCGI(true);
 	resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_ALLOWED_METHOD);
 }
