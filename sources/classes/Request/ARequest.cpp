@@ -86,6 +86,8 @@ void									ARequest::_splitCGIPathInfo(Response &resp) const
 				break;
 			}
 		}
+		else
+			resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND);
 		pos = respResourcePath.find("/", pos + 1);
 	}
 	respResourcePath = resourcePath;
@@ -115,7 +117,9 @@ Response										ARequest::buildResponse(void)
 	else if (!resp.isCGI())
 		this->_execute(resp, uriInfo);
 	else
+	{
 		this->_splitCGIPathInfo(resp);
+	}
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
