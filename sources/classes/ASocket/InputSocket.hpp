@@ -14,9 +14,7 @@
 # define INPUTSOCKET_HPP
 
 # include "ASocket.hpp"
-# include "InCGI.hpp"
-# include "OutCGI.hpp"
-# include "OutputSocket.hpp"
+# include "Response.hpp"
 # include "Server.hpp"
 # include "typedef.hpp"
 # include <ostream>
@@ -41,7 +39,7 @@ class InputSocket: public ASocket
 
 		void	process();
 
-		void	updateCgiEnvp(std::vector<std::string>&, const std::string& script_name);
+		void	updateCgiEnvp(std::vector<std::string>&, const std::string& script_name, const std::string& pathInfo);
 
 		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
 		
@@ -84,7 +82,7 @@ class InputSocket: public ASocket
 		void						process_skip_sp(size_t& pos);
 		void						process_request(size_t& pos);
 
-		void						launch_cgi(const std::string& script_name);
+		void						launch_cgi(Response& resp);
 };
 
 void	setup_response(int& status, int errorCode, Connection *connection);

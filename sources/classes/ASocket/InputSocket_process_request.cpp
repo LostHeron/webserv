@@ -50,7 +50,7 @@ void	InputSocket::process_request(size_t& pos)
 			close(resp.getResource().first);
 			resp.getResource().first = -1;
 		}
-		this->launch_cgi(resp.getResource().second);
+		this->launch_cgi(resp);
 	}
 	else
 	{

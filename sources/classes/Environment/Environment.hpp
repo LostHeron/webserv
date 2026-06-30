@@ -19,7 +19,7 @@
 class Environment
 {
 	public:
-		Environment(const std::string& script_name, InputSocket& inputSocket);
+		Environment(const std::string& script_name, const std::string& pathInfo, InputSocket& inputSocket);
 		~Environment();
 
 		char **getEnvp(void);

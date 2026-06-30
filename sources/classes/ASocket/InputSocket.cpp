@@ -23,6 +23,7 @@
 #include "error.hpp"
 #include "Connection.hpp"
 #include "Environment.hpp"
+#include "Response.hpp"
 #include <cctype>
 #include <cstddef>
 #include <fcntl.h>
@@ -107,9 +108,9 @@ void	InputSocket::process_body(size_t& pos)
 }
 
 
-void launch_child_process(InputSocket &inputSocket, const std::string& script_name, Pipe& toCGI, Pipe& fromCGI);
+void launch_child_process(InputSocket &inputSocket, Response& resp, Pipe& toCGI, Pipe& fromCGI);
 
-void	InputSocket::launch_cgi(const std::string& script_name)
+void	InputSocket::launch_cgi(Response& resp)
 {
 
 	Pipe toCGI;
@@ -131,7 +132,7 @@ void	InputSocket::launch_cgi(const std::string& script_name)
 	}
 	if (pid == 0)
 	{
-		launch_child_process(*this, script_name, toCGI, fromCGI);
+		launch_child_process(*this, resp, toCGI, fromCGI);
 	}
 	else
 	{
@@ -158,12 +159,15 @@ void	InputSocket::launch_cgi(const std::string& script_name)
 
 void	setup_child_standard_io_fds(Pipe& toCGI, Pipe& fromCGI);
 
-void launch_child_process(InputSocket &inputSocket, const std::string& script_name, Pipe& toCGI, Pipe& fromCGI)
+void launch_child_process(InputSocket &inputSocket, Response& resp, Pipe& toCGI, Pipe& fromCGI)
 {
 	char	*argv[2];
 	char	str[] = "";
 	argv[0] = str; 
 	argv[1] = NULL;
+
+	const std::string& script_name = resp.getResource().second;
+	const std::string& pathInfo = resp.getPathInfo();
 
 	try
 	{
@@ -171,8 +175,11 @@ void launch_child_process(InputSocket &inputSocket, const std::string& script_na
 
 		setup_child_standard_io_fds(toCGI, fromCGI);
 
-		Environment env(script_name, inputSocket);
+		Environment env(script_name, pathInfo, inputSocket);
 
+		#ifdef DEBUG
+		std::cerr << "exceve will execute : " << script_name << "\n";
+		#endif
 		execve(script_name.c_str(), argv, env.getEnvp());
 		int	errno_value = errno;
 		logerror("execve", errno_value);
@@ -204,7 +211,7 @@ void	setup_child_standard_io_fds(Pipe& toCGI, Pipe& fromCGI)
 static std::string	get_IPv4_string_format(uint8_t addr[4]);
 static std::string	get_port_string_format(uint16_t peer_port);
 
-void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::string& script_name)
+void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::string& script_name, const std::string& pathInfo)
 {
 	std::string str;
 
@@ -232,14 +239,8 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	str = "GATEWAY_INTERFACE=CGI/1.1";
 	vec_envp.push_back(str);
 
-	str = "PATH_INFO=/";
+	str = "PATH_INFO=/" + pathInfo;
 	vec_envp.push_back(str);
-	// not implemented yet, seems annoying to do
-	// example : /cgi-bin/somescript/coucou
-	// -> PATH_INFO = /coucou
-	// must see when a ressource is an identified file on the server
-	// and then set PATH_INFO to what is after, but it's annoying 
-	// so not yet for now
 	
 	// str = "PATH_TRANSLATED..."
 	// not implemented yet
@@ -261,6 +262,8 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 	vec_envp.push_back(str);
 
 	/*
+	// commented because it caused cgi_tester to
+	// return PATH_INFO incorrect when it was set
 	str = "SCRIPT_NAME=" + this->uri;
 	vec_envp.push_back(str);
 	*/
