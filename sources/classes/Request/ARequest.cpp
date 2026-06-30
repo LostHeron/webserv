@@ -72,28 +72,41 @@ void									ARequest::_splitCGIPathInfo(Response &resp) const
 {
 	std::string	&pathInfo = resp.getPathInfo();
 	std::string	&respResourcePath = resp.getResource().second;
-	std::string	resourcePath;
-	size_t	pos = respResourcePath.find_first_of("/");
+	std::string	resourcePath = resp.getResource().second;
+	size_t	pos = respResourcePath.find("/", respResourcePath.find_first_of("/") + 1);
+	// std::cout << "real path: '" << respResourcePath << "'\n pos: " << pos << std::endl;
 	while (pos != std::string::npos)
 	{
 		resourcePath = respResourcePath.substr(0, pos);
 		struct stat st;
+		// std::cout << "trying with: '" << resourcePath << "'" << std::endl;
 		if (stat(resourcePath.c_str(), &st) == 0)
 		{
 			if (st.st_mode & S_IFREG)
 			{
 				pathInfo = respResourcePath.substr(pos + 1);
-				break;
+				respResourcePath = resourcePath;
+				// std::cout << "\n\n\n-------------\nresource path= '"<< resourcePath << "'" << std::endl;
+				// std::cout << "pathinfo= '"<< pathInfo << "'\n--------------\n\n\n\n" << std::endl;
+				return ;
 			}
 		}
 		else
 		{
-			resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND);
+			switch (errno)
+			{
+				case (EACCES):
+					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+					break;
+				case (ENOENT):
+					resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_FOUND);
+					break;
+			}
 			return;
 		}
 		pos = respResourcePath.find("/", pos + 1);
 	}
-	respResourcePath = resourcePath;
+	// respResourcePath = resourcePath;
 }
 
 Response										ARequest::buildResponse(void)
@@ -103,6 +116,9 @@ Response										ARequest::buildResponse(void)
 
 	resp.setRedir(uriInfo.isRedir());
 	resp.setResourcePath(uriInfo.getRealPath());
+
+	// std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
+	//
 	if (!resp.isCGI())
 		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(this->_uri)));
 
@@ -122,6 +138,8 @@ Response										ARequest::buildResponse(void)
 	else
 	{
 		this->_splitCGIPathInfo(resp);
+		// std::cout << "resource.second: " << resp.getResource().second << std::endl;
+		// std::cout << "status: " << resp.getStatus() << std::endl;
 	}
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
