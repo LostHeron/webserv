@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 13:54:54 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 09:43:46 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/01 18:48:30 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CONNECTION_HPP
 
 #include "ASocket.hpp"
+#include "RequestMetaData/RequestMetaData.hpp"
 #include "VHostList.hpp"
 #include "InputSocket.hpp"
 #include "OutputSocket.hpp"
@@ -22,6 +23,7 @@
 #include "OutCGI.hpp"
 #include "OutputSocket.hpp"
 #include "VirtualHost.hpp"
+#include <queue>
 
 class Connection
 {
@@ -46,6 +48,8 @@ class Connection
 
 		void			add(ASocket*, int event);
 		void			remove(ASocket*);
+		void			removeFromInterestList(ASocket* abstractSocket);
+		void			addToInterestList(ASocket* abstractSocket, int flags);
 
 		uint8_t			*getPeerAddr();
 		uint16_t		getPeerPort();
@@ -76,6 +80,11 @@ class Connection
 		uint8_t				peerAddr[4];
 		uint16_t			peerPort;
 		uint16_t			localPort;
+
+		RequestMetaData		requestMetaData;
+
+		std::queue<std::string>	q1;
+		std::queue<std::string>	q2;
 
 		InputSocket			inputSocket;
 		OutputSocket		outputSocket;

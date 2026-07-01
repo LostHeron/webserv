@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 14:21:57 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 09:55:02 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/01 18:48:07 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,23 @@ void	Connection::add(ASocket* abstractSocket, int event)
 	this->server.add(abstractSocket, event);
 }
 
+
+void	Connection::removeFromInterestList(ASocket* abstractSocket)
+{
+	if (this->server.getIsChildren() == false)
+	{
+		this->server.remove(abstractSocket);
+	}
+}
+
+void	Connection::addToInterestList(ASocket* abstractSocket, int flags)
+{
+	if (this->server.getIsChildren() == false)
+	{
+		this->server.add(abstractSocket, flags);
+	}
+}
+
 void	Connection::remove(ASocket* abstractSocket)
 {
 	if (this->server.getIsChildren() == false && this->cgiPid > 0)
@@ -104,10 +121,7 @@ void	Connection::remove(ASocket* abstractSocket)
 			logerror("kill", error_value);
 		}
 	}
-	if (this->server.getIsChildren() == false)
-	{
-		this->server.remove(abstractSocket);
-	}
+	this->removeFromInterestList(abstractSocket);
 }
 
 void			Connection::setIsChildren()
