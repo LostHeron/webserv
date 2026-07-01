@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:47:44 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/09 16:38:54 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 18:35:54 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ IntSchema::IntSchema(std::string const& name, bool is_required, bool allow_multi
 IntSchema::~IntSchema()
 {}
 
-void	IntSchema::setMin(int min)
+void	IntSchema::setMin(int64_t min)
 {
 	this->_min = min;
 }
 
-void	IntSchema::setMax(int max)
+void	IntSchema::setMax(int64_t max)
 {
 	this->_max = max;
 }

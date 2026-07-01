@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 16:06:22 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/25 19:08:56 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 19:06:00 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,6 +144,9 @@ std::map<std::string, VHostParser::s_setter<VirtualHost::s_config> >	VHostParser
 	setters.setVal = setHostCgiExt;
 	setters.setDef = NULL;
 	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_CGI_EXT_KEY, setters));
+	setters.setVal = setHostUploadPath;
+	setters.setDef = NULL;
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::s_config> >(HOST_UPLOAD_KEY, setters));
 	return (dispatch_map);
 }
 
@@ -161,6 +164,9 @@ std::map<std::string, VHostParser::s_setter<VirtualHost::Location::s_config> >	V
 	setters.setVal = setLocIndex;
 	setters.setDef = NULL;
 	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_INDEX_KEY, setters));
+	setters.setVal = setLocMaxBody;
+	setters.setDef = setLocDefMaxBody;
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_INDEX_KEY, setters));
 	setters.setVal = setLocDirList;
 	setters.setDef = setLocDefDirList;
 	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_DIR_LIST_KEY, setters));
@@ -173,6 +179,9 @@ std::map<std::string, VHostParser::s_setter<VirtualHost::Location::s_config> >	V
 	setters.setVal = setLocCgiExt;
 	setters.setDef = NULL;
 	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_CGI_EXT_KEY, setters));
+	setters.setVal = setLocUploadPath;
+	setters.setDef = NULL;
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_UPLOAD_KEY, setters));
 	return (dispatch_map);
 }
 
@@ -264,7 +273,7 @@ void	VHostParser::setHostIndex(JsonObj const& index, VirtualHost::s_config& host
 
 void	VHostParser::setHostMaxBody(JsonObj const& max_body, VirtualHost::s_config& host_config)
 {
-	host_config.max_body_size = max_body.getVal<int64_t>();	
+	host_config.maxBodySize = max_body.getVal<int64_t>();	
 }
 
 void	VHostParser::setHostInterface(JsonObj const& interface, VirtualHost::s_config& host_config)
@@ -317,6 +326,11 @@ void	VHostParser::setHostCgiExt(JsonObj const& cgi_ext, VirtualHost::s_config& h
 	host_config.cgi_ext.push_back(cgi_ext.getVal<std::string>());
 }
 
+void	VHostParser::setHostUploadPath(JsonObj const& upload_path, VirtualHost::s_config& host_config)
+{
+	host_config.upload_path = upload_path.getVal<std::string>();
+}
+
 void	VHostParser::setLocAlias(JsonObj const& alias, VirtualHost::Location::s_config& loc_config)
 {
 	loc_config.alias = alias.getVal<std::string>();
@@ -330,6 +344,12 @@ void	VHostParser::setLocRedir(JsonObj const& redir, VirtualHost::Location::s_con
 void	VHostParser::setLocIndex(JsonObj const& index, VirtualHost::Location::s_config& loc_config)
 {
 	loc_config.index = index.getVal<std::string>();
+}
+
+void	VHostParser::setLocMaxBody(JsonObj const& max_body, VirtualHost::Location::s_config& loc_config)
+{
+	loc_config.bodySizeInput = true;
+	loc_config.maxBodySize = max_body.getVal<int64_t>();
 }
 
 void	VHostParser::setLocDirList(JsonObj const& dir_list, VirtualHost::Location::s_config& loc_config)
@@ -356,9 +376,14 @@ void	VHostParser::setLocCgiExt(JsonObj const& cgi_ext, VirtualHost::Location::s_
 	loc_config.cgi_ext.push_back(cgi_ext.getVal<std::string>());
 }
 
+void	VHostParser::setLocUploadPath(JsonObj const& upload_path, VirtualHost::Location::s_config& loc_config)
+{
+	loc_config.upload_path = upload_path.getVal<std::string>();
+}
+
 void	VHostParser::setHostDefMaxBody(VirtualHost::s_config& host_config)
 {
-	host_config.max_body_size = MAX_BODY_SIZE;
+	host_config.maxBodySize = MAX_BODY_SIZE;
 }
 
 void	VHostParser::setHostDefInterface(VirtualHost::s_config& host_config)
@@ -379,6 +404,12 @@ void	VHostParser::setHostDefAllowedRequest(VirtualHost::s_config& host_config)
 void	VHostParser::setHostDefCgi(VirtualHost::s_config& host_config)
 {
 	host_config.cgi = false;
+}
+
+void	VHostParser::setLocDefMaxBody(VirtualHost::Location::s_config& loc_config)
+{
+	loc_config.bodySizeInput = false;
+	loc_config.maxBodySize = 0;
 }
 
 void	VHostParser::setLocDefDirList(VirtualHost::Location::s_config& loc_config)

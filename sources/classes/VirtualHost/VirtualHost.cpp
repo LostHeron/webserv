@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/22 17:36:59 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 19:00:34 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,6 @@ bool	VirtualHost::InterfaceAllowed(uint32_t interface) const
 			return (true);
 	}
 	return (false);
-}
-
-uint64_t	VirtualHost::getBodySize(void) const
-{
-	return (this->_conf.max_body_size);
 }
 
 std::pair<bool, std::string>	VirtualHost::getError(int err_code) const
@@ -110,6 +105,8 @@ void	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Lo
 		uri_info._path += uri;
 	if (loc_pair.second.conf.index.empty() == false)
 		uri_info._index = loc_pair.second.conf.index;
+	if (loc_pair.second.conf.bodySizeInput == true)
+		uri_info._maxBodySize = loc_pair.second.conf.maxBodySize;
 	if (loc_pair.second.conf.allowedRequest.empty() == false)
 		uri_info._allowedRequests = loc_pair.second.conf.allowedRequest;
 	uri_info._allowDirList = loc_pair.second.conf.allowDirList;
@@ -132,20 +129,27 @@ VirtualHost::UriInfo::UriInfo(VirtualHost::s_config conf) :
 	_isRedir(false),
 	_path(conf.root),
 	_index(conf.index),
+	_maxBodySize(conf.maxBodySize),
 	_allowedRequests(conf.allowedRequest),
 	_allowDirList(conf.allowDirList),
 	_cgi(conf.cgi),
-	_cgi_ext(conf.cgi_ext)
+	_cgi_ext(conf.cgi_ext),
+	_upload_path(conf.upload_path)
 {}
 
 VirtualHost::UriInfo::UriInfo(UriInfo const& other) :
 	_isRedir(other._isRedir),
 	_path(other._path),
 	_index(other._index),
+	_maxBodySize(other._maxBodySize),
 	_allowedRequests(other._allowedRequests),
 	_allowDirList(other._allowDirList),
 	_cgi(other._cgi),
-	_cgi_ext(other._cgi_ext)
+	_cgi_ext(other._cgi_ext),
+	_upload_path(other._upload_path)
+{}
+
+VirtualHost::UriInfo::~UriInfo()
 {}
 
 bool	VirtualHost::UriInfo::isRedir(void)	const
@@ -163,6 +167,13 @@ std::string const&	VirtualHost::UriInfo::getIndex(void) const
 	if (this->_isRedir)
 		throw std::logic_error("This uri is a redirection to another path : the requested info is non-existant");
 	return (this->_index);
+}
+
+uint64_t	VirtualHost::UriInfo::getBodySize(void) const
+{
+	if (this->_isRedir)
+		throw std::logic_error("This uri is a redirection to another path : the requested info is non-existant");
+	return (this->_maxBodySize);
 }
 
 bool	VirtualHost::UriInfo::isRequestAllowed(std::string const& req) const
@@ -201,4 +212,13 @@ bool	VirtualHost::UriInfo::isCgiExtAllowed(std::string const& cgi_ext) const
 			return (true);
 	}
 	return (false);
+}
+
+std::string const&	VirtualHost::UriInfo::getUploadPath(void) const
+{
+	if (this->_isRedir)
+		throw std::logic_error("This uri is a redirection to another path : the requested info is non-existant");
+	if (this->_upload_path.empty())
+		return (this->_path);
+	return (this->_upload_path);
 }

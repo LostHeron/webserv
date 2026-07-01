@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/22 13:41:30 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 18:57:54 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,13 @@ class VirtualHost
 					std::string					alias;
 					std::string					redirection;
 					std::string					index;
+					bool						bodySizeInput;
+					uint64_t					maxBodySize;
 					std::vector<std::string>	allowedRequest;
 					bool						allowDirList;
 					bool						cgi;
 					std::vector<std::string>	cgi_ext;
+					std::string					upload_path;
 				};
 			
 				Location::s_config const	conf;
@@ -64,7 +67,7 @@ class VirtualHost
 			std::vector<std::string>						name;
 			std::string										root;
 			std::string										index;
-			uint32_t										max_body_size;
+			uint64_t										maxBodySize;
 			std::vector<VirtualHost::s_ip_range>			allowedInterface;
 			std::vector<std::string>						allowedRequest;
 			bool											allowDirList;
@@ -72,7 +75,7 @@ class VirtualHost
 			std::map<std::string, VirtualHost::Location>	location;
 			bool											cgi;
 			std::vector<std::string>						cgi_ext;
-
+			std::string										upload_path;
 		};
 		
 		class UriInfo
@@ -83,26 +86,31 @@ class VirtualHost
 			
 				UriInfo(VirtualHost::s_config conf);
 				UriInfo(UriInfo const& other);
+				~UriInfo();
 
-				bool				isRedir(void)	const;
+				bool				isRedir(void) const;
 				std::string const&	getRealPath(void) const;
 				std::string const&	getIndex(void) const;
+				uint64_t			getBodySize(void) const;
 				bool				isRequestAllowed(std::string const& req) const;
 				bool				isDirListAllowed(void) const;
 				bool				isCgiAllowed(void) const;
 				bool				isCgiExtAllowed(std::string const& cgi_ext) const;
+				std::string const&	getUploadPath(void) const;
 				
 			private:
 
 				bool						_isRedir;
 				std::string					_path;
 				std::string					_index;
+				uint64_t					_maxBodySize;
 				std::vector<std::string>	_allowedRequests;
 				bool						_allowDirList;
 				bool						_cgi;
 				std::vector<std::string>	_cgi_ext;
+				std::string					_upload_path;
 
-				UriInfo();
+				UriInfo(void);
 				const UriInfo& operator=(const UriInfo& other);
 		};
 
@@ -112,7 +120,6 @@ class VirtualHost
 
 		std::vector<std::string> const&	getName(void) const;
 		bool							InterfaceAllowed(uint32_t interface) const;
-		uint64_t						getBodySize(void) const;
 		std::pair<bool, std::string> 	getError(int err_code) const;
 		UriInfo							getUriInfo(std::string const& uri) const;
 		
