@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/01 19:00:34 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 19:14:40 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,11 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 	if (loc_match_it != this->_conf.location.end())
 		VirtualHost::buildUriInfo(uri, *loc_match_it, uri_info);
 	else
+	{
 		uri_info._path += uri;
+		if (uri_info._uploadPath.empty())
+			uri_info._uploadPath = this->_conf.root;
+	}
 	return (uri_info);
 }
 
@@ -111,7 +115,9 @@ void	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Lo
 		uri_info._allowedRequests = loc_pair.second.conf.allowedRequest;
 	uri_info._allowDirList = loc_pair.second.conf.allowDirList;
 	uri_info._cgi = loc_pair.second.conf.cgi;
-	uri_info._cgi_ext = loc_pair.second.conf.cgi_ext;
+	uri_info._cgiExt = loc_pair.second.conf.cgiExt;
+	if (loc_pair.second.conf.uploadPath.empty() == true)
+		uri_info._uploadPath = loc_pair.second.conf.alias;
 }
 
 VirtualHost::Location::Location(Location::s_config const& conf):
@@ -133,8 +139,8 @@ VirtualHost::UriInfo::UriInfo(VirtualHost::s_config conf) :
 	_allowedRequests(conf.allowedRequest),
 	_allowDirList(conf.allowDirList),
 	_cgi(conf.cgi),
-	_cgi_ext(conf.cgi_ext),
-	_upload_path(conf.upload_path)
+	_cgiExt(conf.cgiExt),
+	_uploadPath(conf.uploadPath)
 {}
 
 VirtualHost::UriInfo::UriInfo(UriInfo const& other) :
@@ -145,8 +151,8 @@ VirtualHost::UriInfo::UriInfo(UriInfo const& other) :
 	_allowedRequests(other._allowedRequests),
 	_allowDirList(other._allowDirList),
 	_cgi(other._cgi),
-	_cgi_ext(other._cgi_ext),
-	_upload_path(other._upload_path)
+	_cgiExt(other._cgiExt),
+	_uploadPath(other._uploadPath)
 {}
 
 VirtualHost::UriInfo::~UriInfo()
@@ -206,7 +212,7 @@ bool	VirtualHost::UriInfo::isCgiExtAllowed(std::string const& cgi_ext) const
 {
 	if (this->_isRedir)
 		throw std::logic_error("This uri is a redirection to another path : the requested info is non-existant");
-	for (std::vector<std::string>::const_iterator it = this->_cgi_ext.begin(); it != this->_cgi_ext.end(); ++it)
+	for (std::vector<std::string>::const_iterator it = this->_cgiExt.begin(); it != this->_cgiExt.end(); ++it)
 	{
 		if (*it == cgi_ext)
 			return (true);
@@ -218,7 +224,5 @@ std::string const&	VirtualHost::UriInfo::getUploadPath(void) const
 {
 	if (this->_isRedir)
 		throw std::logic_error("This uri is a redirection to another path : the requested info is non-existant");
-	if (this->_upload_path.empty())
-		return (this->_path);
-	return (this->_upload_path);
+	return (this->_uploadPath);
 }

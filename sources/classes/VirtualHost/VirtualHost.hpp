@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/01 18:57:54 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 19:12:51 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,8 @@ class VirtualHost
 					std::vector<std::string>	allowedRequest;
 					bool						allowDirList;
 					bool						cgi;
-					std::vector<std::string>	cgi_ext;
-					std::string					upload_path;
+					std::vector<std::string>	cgiExt;
+					std::string					uploadPath;
 				};
 			
 				Location::s_config const	conf;
@@ -74,8 +74,8 @@ class VirtualHost
 			std::map<int, std::string>						error;
 			std::map<std::string, VirtualHost::Location>	location;
 			bool											cgi;
-			std::vector<std::string>						cgi_ext;
-			std::string										upload_path;
+			std::vector<std::string>						cgiExt;
+			std::string										uploadPath;
 		};
 		
 		class UriInfo
@@ -107,8 +107,8 @@ class VirtualHost
 				std::vector<std::string>	_allowedRequests;
 				bool						_allowDirList;
 				bool						_cgi;
-				std::vector<std::string>	_cgi_ext;
-				std::string					_upload_path;
+				std::vector<std::string>	_cgiExt;
+				std::string					_uploadPath;
 
 				UriInfo(void);
 				const UriInfo& operator=(const UriInfo& other);

@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 16:06:22 by cviel             #+#    #+#             */
-/*   Updated: 2026/07/01 19:06:00 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 19:15:31 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -321,14 +321,14 @@ void	VHostParser::setHostCgi(JsonObj const& cgi, VirtualHost::s_config& host_con
 
 void	VHostParser::setHostCgiExt(JsonObj const& cgi_ext, VirtualHost::s_config& host_config)
 {
-	if (VHostParser::checkDuplicates<std::string>(cgi_ext.getVal<std::string>(), host_config.cgi_ext))
+	if (VHostParser::checkDuplicates<std::string>(cgi_ext.getVal<std::string>(), host_config.cgiExt))
 		throw std::logic_error(std::string(HOST_CGI_EXT_KEY) + std::string(" duplicate"));
-	host_config.cgi_ext.push_back(cgi_ext.getVal<std::string>());
+	host_config.cgiExt.push_back(cgi_ext.getVal<std::string>());
 }
 
 void	VHostParser::setHostUploadPath(JsonObj const& upload_path, VirtualHost::s_config& host_config)
 {
-	host_config.upload_path = upload_path.getVal<std::string>();
+	host_config.uploadPath = upload_path.getVal<std::string>();
 }
 
 void	VHostParser::setLocAlias(JsonObj const& alias, VirtualHost::Location::s_config& loc_config)
@@ -371,14 +371,14 @@ void	VHostParser::setLocCgi(JsonObj const& cgi, VirtualHost::Location::s_config&
 
 void	VHostParser::setLocCgiExt(JsonObj const& cgi_ext, VirtualHost::Location::s_config& loc_config)
 {
-	if (VHostParser::checkDuplicates<std::string>(cgi_ext.getVal<std::string>(), loc_config.cgi_ext))
+	if (VHostParser::checkDuplicates<std::string>(cgi_ext.getVal<std::string>(), loc_config.cgiExt))
 		throw std::logic_error(std::string(HOST_CGI_EXT_KEY) + std::string(" duplicate"));
-	loc_config.cgi_ext.push_back(cgi_ext.getVal<std::string>());
+	loc_config.cgiExt.push_back(cgi_ext.getVal<std::string>());
 }
 
 void	VHostParser::setLocUploadPath(JsonObj const& upload_path, VirtualHost::Location::s_config& loc_config)
 {
-	loc_config.upload_path = upload_path.getVal<std::string>();
+	loc_config.uploadPath = upload_path.getVal<std::string>();
 }
 
 void	VHostParser::setHostDefMaxBody(VirtualHost::s_config& host_config)
