@@ -30,6 +30,8 @@ class Connection
 	public:
 		Connection(int fd, uint16_t local_port, const struct sockaddr_in& addr, Server& server);
 		~Connection();
+
+		void			process();
 		
 		void			setIsChildren();
 		bool			getIsChildren();
@@ -82,9 +84,7 @@ class Connection
 		uint16_t			localPort;
 
 		RequestMetaData		requestMetaData;
-
-		std::queue<std::string>	q1;
-		std::queue<std::string>	q2;
+		int					state;
 
 		InputSocket			inputSocket;
 		OutputSocket		outputSocket;
