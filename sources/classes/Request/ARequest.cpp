@@ -74,20 +74,18 @@ void									ARequest::_splitCGIPathInfo(Response &resp)
 	std::string	&respResourcePath = resp.getResource().second;
 	std::string	resourcePath = resp.getResource().second;
 	size_t	pos = respResourcePath.find("/", respResourcePath.find_first_of("/") + 1);
-	// std::cout << "real path: '" << respResourcePath << "'\n pos: " << pos << std::endl;
+
 	while (pos != std::string::npos)
 	{
 		resourcePath = respResourcePath.substr(0, pos);
+
 		struct stat st;
-		// std::cout << "trying with: '" << resourcePath << "'" << std::endl;
 		if (stat(resourcePath.c_str(), &st) == 0)
 		{
 			if (st.st_mode & S_IFREG)
 			{
 				pathInfo = respResourcePath.substr(pos + 1);
 				respResourcePath = resourcePath;
-				// std::cout << "\n\n\n-------------\nresource path= '"<< resourcePath << "'" << std::endl;
-				// std::cout << "pathinfo= '"<< pathInfo << "'\n--------------\n\n\n\n" << std::endl;
 				return;
 			}
 		}
@@ -117,7 +115,6 @@ Response										ARequest::buildResponse(void)
 	resp.setRedir(uriInfo.isRedir());
 	resp.setResourcePath(uriInfo.getRealPath());
 
-	std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
 	this->_splitCGIPathInfo(resp);
 	if (!resp.isCGI())
 	{
@@ -125,16 +122,11 @@ Response										ARequest::buildResponse(void)
 		if (!resp.isCGI())
 			resp.setResourcePath(uriInfo.getRealPath());
 	}
-	std::cout << "PATH->>>>> [" << resp.getResource().second << "]" << std::endl;
-
 	struct stat st;
 	if (stat(resp.getResource().second.c_str(), &st) != 0)
 	{
 		resp.setCGI(false);
 	}
-
-	std::cout << "CGIIIIIIIIIIIIIIIIIII -> " << resp.isCGI() << std::endl;
-
 	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
 	resp.setCookies(this->_updateCookies(receivedCookies));
 
@@ -148,10 +140,6 @@ Response										ARequest::buildResponse(void)
 	}
 	else if (!resp.isCGI())
 		this->_execute(resp, uriInfo);
-
-	// std::cout << "resource.second: " << resp.getResource().second << std::endl;
-	// std::cout << "status: " << resp.getStatus() << std::endl;
-
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
 
