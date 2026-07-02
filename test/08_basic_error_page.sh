@@ -11,6 +11,10 @@
 #                                                                              #
 # **************************************************************************** #
 
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
 echo "TEST 8: basic error page"
 OLD_IFS=$IFS
 IFS=""
@@ -28,8 +32,8 @@ CONFIG_FILE="\"host\":
 				\"link\": \"$HOME/goinfre/tmp/error_400.html\"
 			},
 			{
-				\"code\":403,
-				\"link\": \"$HOME/goinfre/tmp/error_403.html\"
+				\"code\":405,
+				\"link\": \"$HOME/goinfre/tmp/error_405.html\"
 			}
 		]
 	}
@@ -40,7 +44,7 @@ IFS=$OLD_IFS
 mkdir -p $HOME/goinfre/tmp/a
 
 echo "personnalized error 400" > $HOME/goinfre/tmp/error_400.html
-echo "personnalized error 403" > $HOME/goinfre/tmp/error_403.html
+echo "personnalized error 405" > $HOME/goinfre/tmp/error_405.html
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
@@ -56,16 +60,18 @@ REQ_1="ahah\r\n\r\n"
 # was empty
 echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req_a.log
 sed --in-place '/Date/d' log_req_a.log # delete date line to use diff after
+sed --in-place '/Set-Cookie/d' log_req_a.log # delete date line to use diff after
 
 echo -ne \
-"HTTP/1.1 403 Forbidden\r\n"\
+"HTTP/1.1 405 Method Not Allowed\r\n"\
 "\r\n"\
-"personnalized error 403\n" > expected_b.log
+"personnalized error 405\n" > expected_b.log
 
 
 REQ_2="GET /a HTTP/1.1\r\n\r\n"
 echo -ne $REQ_2 | stdbuf -oL nc localhost 4343 > log_req_b.log
 sed --in-place '/Date/d' log_req_b.log # delete date line to use diff after
+sed --in-place '/Set-Cookie/d' log_req_b.log # delete date line to use diff after
 
 
 ERROR=0
@@ -109,9 +115,9 @@ else
 fi
 
 kill -INT $WEBSERV_PID
-rm -rf config_file.json
-rm -rf $HOME/goinfre/tmp/
-rm -rf *.log
+#rm -rf config_file.json
+#rm -rf $HOME/goinfre/tmp/
+#rm -rf *.log
 echo
 echo
 

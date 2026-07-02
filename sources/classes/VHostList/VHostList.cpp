@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 15:32:26 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/11 18:09:42 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/26 17:46:37 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ VHostList    VHostList::build(char const* filename)
 	std::ifstream	config_file(filename);
 
 	if (config_file.fail())
-		throw std::runtime_error("File stream failed to properly setup");
+		throw std::runtime_error("could not open file: '" + std::string(filename) + "'");
 
 	std::stringstream	input_stream;
 
@@ -55,6 +55,8 @@ VHostList    VHostList::build(char const* filename)
 		key = lexer.popToken();
 		if (lexer.peekType() != JsonLexer::COLON)
 			throw std::invalid_argument("Missing ':' separator between key and value");
+		if (key != HOST_KEY)
+			throw std::invalid_argument("Unexpected key : " + key);
 		lexer.popToken();
 
 		JsonObj	val(lexer);

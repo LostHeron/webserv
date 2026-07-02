@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 13:54:54 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/11 16:39:18 by jweber           ###   ########.fr       */
+/*   Updated: 2026/06/26 09:43:46 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Connection
 		~Connection();
 		
 		void			setIsChildren();
+		bool			getIsChildren();
 
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();

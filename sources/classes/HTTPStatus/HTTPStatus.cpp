@@ -26,6 +26,8 @@ inline const std::string HTTPStatus::getStatusMessage(const uint16_t statusCode)
 			return (HTTPStatus::_getClientErrorMessage(statusCode - HTTPStatus::C_ERR));
 		case (5):
 			return (HTTPStatus::_getServerErrorMessage(statusCode - HTTPStatus::S_ERR));
+		default:
+			return ("");
 	};
 	return (NULL);
 }
@@ -42,6 +44,8 @@ inline const char	*HTTPStatus::_getInfoMessage(const uint16_t &statusCode)
 			return ("Processing");
 		case (HTTPStatus::EARLY_HINTS):
 			return ("Early Hints");
+		default:
+			return ("");
 	};
 	return (NULL);
 }
@@ -70,6 +74,8 @@ inline const char	*HTTPStatus::_getSuccessMessage(const uint16_t &statusCode)
 			return ("Already Reported");
 		case (HTTPStatus::IM_USED):
 			return ("Im Used");
+		default:
+			return ("");
 	};
 	return (NULL);
 }
@@ -96,6 +102,8 @@ inline const char	*HTTPStatus::_getRedirMessage(const uint16_t &statusCode)
 			return ("Temporary Redirect");
 		case (HTTPStatus::PERM_REDIR):
 			return ("Permanent Redirect");
+		default:
+			return ("");
 	};
 	return (NULL);
 }
@@ -160,6 +168,8 @@ inline const char	*HTTPStatus::_getClientErrorMessage(const uint16_t &statusCode
 			return ("Request Header Fields Too Large");
 		case (HTTPStatus::LEGAL):
 			return ("Unavailable For Legal Reasons");
+		default:
+			return ("");
 	};
 	return (NULL);
 }
@@ -188,6 +198,8 @@ inline const char	*HTTPStatus::_getServerErrorMessage(const uint16_t &statusCode
 			return ("Not Extended");
 		case (HTTPStatus::NETWORK_AUTH_REQUIRED):
 			return ("Network Authentication Required");
+		default:
+			return ("");
 	};
 	return (NULL);
 }

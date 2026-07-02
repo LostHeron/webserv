@@ -1,14 +1,18 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    03_no_methods_allowed.sh                           :+:      :+:    :+:    #
+#    04_directory_listing_on.sh                         :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/23 10:31:25 by jweber            #+#    #+#              #
-#    Updated: 2026/06/23 10:31:58 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/26 17:58:42 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
 
 echo "TEST 4: directory listing on"
 OLD_IFS=$IFS
@@ -34,24 +38,25 @@ WEBSERV_PID=$!
 echo -ne \
 "HTTP/1.1 200 OK\r\n"\
 "\r\n"\
-"<html>\n"\
+"<!DOCTYPE html><html>\n"\
 "<head><title>Index of /</title></head>\n"\
 "<h1>Index of /</h1>\n"\
 "<body>\n"\
 "<ul>\n"\
-"<li><a href=\"../\">../</a></li>\n"\
-"<li><a href=\"./\">./</a></li>\n"\
-"<li><a href=\"index.html\">index.html</a></li>\n"\
+"<li><a href=\"/../\">../</a></li>\n"\
+"<li><a href=\"/./\">./</a></li>\n"\
+"<li><a href=\"/index.html\">index.html</a></li>\n"\
 "\n"\
 "</ul>\n"\
 "\n"\
 "</body>\n"\
-"</html>\n" > expected.log
+"</html>\n"> expected.log
 
 
 REQ_1="GET / HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | nc localhost 4343 > log_req.log
+echo -ne $REQ_1 | stdbuf -o0 nc localhost 4343 > log_req.log
 sed --in-place '/Date/d' log_req.log # delete date line to use diff after
+sed --in-place '/Set-Cookie/d' log_req.log # delete date line to use diff after
 
 ERROR=0
 MSG=""

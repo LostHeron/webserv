@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:25:38 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/22 13:53:42 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/25 18:40:03 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,6 @@ void	path_validator(std::string const& path);
 void	index_validator(std::string const& index);
 void	interface_validator(std::string const& interface);
 void	request_validator(std::string const& request);
-void	non_empty_validator(std::string const& str);
+void	printable_validator(std::string const& str);
 
 #endif

@@ -1,56 +1,74 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    07_basic_cgi.sh                                    :+:      :+:    :+:    #
+#    10_basic_redirection.sh                            :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/06/23 12:36:53 by jweber            #+#    #+#              #
-#    Updated: 2026/06/23 12:51:17 by jweber           ###   ########.fr        #
+#    Created: 2026/06/26 16:30:38 by jweber            #+#    #+#              #
+#    Updated: 2026/06/26 17:59:22 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-echo "TEST 7: basic cgi execution"
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
+echo "TEST 10: basic redirection"
+
 OLD_IFS=$IFS
 IFS=""
 CONFIG_FILE="\"host\":
 [
 	{
-		\"listen\":4343,
 		\"name\": \"host_a\",
-		\"root\":\"$HOME/goinfre/tmp/a\",
-		\"extension\": \".sh\"
+		\"listen\":[4343],
+		\"root\":\"$HOME/goinfre/tmp/a\"
+	},
+	{
+		\"name\": \"host_b\",
+		\"listen\":[4344],
+		\"root\":\"$HOME/goinfre/tmp/b\",
+		\"location\":
+		{
+			\"name\":\"/\",
+			\"redirection\":\"http://localhost:4343/index.html\"
+		}
 	}
 ]"
+
 echo $CONFIG_FILE > config_file.json
 IFS=$OLD_IFS
 
 mkdir -p $HOME/goinfre/tmp/a
-echo '#!/bin/bash' > $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne 'content-type:text/html\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne '\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-echo "echo -ne 'Hello, World!\r\n'" >> $HOME/goinfre/tmp/a/coucou.sh
-chmod +111 $HOME/goinfre/tmp/a/coucou.sh
+mkdir -p $HOME/goinfre/tmp/b
+
+echo -ne 'in a' > $HOME/goinfre/tmp/a/index.html
+echo -ne 'in b' > $HOME/goinfre/tmp/b/index.html
 
 ../webserv config_file.json >/dev/null 2>/dev/null &
 WEBSERV_PID=$!
 
 echo -ne \
-"HTTP/1.1 200 Success\r\n" \
+"HTTP/1.1 200 OK\r\n"\
 "\r\n"\
-"Hello, World!" > expected.log
+"in a" > expected_a.log
 
-REQ_1="GET /coucou.sh HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | nc localhost 4343 > log_req.log
-sed --in-place '/Date/d' log_req.log # delete date line to use diff after
+REQ_1="GET /index.html HTTP/1.1\r\n\r\n"
+# the 'stdbuf -oL' flushes the buffer into the file,
+# without it, we had some issue where sometimes log_req_a.log
+# was empty
+echo -ne $REQ_1 | stdbuf -o0 nc localhost 4344 > log_req_a.log
+sed --in-place '/Date/d' log_req_a.log # delete date line to use diff after
+sed --in-place '/Set-Cookie/d' log_req_a.log # delete date line to use diff after
 
 ERROR=0
 MSG=""
-DIFF_A=$(diff expected.log log_req.log)
+DIFF_A=$(diff expected_a.log log_req_a.log)
 DIFF_A_ERR=$?
 if [ $DIFF_A_ERR -ne 0 ] ; then
-	MSG_EXPECT=$(cat -e expected.log)
-	MSG_GET=$(cat -e log_req.log)
+	MSG_EXPECT=$(cat -e expected_a.log)
+	MSG_GET=$(cat -e log_req_a.log)
 	MSG+="\n\nfollowing REQUEST failed:\n~~~~~~~~~~~~~~\n'$REQ_1'\n~~~~~~~~~~~~~~\n"
 	MSG+="expected:\n"
 	MSG+=$MSG_EXPECT
@@ -59,7 +77,6 @@ if [ $DIFF_A_ERR -ne 0 ] ; then
 	MSG+="\n"
 	ERROR+=1
 fi
-
 
 if [ $ERROR -ne 0 ]; then
 	echo -ne "FAILED\n"

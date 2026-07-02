@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 18:07:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/19 16:33:29 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/29 16:18:46 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,14 @@
 #include "Response.hpp"
 #include "VirtualHost.hpp"
 #include "OutputSocket.hpp"
+#include "Connection.hpp"
 #include <stdint.h>
 #include <sys/epoll.h>
-#include "Connection/Connection.hpp"
 
 
 void	InputSocket::process_request(size_t& pos)
 {
 	std::string requested_server_name;
-	// ach: build arequest (GET/POST/DEL...) from previoulsy fullfilled inputsocket 
 	if (this->headers.count("host"))
 	{
 		if (this->headers["host"].size() > 0)
@@ -35,18 +34,23 @@ void	InputSocket::process_request(size_t& pos)
 	else
 		requested_server_name = "";
 	const VirtualHost& vhost = this->connection->getHostList().getHost(this->connection->getLocalPort(), requested_server_name);
+	//if (vhost.InterfaceAllowed(this->connection->)
+	// here should check if the IP from the vhost is accepted or not
 	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
 	ARequest *req = facto.createElement();
 
-	Response resp = req->execute();
+	Response resp = req->buildResponse();
 
 	delete req;
 	
 	if (resp.isCGI() == true)
 	{
 		if (resp.getResource().first > 0)
+		{
 			close(resp.getResource().first);
-		this->prepareCGI(resp.getResource().second);
+			resp.getResource().first = -1;
+		}
+		this->launch_cgi(resp);
 	}
 	else
 	{

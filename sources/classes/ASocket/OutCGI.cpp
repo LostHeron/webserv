@@ -18,7 +18,9 @@
 #include "error.hpp"
 #include "typedef.hpp"
 #include "Connection/Connection.hpp"
+#include <complex>
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -83,6 +85,7 @@ static int	check_headers(string_map& headers)
 		return (FAILURE);
 	return (SUCCESS);
 }
+static void	getStatus(int& real_status, string_map&	headers);
 
 void OutCGI::process_headers(size_t &start)
 {
@@ -92,6 +95,10 @@ void OutCGI::process_headers(size_t &start)
 		{
 			if (check_headers(this->headers) != SUCCESS)
 				return (setup_response(this->status, HTTPStatus::S_ERR + HTTPStatus::INTERNAL, this->connection));
+
+			int status = 200;
+			getStatus(status, this->headers);
+
 			// here we will leave this function, 
 			// so it's right now we MUST write all header informations 
 			// to buffer of OutputSocket:
@@ -99,7 +106,7 @@ void OutCGI::process_headers(size_t &start)
 			b.initialize();
 			if (this->connection->getInputSocket()->getVersion() != "")
 			{
-				b.buildStatusLine("HTTP/1.1", 200)
+				b.buildStatusLine("HTTP/1.1", status)
 					.buildDate();
 				for (string_map::const_iterator it = this->headers.begin(); it != this->headers.end(); it++)
 				{
@@ -125,6 +132,25 @@ void OutCGI::process_headers(size_t &start)
 			this->last_line.clear();
 		}
 	}
+}
+
+static void	getStatus(int& real_status, string_map&	headers)
+{
+	long tmp_status = real_status;
+	if (headers.count("status"))
+	{
+		if (headers["status"].size() > 0)
+		{
+			std::vector<std::string>&	vec = headers["status"];
+			std::string&				status_string = vec.at(vec.size() - 1);
+			char	*end;
+			tmp_status = strtol(status_string.c_str(), &end, 10);
+			if (end == status_string.c_str() || tmp_status > 999 || tmp_status < 100)
+				tmp_status = 500;
+		}
+		headers.erase("status");
+	}
+	real_status = tmp_status;
 }
 
 void OutCGI::process_body(size_t &start)

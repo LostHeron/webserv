@@ -20,6 +20,7 @@
 # include <vector>
 # include <map>
 # include "JsonObj.hpp"
+# include "Session.hpp"
 
 class VirtualHost
 {
@@ -115,9 +116,19 @@ class VirtualHost
 		uint64_t						getBodySize(void) const;
 		std::pair<bool, std::string> 	getError(int err_code) const;
 		UriInfo							getUriInfo(std::string const& uri) const;
+
+		std::string						buildSessionId(void);
+		bool							isIdAvailable(std::string &id);
+		std::map<std::string, Session>	&getSessions(void);
+		void							addSession(Session &session);
+		void							removeSession(const std::string	&sessionId);
+		void							removeOldSessions(void);
+		void							updateSession(const std::string &id, std::map<std::string, Cookie> &cookies);
 		
 	private:
 		
+		std::map<std::string, Session>	_sessions;
+	
 		struct s_config	_conf;
 		
 		VirtualHost(void);

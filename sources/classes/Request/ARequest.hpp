@@ -20,6 +20,7 @@
 # include <errno.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <dirent.h>
 
 
 typedef HTTPStatus::e_reqStatus	e_reqStatus;
@@ -38,7 +39,7 @@ class	ARequest: public AMessage
 
 		ARequest				&operator=(const ARequest &assign);
 
-		virtual Response		execute(void) = 0;
+		Response				buildResponse(void);
 
 		const std::string		&getMethod(void) const;
 		std::string				getUri(void);
@@ -49,21 +50,28 @@ class	ARequest: public AMessage
 		{
 			GET,
 			POST,
+			PUT,
 			DELETE,
 			UNKNOWN,
 			TYPE_QTY,
 		};
 
 	protected:
-		std::vector<Cookie>		_headerToCookie(void);
-		// void					_updateCookies(const std::vector<Cookie> &request, std::vector<Cookie> &response) const;
-		const VirtualHost		&_vhost;
-		const std::string		_method;
-		std::string				_uri;
-		const std::string		_version;
-	 	string_map				_header;
+		const std::string				_getFileExtension(const std::string &path);
+		DIR								*_tryOpenDirectory(const char *path) const;
+		int								_tryOpenFile(const char *path) const;
+		virtual void					_execute(Response &res, const VirtualHost::UriInfo &uriInfo) = 0;
+		std::map<std::string, Cookie>	_headerToCookies(void);
+		std::map<std::string, Cookie>	&_updateCookies(std::map<std::string, Cookie> &cookies);
 
-		// std::set<std::string, Cookie>
+		VirtualHost						&_vhost;
+		const std::string				_method;
+		std::string						_uri;
+		const std::string				_version;
+	 	string_map						_header;
+
+	private:
+		void							_splitCGIPathInfo(Response &resp);
 };
 
 #endif

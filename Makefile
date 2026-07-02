@@ -6,11 +6,12 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/11 16:35:18 by jweber            #+#    #+#              #
-#    Updated: 2026/06/11 16:35:18 by jweber           ###   ########.fr        #
+#    Updated: 2026/06/26 09:40:24 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := webserv
+NAME_SANITIZE := "webserv_no_valgrind"
 CXX := c++
 CXXFLAGS := -Wall -Wextra -Werror -MMD -MP -std="c++98"
 
@@ -27,13 +28,16 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(CONNECTION_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ENVIRONMENT_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(RESPONSE_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AFACTORY_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(COOKIE_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(SESSION_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(GETREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(POSTREQ_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(PUTREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(DELETEREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR)$(UNKNOWNREQ_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(JSONLEXER_DIR) \
@@ -47,6 +51,9 @@ INCLUDES = -I includes\
 
 HTTPSTATUS_DIR :=	HTTPStatus/
 HTTPSTATUS_FILES :=	HTTPStatus.cpp
+
+SESSION_DIR :=		Session/
+SESSION_FILES :=	Session.cpp
 
 HTMLPAGEBUILDER_DIR :=		HTMLPageBuilder/
 HTMLPAGEBUILDER_FILES :=	HTMLPageBuilder.cpp
@@ -94,16 +101,23 @@ DELETEREQ_FILES := 	DELETEReq.cpp \
 POSTREQ_DIR := 		POSTReq/
 POSTREQ_FILES := 	POSTReq.cpp \
 
+PUTREQ_DIR := 		PUTReq/
+PUTREQ_FILES := 	PUTReq.cpp \
+
 UNKNOWNREQ_DIR := 	UNKNOWNReq/
 UNKNOWNREQ_FILES := UNKNOWNReq.cpp \
 
 CONNECTION_DIR := Connection/
 CONNECTION_FILES := Connection.cpp \
 
+ENVIRONMENT_DIR := Environment/
+ENVIRONMENT_FILES := Environment.cpp \
+
 ASOCKET_DIR := 	ASocket/
 ASOCKET_FILES := 	ASocket.cpp \
 					ListenSocket.cpp \
 					InputSocket.cpp \
+					InputSocket_process.cpp \
 					InputSocket_process_method.cpp \
 					InputSocket_process_uri.cpp \
 					InputSocket_process_version.cpp \
@@ -159,6 +173,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(AFACTORY_DIR), $(AFACTORY_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(GETREQ_DIR), $(GETREQ_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(POSTREQ_DIR), $(POSTREQ_FILES)) \
+				 $(addprefix $(REQUEST_DIR)$(PUTREQ_DIR), $(PUTREQ_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(DELETEREQ_DIR), $(DELETEREQ_FILES)) \
 				 $(addprefix $(REQUEST_DIR)$(UNKNOWNREQ_DIR), $(UNKNOWNREQ_FILES)) \
 				 $(addprefix $(EPOLLSTRUCT_DIR), $(EPOLLSTRUCT_FILES)) \
@@ -166,8 +181,10 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(CONNECTION_DIR), $(CONNECTION_FILES)) \
+				 $(addprefix $(ENVIRONMENT_DIR), $(ENVIRONMENT_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(COOKIE_DIR), $(COOKIE_FILES)) \
+				 $(addprefix $(SESSION_DIR), $(SESSION_FILES)) \
 				 $(addprefix $(JSONOBJ_DIR), $(JSONOBJ_FILES)) \
 				 $(addprefix $(HTTPSTATUS_DIR), $(HTTPSTATUS_FILES)) \
 				 $(addprefix $(HTMLPAGEBUILDER_DIR), $(HTMLPAGEBUILDER_FILES)) \
@@ -219,6 +236,7 @@ all: $(NAME)
 -include $(D_FILES)
 
 $(NAME): $(OBJECTS)
+	rm -f $(NAME_SANITIZE)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(OBJ_DIR)%.o:%.cpp
@@ -237,6 +255,7 @@ clean:
 fclean:
 	$(MAKE) clean
 	rm -f $(NAME)
+	rm -f $(NAME_SANITIZE)
 
 re:
 	$(MAKE) fclean
@@ -244,7 +263,8 @@ re:
 
 
 debug_info:
-	rm -f webserv
+	rm -f $(NAME)
+	rm -f $(NAME_SANITIZE)
 	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
 debug_info_clean:
@@ -257,7 +277,8 @@ debug_info_re:
 	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -D INFO_WEBSERV" OBJ_DIR=".obj_debug_info/"
 
 debug_print:
-	rm -f webserv
+	rm -f $(NAME)
+	rm -f $(NAME_SANITIZE)
 	$(MAKE) all CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
 
 debug_print_clean:
@@ -270,17 +291,18 @@ debug_print_re:
 	$(MAKE) re CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -Wno-unused -D DEBUG" OBJ_DIR=".obj_debug_print/"
 
 debug_sanitize:
-	rm -f webserv
-	$(MAKE) all NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+	rm -f $(NAME)
+	rm -f $(NAME_SANITIZE)
+	$(MAKE) all NAME="$(NAME_SANITIZE)" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
 
 debug_sanitize_clean:
-	$(MAKE) clean NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+	$(MAKE) clean NAME="$(NAME_SANITIZE)" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
 
 debug_sanitize_fclean:
-	$(MAKE) fclean NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+	$(MAKE) fclean NAME="$(NAME_SANITIZE)" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
 
 debug_sanitize_re:
-	$(MAKE) re NAME="webserv_no_valgrind" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
+	$(MAKE) re NAME="$(NAME_SANITIZE)" CXX="g++" CXXFLAGS="$(CXXFLAGS) -g3 -fsanitize=address -Wno-unused -D INFO_WEBSERV" OBJ_DIR=".obj_debug_sanitize/"
 
 
 

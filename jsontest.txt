@@ -1,16 +1,17 @@
 "host":
 [
     {
-        "listen":4343,
+        "listen":[4343,4342],
         "name": "host_a",
         "root":"/home/cviel",
-        "index":"shutdown.c"
+        "index":"shutdown.c",
         "location":
         [
             {
                 "name":"/",
                 "index": "coucou",
                 "alias":"/home/cviel",
+                "redirection":"http://youtube.com",
                 "request":
                 [
                     "GET",
@@ -19,5 +20,10 @@
                 "directory listing": true
             }
         ]
+    },
+    {
+        "listen":4141,
+        "name":"test",
+        "caca":"pipi"
     }
 ]

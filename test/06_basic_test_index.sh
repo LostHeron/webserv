@@ -11,6 +11,10 @@
 #                                                                              #
 # **************************************************************************** #
 
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
+
 echo "TEST 6: basic index, with directory listing on and off"
 OLD_IFS=$IFS
 IFS=""
@@ -51,8 +55,9 @@ WEBSERV_PID=$!
 
 
 REQ_1="GET /a HTTP/1.1\r\n\r\n"
-echo -ne $REQ_1 | nc localhost 4343 > log_req_a.log
+echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req_a.log
 sed --in-place '/Date/d' log_req_a.log # delete date line to use diff after
+sed --in-place '/Set-Cookie/d' log_req_a.log # delete date line to use diff after
 
 echo -ne \
 "HTTP/1.1 200 OK\r\n"\
@@ -60,8 +65,9 @@ echo -ne \
 "in a" > expected_a.log
 
 REQ_2="GET /b/index.html HTTP/1.1\r\n\r\n"
-echo -ne $REQ_2 | nc localhost 4343 > log_req_b.log
+echo -ne $REQ_2 | stdbuf -oL nc localhost 4343 > log_req_b.log
 sed --in-place '/Date/d' log_req_b.log # delete date line to use diff after
+sed --in-place '/Set-Cookie/d' log_req_b.log # delete date line to use diff after
 
 echo -ne \
 "HTTP/1.1 200 OK\r\n"\
@@ -109,9 +115,9 @@ else
 fi
 
 kill -INT $WEBSERV_PID
-#rm -rf config_file.json
-#rm -rf $HOME/goinfre/tmp/
-#rm -rf *.log
+rm -rf config_file.json
+rm -rf $HOME/goinfre/tmp/
+rm -rf *.log
 echo
 echo
 

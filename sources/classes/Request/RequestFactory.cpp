@@ -18,6 +18,7 @@ const AFactory<ARequest>::_constructor	RequestFactory::_constructorsArray[] =
 {
 	&RequestFactory::_newElement<GETReq>,
 	&RequestFactory::_newElement<POSTReq>,
+	&RequestFactory::_newElement<PUTReq>,
 	&RequestFactory::_newElement<DELETEReq>,
 	&RequestFactory::_newElement<UNKNOWNReq>
 };
@@ -45,15 +46,10 @@ const AFactory<ARequest>::_constructor		*RequestFactory::_getConstructors(void) 
 }
 
 // Member functions =============================================================
-Response			RequestFactory::execute(void)
+void				RequestFactory::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	Response resp(-1, false);
-
-	#ifdef DEBUG
-	std::cout << "Cannot execute Factory class." << std::endl;
-	#endif
-
-	return (resp);
+	(void) resp;
+	(void) uriInfo;
 }
 
 ARequest		*RequestFactory::createElement(void) const
@@ -61,36 +57,19 @@ ARequest		*RequestFactory::createElement(void) const
 	const _constructor	*constructorsArray = this->_getConstructors();
 	const int			i = this->_determineElement();
 
-	if (i == ERROR)
-		return (NULL);
 	return (constructorsArray[i](*this));
 }
 
 int8_t			RequestFactory::_determineElement(void) const
 {
-	if (!this->_checkHeader())
-		return (ERROR);
-
 	if (this->_method == "GET")
 		return (ARequest::GET);
-	else if (this->_method == "POST" && this->_checkBody())
+	else if (this->_method == "POST")
 		return (ARequest::POST);
+	else if (this->_method == "PUT")
+		return (ARequest::PUT);
 	else if (this->_method == "DELETE")
 		return (ARequest::DELETE);
 	else
 		return (UNKNOWN);
-}
-
-
-// Tests =======================================================================
-uint8_t		RequestFactory::_checkHeader(void) const
-{
-	// check if parsed header "looks like" a valid header
-	return (1); // OK
-}
-
-uint8_t		RequestFactory::_checkBody(void) const
-{
-	// if requested, check if parsed body "looks like" a valid body
-	return (1); // KO
 }

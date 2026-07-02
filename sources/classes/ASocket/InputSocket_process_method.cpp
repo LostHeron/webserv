@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "status.hpp"
 #include "abnf.hpp"
@@ -24,7 +25,7 @@ void	InputSocket::process_method(size_t& pos)
 		// no space found: add everything in the 'method' field
 		this->method.append(this->inputBuffer);
 		if (check_method(this->method) != SUCCESS)
-			return (setup_response(this->status, 400, this->connection));
+			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
 		pos = this->inputBuffer.size();
 		return ;
 	}
@@ -32,7 +33,7 @@ void	InputSocket::process_method(size_t& pos)
 	{
 		this->method.append(this->inputBuffer, pos, space_pos - pos);
 		if (check_method(this->method) != SUCCESS)
-			return (setup_response(this->status, 400, this->connection));
+			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
 		else
 		{
 			this->state++;

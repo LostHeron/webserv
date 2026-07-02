@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/19 13:19:21 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/19 13:19:25 by cviel            ###   ########.fr       */
+/*   Updated: 2026/06/25 19:12:00 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,14 +203,6 @@ int64_t const&	JsonObj::getVal<int64_t>(void) const
 	if (this->_type != JsonObj::INT)
 		throw std::logic_error("Incorrect type : JsonObj is not an integer");
 	return (this->_typeInt);
-}
-
-template <>
-uint16_t const&	JsonObj::getVal<uint16_t>(void) const
-{
-	if (this->_type != JsonObj::INT)
-		throw std::logic_error("Incorrect type : JsonObj is not an integer");
-	return (*(reinterpret_cast<const uint16_t*>(&this->_typeInt)));
 }
 
 template <>

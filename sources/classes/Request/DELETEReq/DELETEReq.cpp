@@ -14,9 +14,6 @@
 #include <cstdio>
 
 // Constructors/Destructor =====================================================
-// DELETEReq::DELETEReq(const std::string &type, const std::string &header, const std::string &body):
-// 	ARequest(type, header, body) {}
-
 DELETEReq::DELETEReq(const ARequest &cpy):
 	ARequest(cpy) {}
 
@@ -26,11 +23,21 @@ DELETEReq::DELETEReq(const DELETEReq &cpy):
 DELETEReq::~DELETEReq(void) {}
 
 // Member functions ============================================================
-uint16_t	DELETEReq::_removeResource(std::pair<int, std::string> &resource) const
+void	DELETEReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	uint16_t status = HTTPStatus::SUCCESS + HTTPStatus::OK;
+	(void) uriInfo;
+	uint16_t 					&status = resp.getStatus();
+	std::pair<int, std::string>	&resource = resp.getResource();
 
-	if (1/*std::remove(resource.second.c_str())*/)
+	status = HTTPStatus::SUCCESS + HTTPStatus::NO_CONTENT;
+
+	DIR	*directory = this->_tryOpenDirectory(resource.second.c_str());
+	if (directory)
+	{
+		status = HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN;
+		closedir(directory);
+	}
+	else if (std::remove(resource.second.c_str()))
 	{
 		switch (errno)
 		{
@@ -45,24 +52,4 @@ uint16_t	DELETEReq::_removeResource(std::pair<int, std::string> &resource) const
 				break;
 		}
 	}
-	return (status);
-}
-
-Response	DELETEReq::execute(void)
-{
-	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
-	Response						resp(this->_fd, uriInfo.isCgiAllowed());
-
-	resp.setCGI(uriInfo.isCgiAllowed());
-	resp.setResourcePath(uriInfo.getRealPath());
-	
-	if (!uriInfo.isRequestAllowed(this->_method))
-		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
-	else
-		resp.setStatus(this->_removeResource(resp.getResource()));
-
-	if (resp.getStatus() >= HTTPStatus::C_ERR)
-		resp.error(this->_vhost);
-
-	return (resp);
 }
