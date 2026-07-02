@@ -50,6 +50,7 @@ class	ARequest: public AMessage
 		{
 			GET,
 			POST,
+			PUT,
 			DELETE,
 			UNKNOWN,
 			TYPE_QTY,

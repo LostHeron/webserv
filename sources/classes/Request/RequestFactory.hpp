@@ -22,7 +22,8 @@
 # include "POSTReq.hpp"
 # include "DELETEReq.hpp"
 # include "UNKNOWNReq.hpp"
-#include "VirtualHost.hpp"
+# include "PUTReq.hpp"
+# include "VirtualHost.hpp"
 
 class	RequestFactory:
 	public ARequest,
@@ -45,9 +46,6 @@ class	RequestFactory:
 
 		template					<class Derived>
 		static ARequest				*_newElement(const ARequest &tmp);
-
-		uint8_t						_checkHeader(void) const;
-		uint8_t						_checkBody(void) const;
 
 		static const _constructor	_constructorsArray[];
 
