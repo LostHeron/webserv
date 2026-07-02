@@ -69,7 +69,7 @@ int8_t			RequestFactory::_determineElement(void) const
 	if (this->_method == "GET")
 		return (ARequest::GET);
 	else if (this->_method == "POST" && this->_checkBody())
-		return (ARequest::POST);
+		return (ARequest::POST); // GET
 	else if (this->_method == "DELETE")
 		return (ARequest::DELETE);
 	else

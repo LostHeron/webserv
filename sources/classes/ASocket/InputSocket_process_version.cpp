@@ -17,7 +17,7 @@
 #include <cstring>
 #include "Connection.hpp"
 
-static int	check_version(const std::string& method, const std::string& version);
+static int	check_version(const std::string& method, std::string& version);
 
 // here function to process version part of the request
 // should look something like: HTTP/*[DIGITS].*[DIGITS] or nothing 
@@ -63,7 +63,7 @@ void	InputSocket::process_version(size_t& pos)
 // should begin with 'HTTP/'
 // and then two number separated by a '.'
 // or should be empty with a 'GET' method
-static int	check_version(const std::string& method, const std::string& version)
+static int	check_version(const std::string& method, std::string& version)
 {
 	if (version.size() > INPUTSOCKET_MAX_SIZE)
 		return (FAILURE);

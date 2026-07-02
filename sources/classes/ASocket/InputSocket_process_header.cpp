@@ -40,6 +40,14 @@ void	InputSocket::process_headers(size_t& start)
 		{
 			// here the processing of headers is over
 			this->connection->setVHost();
+			if (this->headers.count("transfer-encoding"))
+			{
+				if (this->headers["transfer-encoding"].size() > 0)
+				{
+					if (this->headers["transfer-encoding"].at(0) == "chunked")
+						this->connection->setChunked();
+				}
+			}
 			if (getBodySize(this->bodySize, this->headers) != SUCCESS)
 				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
 			if (this->bodySize > this->connection->getVHost()->getBodySize())

@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 14:56:34 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 14:24:10 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "IsChildren.hpp"
+#include "Server.hpp"
 #include "sockets.hpp"
 #include "ASocket.hpp"
 #include "status.hpp"
@@ -23,6 +24,7 @@
 #include <sys/epoll.h>
 #include <cerrno>
 #include <iostream>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
 
@@ -98,7 +100,18 @@ void	start(Server& server)
 					*/
 				}
 				timeout_connections(server);
-				(void) timeout_connections;
+				std::vector<Connection *>& connections = server.getConnections();
+				for (size_t i = 0; i < connections.size(); i++)
+				{
+					if (connections[i]->isChunked() == true)
+					{
+						if (connections[i]->getChunk().isFinished() == true &&
+							connections[i]->getOutCGI() == NULL)
+						{
+							connections[i]->getInputSocket()->launch_cgi(connections[i]->getChunk().getTotalSize());
+						}
+					}
+				}
 			}
 			catch (IsChildren& e)
 			{

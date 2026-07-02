@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 14:21:57 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 09:55:02 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 13:39:44 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& newPeerAddr, Server& server):
 	memoryUsage(0),
 	startTime(time(NULL)),
+	chunked(false),
 	vHost(NULL),
 	peerPort(ntohs(newPeerAddr.sin_port)),
 	localPort(newLocalPort),
@@ -109,6 +110,22 @@ void	Connection::remove(ASocket* abstractSocket)
 		this->server.remove(abstractSocket);
 	}
 }
+
+void			Connection::setChunked()
+{
+	this->chunked = true;
+}
+
+bool			Connection::isChunked()
+{
+	return (this->chunked);
+}
+
+Chunk&			Connection::getChunk()
+{
+	return (this->chunk);
+}
+
 
 void			Connection::setIsChildren()
 {

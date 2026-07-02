@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 09:44:39 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 13:58:54 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@
 InputSocket::InputSocket(int fd, Connection* connection):
 	ASocket(connection),
 	state(0),
-	bodySize(0)
+	bodySize(0),
+	resp(NULL)
 {
 	this->fd = fd;
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
@@ -77,6 +78,11 @@ InputSocket::~InputSocket()
 	#ifdef DEBUG
 	std::cout << "In InputSocket Destructor\n";
 	#endif
+	if (this->resp != NULL)
+	{
+		delete (this->resp);
+		this->resp = NULL;
+	}
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
@@ -107,13 +113,21 @@ void	InputSocket::process_body(size_t& pos)
 		this->inputBuffer = std::string(this->inputBuffer, pos);
 		pos = 0; // to avoid InputSocket::process clear the string
 	}
+	if (this->connection->isChunked() == true)
+	{
+		this->connection->getChunk().process(this->inputBuffer);
+		if (this->connection->getChunk().fail() == true)
+		{
+			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, connection));
+		}
+	}
 	return ;
 }
 
 
 void launch_child_process(InputSocket &inputSocket, Response& resp, Pipe& toCGI, Pipe& fromCGI);
 
-void	InputSocket::launch_cgi(Response& resp)
+void	InputSocket::launch_cgi(size_t nbToSend)
 {
 
 	Pipe toCGI;
@@ -135,20 +149,14 @@ void	InputSocket::launch_cgi(Response& resp)
 	}
 	if (pid == 0)
 	{
-		launch_child_process(*this, resp, toCGI, fromCGI);
+		launch_child_process(*this, *this->resp, toCGI, fromCGI);
 	}
 	else
 	{
 		this->getConnection()->setCgiPid(pid);
-		size_t body_size;
-		char *end;
-		if (this->headers.count("content-length") == 1)
-			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
-		else
-			body_size = 0;
-		if (body_size != 0)
+		if (nbToSend != 0)
 		{
-			InCGI *incgi = new InCGI(toCGI.getWriteEnd(), body_size, this->inputBuffer, this->connection);
+			InCGI *incgi = new InCGI(toCGI.getWriteEnd(), nbToSend, this->inputBuffer, this->connection);
 			this->connection->add(incgi, EPOLLOUT);
 			this->connection->setInCGI(incgi);
 		}
@@ -175,6 +183,8 @@ void launch_child_process(InputSocket &inputSocket, Response& resp, Pipe& toCGI,
 	try
 	{
 		inputSocket.getConnection()->setIsChildren();
+
+		// TODO switch directory
 
 		setup_child_standard_io_fds(toCGI, fromCGI);
 
@@ -218,7 +228,16 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 {
 	std::string str;
 
-	if (this->headers.count("content-length"))
+	if (this->connection->isChunked() == true)
+	{
+		str = "CONTENT_LENGTH=";
+		std::stringstream ss;
+		ss << this->connection->getChunk().getTotalSize();
+		std::string tmp;
+		ss >> tmp;
+		str += tmp;
+	}
+	else if (this->headers.count("content-length"))
 	{
 		str = "CONTENT_LENGTH=";
 		str += this->headers["content-length"].at(0);
