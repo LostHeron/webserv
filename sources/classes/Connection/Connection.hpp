@@ -15,6 +15,7 @@
 
 #include "ASocket.hpp"
 #include "RequestMetaData/RequestMetaData.hpp"
+#include "Response.hpp"
 #include "VHostList.hpp"
 #include "InputSocket.hpp"
 #include "OutputSocket.hpp"
@@ -85,6 +86,8 @@ class Connection
 
 		RequestMetaData		requestMetaData;
 		int					state;
+
+		Response			*resp;
 
 		InputSocket			inputSocket;
 		OutputSocket		outputSocket;

@@ -146,7 +146,7 @@ void			Connection::process()
 		}
 	}
 
-	if (requestMetaData.isReady() == true)
+	if (requestMetaData.isReady() == true && this->resp == NULL)
 	{
 		// call Achill's part which will create the ressource
 		// so we can have kind of this stuff here : 
@@ -204,6 +204,11 @@ void			Connection::process()
 	return ;
 		*/
 		// but of course with some modificatiions
+	}
+
+	if (this->resp != NULL)
+	{
+		this->resp->
 	}
 
 	// here we can have a part where we read from the resourceFD
