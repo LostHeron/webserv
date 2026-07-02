@@ -23,8 +23,14 @@ class	PUTReq: public ARequest
 		~PUTReq(void);
 
 	private:
-		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
-		void		_uploadFile(Response &resp, const std::string &upPath);
+		static std::vector<std::string>	_lockedFiles;
+		static bool						_lockFile(const std::string &file);
+		static void						_unlockFile(const std::string &file);
+
+		static bool						_isFileLocked(const std::string &file);
+
+		void							_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
+		void							_uploadFile(Response &resp, const std::string &upPath);
 };
 
 #endif
