@@ -126,24 +126,21 @@ void	Connection::remove(ASocket* abstractSocket)
 
 void			Connection::process()
 {
-	//	ok so many things will happen here :
-	// 	first: 
-	//		- some buffer might have arrived in an IncomingFd
-	//		- if we in the state 0, we should be processing 
-	//		RequestMetaData
-	// so this is the part to process incomingFd
+	// get data to process 
 	std::string to_process;
 	if (this->inputSocket.size() > 0) // check if there is data to process
 	{
 
 		to_process = this->inputSocket.front();
 		this->inputSocket.pop();
-		if (this->requestMetaData.isReady() == false)
-		{
-			// we must still process headers and stuff from 
-			// incoming data
-			requestMetaData.process(to_process);
-		}
+	}
+
+	// proces requestMetaData as long as it's not ready
+	if (this->requestMetaData.isReady() == false)
+	{
+		// we must still process headers and stuff from 
+		// incoming data
+		requestMetaData.process(to_process);
 	}
 
 	if (requestMetaData.isReady() == true && this->resp == NULL)
@@ -208,7 +205,34 @@ void			Connection::process()
 
 	if (this->resp != NULL)
 	{
-		this->resp->
+		if (this->resp->isRedir() == true)
+		{
+		}
+		else if (this->resp->isCGI() == true)
+		{
+			if (to_process != "")
+			{
+				this->inCGI.addBuffer(to_process);
+			}
+			std::string to_process_cgi;
+			if (this->outCGI.size() > 0)
+			{
+				// means there is data to process in the cgi queuqe
+				to_process_cgi = this->outCGI.front();
+				this->outCGI.pop();
+			}
+			if (cgiMetaData.isReady() == false)
+			{
+				cgiMetaData.process(to_process_cgi);
+			}
+		}
+		else
+		{
+			// read from resourceFd and put the stuff in the queue of buffer
+			// to be send to outputSocket
+			// clear buffer from request, because not needed here ?
+			// except if it is a post ?
+		}
 	}
 
 	// here we can have a part where we read from the resourceFD
