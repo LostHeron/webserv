@@ -37,5 +37,5 @@ void	PUTReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 
 	// if (std::string upPath = uriInfo.getUploadPath())
 	// this->_uploadFile(upPath);
-	resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::NOT_ALLOWED_METHOD);
+	resp.setStatus(900);
 }

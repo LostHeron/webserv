@@ -13,9 +13,6 @@
 #include "UNKNOWNReq.hpp"
 
 // Constructors/Destructor =====================================================
-// UNKNOWNReq::UNKNOWNReq(const std::string &type, const std::string &header, const std::string &body):
-// 	ARequest(type, header, body) {}
-
 UNKNOWNReq::UNKNOWNReq(const ARequest &cpy):
 	ARequest(cpy) {}
 

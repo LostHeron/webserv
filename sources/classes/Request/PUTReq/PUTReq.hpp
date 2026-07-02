@@ -15,16 +15,12 @@
 
 # include "ARequest.hpp"
 
-class	PUTReq: public ARequest // only PUT ?
+class	PUTReq: public ARequest
 {
 	public:
-		// PUTReq(void);
-		// PUTReq(const std::string &type, const std::string &header, const std::string &body);
 		PUTReq(const ARequest &cpy);
 		PUTReq(const PUTReq &cpy);
 		~PUTReq(void);
-
-		// PUTReq		&operator=(const PUTReq &assign);
 
 	private:
 		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);

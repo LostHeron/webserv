@@ -15,16 +15,12 @@
 
 # include "ARequest.hpp"
 
-class	UNKNOWNReq: public ARequest // only UNKNOWN ?
+class	UNKNOWNReq: public ARequest
 {
 	public:
-		// UNKNOWNReq(void);
-		// UNKNOWNReq(const std::string &type, const std::string &header, const std::string &body);
 		UNKNOWNReq(const ARequest &cpy);
 		UNKNOWNReq(const UNKNOWNReq &cpy);
 		~UNKNOWNReq(void);
-
-		// UNKNOWNReq		&operator=(const UNKNOWNReq &assign);
 
 	private:
 		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);

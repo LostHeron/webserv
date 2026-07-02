@@ -15,16 +15,12 @@
 
 # include "ARequest.hpp"
 
-class	POSTReq: public ARequest // only POST ?
+class	POSTReq: public ARequest
 {
 	public:
-		// POSTReq(void);
-		// POSTReq(const std::string &type, const std::string &header, const std::string &body);
 		POSTReq(const ARequest &cpy);
 		POSTReq(const POSTReq &cpy);
 		~POSTReq(void);
-
-		// POSTReq		&operator=(const POSTReq &assign);
 
 	private:
 		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
