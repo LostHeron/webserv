@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:25:38 by cviel             #+#    #+#             */
-/*   Updated: 2026/07/01 18:51:10 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/03 15:49:59 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@
 # define LOC_UPLOAD_KEY "upload"
 
 # include <stdint.h>
-# include "VirtualHost.hpp"
 # include "ObjSchema.hpp"
 
 void	host_schema_builder(ObjSchema& server_schema);

@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 16:06:22 by cviel             #+#    #+#             */
-/*   Updated: 2026/07/01 19:15:31 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/03 16:15:00 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ std::map<std::string, VHostParser::s_setter<VirtualHost::Location::s_config> >	V
 	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_INDEX_KEY, setters));
 	setters.setVal = setLocMaxBody;
 	setters.setDef = setLocDefMaxBody;
-	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_INDEX_KEY, setters));
+	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_BODY_SIZE_KEY, setters));
 	setters.setVal = setLocDirList;
 	setters.setDef = setLocDefDirList;
 	dispatch_map.insert(std::pair<std::string, s_setter<VirtualHost::Location::s_config> >(LOC_DIR_LIST_KEY, setters));

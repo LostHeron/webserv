@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/01 19:14:40 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/03 16:16:49 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 	else
 	{
 		uri_info._path += uri;
-		if (uri_info._uploadPath.empty())
+		if (uri_info._uploadPath.empty() == true)
 			uri_info._uploadPath = this->_conf.root;
 	}
 	return (uri_info);
@@ -221,6 +221,13 @@ bool	VirtualHost::UriInfo::isCgiExtAllowed(std::string const& cgi_ext) const
 	return (false);
 }
 
+std::string const&	VirtualHost::UriInfo::getUploadPath(void) const
+{
+	if (this->_isRedir)
+		throw std::logic_error("This uri is a redirection to another path : the requested info is non-existant");
+	return (this->_uploadPath);
+}
+
 //<<<<<<< HEAD
 std::string						VirtualHost::buildSessionId(void)
 {
@@ -286,12 +293,4 @@ void							VirtualHost::updateSession(const std::string &id, std::map<std::strin
 	{
 		session.updateCookie(iter->second);
 	}
-
-//=======
-//std::string const&	VirtualHost::UriInfo::getUploadPath(void) const
-//{
-//	if (this->_isRedir)
-//		throw std::logic_error("This uri is a redirection to another path : the requested info is non-existant");
-//	return (this->_uploadPath);
-//>>>>>>> config_file
 }
