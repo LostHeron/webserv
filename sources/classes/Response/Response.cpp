@@ -23,6 +23,7 @@ Response::Response(const int fd, bool isCGI):
 	_content(""),
 	_cookies(),
 	_cgi(isCGI),
+	_pathInfo(""),
 	_redir(false) {}
 
 Response::Response(uint16_t errCode, const VirtualHost &vHost):
@@ -40,6 +41,7 @@ Response::Response(const Response &cpy):
 	_content(cpy._content),
 	_cookies(cpy._cookies),
 	_cgi(cpy._cgi),
+	_pathInfo(cpy._pathInfo),
 	_redir(cpy._redir) {}
 
 Response::~Response(void) {}

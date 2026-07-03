@@ -15,16 +15,12 @@
 
 # include "ARequest.hpp"
 
-class	DELETEReq: public ARequest // only DELETE ?
+class	DELETEReq: public ARequest
 {
 	public:
-		// DELETEReq(void);
-		// DELETEReq(const std::string &type, const std::string &header, const std::string &body);
 		DELETEReq(const ARequest &cpy);
 		DELETEReq(const DELETEReq &cpy);
 		~DELETEReq(void);
-
-		// DELETEReq		&operator=(const DELETEReq &assign);
 
 		Response		execute(void);
 

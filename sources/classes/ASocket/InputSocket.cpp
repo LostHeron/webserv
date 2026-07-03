@@ -24,6 +24,8 @@
 #include "Connection.hpp"
 #include "Environment.hpp"
 #include "Response.hpp"
+#include "ARequest.hpp"
+#include "PUTReq.hpp"
 #include <cctype>
 #include <cstddef>
 #include <fcntl.h>
@@ -48,7 +50,8 @@ InputSocket::InputSocket(int fd, Connection* connection):
 	ASocket(connection),
 	state(0),
 	bodySize(0),
-	resp(NULL)
+	resp(NULL),
+	req(NULL)
 {
 	this->fd = fd;
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
@@ -119,6 +122,14 @@ void	InputSocket::process_body(size_t& pos)
 		if (this->connection->getChunk().fail() == true)
 		{
 			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, connection));
+		}
+	}
+	else
+	{
+		if (this->req != NULL)
+		{
+			// means this is a put request, and 
+			// here, i need a function to send data to the post ?
 		}
 	}
 	return ;
@@ -247,7 +258,7 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 
 	if (this->headers.count("content-type"))
 	{
-		str = "CONTENT-TYPE=";
+		str = "CONTENT_TYPE=";
 		for (size_t i = 0; i < this->headers["content-type"].size(); i++)
 		{
 			if (i > 0)

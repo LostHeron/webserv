@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   UNKNOWNReq.hpp                                      :+:      :+:    :+:   */
+/*   PUTReq.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,20 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef		__UNKNOWNREQ_HPP__
-# define	__UNKNOWNREQ_HPP__
+#ifndef		__PUTREQ_HPP__
+# define	__PUTREQ_HPP__
 
 # include "ARequest.hpp"
 
-class	UNKNOWNReq: public ARequest
+class	PUTReq: public ARequest
 {
 	public:
-		UNKNOWNReq(const ARequest &cpy);
-		UNKNOWNReq(const UNKNOWNReq &cpy);
-		~UNKNOWNReq(void);
+		PUTReq(const ARequest &cpy);
+		PUTReq(const PUTReq &cpy);
+		~PUTReq(void);
 
 	private:
-		void		_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
+		static std::vector<std::string>	_lockedFiles;
+		static bool						_lockFile(const std::string &file);
+		static void						_unlockFile(const std::string &file);
+
+		static bool						_isFileLocked(const std::string &file);
+
+		void							_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
+		void							_uploadFile(Response &resp, const std::string &upPath);
 };
 
 #endif

@@ -38,12 +38,15 @@ void	InputSocket::process_request(size_t& pos)
 	//if (vhost.InterfaceAllowed(this->connection->)
 	// here should check if the IP from the vhost is accepted or not
 	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
-	ARequest *req = facto.createElement();
+	this->req = facto.createElement();
 
-	
-	this->resp = new Response(req->buildResponse());
+	this->resp = new Response(this->req->buildResponse());
 
-	delete req;
+	if (this->method != "PUT")
+	{
+		delete this->req;
+		this->req = NULL;
+	}
 	
 	if (this->resp->isCGI() == true)
 	{
