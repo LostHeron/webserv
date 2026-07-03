@@ -34,7 +34,7 @@ echo "\"host\":
 		\"request\":[\"GET\"],
 		\"extension\":[\".bla\"],
 	    \"root\":\"$PWD/YoupiBanane\",
-		\"max body\": 1000000000000,
+		\"max body\": 1000000000,
 		\"location\":
 		[
 			{

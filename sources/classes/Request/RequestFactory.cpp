@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RequestFactory.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 21:26:49 by abetemps          #+#    #+#             */
-/*   Updated: 2026/05/28 11:48:11 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/03 16:20:26 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int8_t			RequestFactory::_determineElement(void) const
 	if (this->_method == "GET")
 		return (ARequest::GET);
 	else if (this->_method == "POST")
-		return (ARequest::POST);
+		return (ARequest::GET);
 	else if (this->_method == "PUT")
 		return (ARequest::PUT);
 	else if (this->_method == "DELETE")

@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 11:20:07 by jweber            #+#    #+#             */
-/*   Updated: 2026/05/30 11:31:17 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 13:01:50 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class InCGI: public ASocket
 		size_t			nbToSend;
 		size_t			nbSent;
 		std::string&	inputBuffer;
+		std::string		inputBufferChunk;
 };
 
 #endif 

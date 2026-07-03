@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/05 13:54:54 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 09:43:46 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 12:57:03 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CONNECTION_HPP
 
 #include "ASocket.hpp"
+#include "Chunk/Chunk.hpp"
 #include "VHostList.hpp"
 #include "InputSocket.hpp"
 #include "OutputSocket.hpp"
@@ -22,6 +23,7 @@
 #include "OutCGI.hpp"
 #include "OutputSocket.hpp"
 #include "VirtualHost.hpp"
+#include <queue>
 
 class Connection
 {
@@ -31,6 +33,10 @@ class Connection
 		
 		void			setIsChildren();
 		bool			getIsChildren();
+
+		bool			isChunked();
+		void			setChunked();
+		Chunk&			getChunk();
 
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();
@@ -70,6 +76,9 @@ class Connection
 
 		// used to timeout request
 		time_t				startTime;
+
+		bool					chunked;
+		Chunk					chunk;
 
 		const VirtualHost	*vHost;
 

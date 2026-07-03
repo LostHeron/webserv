@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 18:07:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/29 16:18:46 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 14:24:07 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 void	InputSocket::process_request(size_t& pos)
 {
+
 	std::string requested_server_name;
 	if (this->headers.count("host"))
 	{
@@ -39,18 +40,29 @@ void	InputSocket::process_request(size_t& pos)
 	RequestFactory facto(*this, vhost);//, VirtualHost &vhost;
 	ARequest *req = facto.createElement();
 
-	Response resp = req->buildResponse();
+	
+	this->resp = new Response(req->buildResponse());
 
 	delete req;
 	
-	if (resp.isCGI() == true)
+	if (this->resp->isCGI() == true)
 	{
-		if (resp.getResource().first > 0)
+		if (this->resp->getResource().first > 0)
 		{
-			close(resp.getResource().first);
-			resp.getResource().first = -1;
+			close(this->resp->getResource().first);
+			this->resp->getResource().first = -1;
 		}
-		this->launch_cgi(resp);
+		// we can not launch directly in case of chunked 
+		// request, we need the size of the total request before
+
+		char *end;
+		size_t body_size;
+		if (this->headers.count("content-length") == 1)
+			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
+		else
+			body_size = 0;
+		if (this->connection->isChunked() == false)
+			this->launch_cgi(body_size);
 	}
 	else
 	{
@@ -60,14 +72,14 @@ void	InputSocket::process_request(size_t& pos)
 		b.initialize();
 		if (this->version != "")
 		{
-			b.buildStatusLine("HTTP/1.1", resp.getStatus())
+			b.buildStatusLine("HTTP/1.1", resp->getStatus())
 		 	.buildDate()
-			.buildCookies(resp.getCookies())
+			.buildCookies(resp->getCookies())
 		 	.buildCRLF();
 		}
-		b.buildBody(resp.getContent());
+		b.buildBody(resp->getContent());
 
-		os->setup(resp.getResource().first, b.build());
+		os->setup(resp->getResource().first, b.build());
 	}
 	
 	this->state++;

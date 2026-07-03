@@ -6,7 +6,7 @@
 #    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/11 16:35:18 by jweber            #+#    #+#              #
-#    Updated: 2026/06/26 09:40:24 by jweber           ###   ########.fr        #
+#    Updated: 2026/07/02 13:43:45 by jweber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,7 @@ INCLUDES = -I includes\
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(VHOSTLIST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ASOCKET_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(CONNECTION_DIR) \
+		   -I $(SRCS_DIR)$(CLASSES_DIR)$(CHUNK_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(ENVIRONMENT_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(REQUEST_DIR) \
 		   -I $(SRCS_DIR)$(CLASSES_DIR)$(AMESSAGE_DIR) \
@@ -107,6 +108,9 @@ PUTREQ_FILES := 	PUTReq.cpp \
 UNKNOWNREQ_DIR := 	UNKNOWNReq/
 UNKNOWNREQ_FILES := UNKNOWNReq.cpp \
 
+CHUNK_DIR := Chunk/
+CHUNK_FILES := Chunk.cpp \
+
 CONNECTION_DIR := Connection/
 CONNECTION_FILES := Connection.cpp \
 
@@ -181,6 +185,7 @@ CLASSES_FILES := $(addprefix $(SERVER_DIR), $(SERVER_FILES)) \
 				 $(addprefix $(EXCEPTIONS_DIR), $(EXCEPTIONS_FILES)) \
 				 $(addprefix $(ASOCKET_DIR), $(ASOCKET_FILES)) \
 				 $(addprefix $(CONNECTION_DIR), $(CONNECTION_FILES)) \
+				 $(addprefix $(CHUNK_DIR), $(CHUNK_FILES)) \
 				 $(addprefix $(ENVIRONMENT_DIR), $(ENVIRONMENT_FILES)) \
 				 $(addprefix $(JSONLEXER_DIR), $(JSONLEXER_FILES)) \
 				 $(addprefix $(COOKIE_DIR), $(COOKIE_FILES)) \

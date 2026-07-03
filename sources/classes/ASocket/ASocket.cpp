@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 17:01:33 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 14:56:10 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 13:41:36 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ int fill_last_line(const std::string &buf, std::string &last_line, size_t &start
 		}
 	}
 	start = until;
-	return (CONTINUE);
+	return (CONTINUE_STATUS);
 }
 
 size_t		getDelimPosition(const std::string& str, size_t start, const std::vector<std::string>& delims)

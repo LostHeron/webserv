@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/26 09:00:58 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 10:03:03 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 11:58:20 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 #include <netinet/ip.h>
 #include <cerrno>
 
-void	updateInputBuffer(std::string& inputBuffer, int fd, int& status);
+void			updateInputBuffer(std::string& inputBuffer, int fd, int& status);
+static	void	remove_trailing_carriage_return(std::string& inputBuffer);
 
 void InputSocket::process()
 {
@@ -31,6 +32,12 @@ void InputSocket::process()
 	if (this->status != SUCCESS)
 		return ;
 
+	// TODO add a boolean to check if buffer begins with
+	// *\r\n and nothing else to avoid error,
+	// this flag should be set if the previous buffered
+	// ended with carriage returns
+	remove_trailing_carriage_return(this->inputBuffer);
+	
 	size_t	position = 0;
 	// std::cout << "this->state = " << this->state << "\n";
 	(this->*process_functions[this->state])(position);
@@ -41,6 +48,15 @@ void InputSocket::process()
 	#ifdef DEBUG
 	std::cout << *this << "\n";
 	#endif
+}
+
+static void	remove_trailing_carriage_return(std::string& inputBuffer)
+{
+	size_t	position = inputBuffer.find_last_not_of("\r");
+	if (position == std::string::npos)
+		inputBuffer.clear();
+	if (position + 1 != inputBuffer.size())
+		inputBuffer = std::string(inputBuffer, 0, position + 1);
 }
 
 void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
