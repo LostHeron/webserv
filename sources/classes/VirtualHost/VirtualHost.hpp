@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/01 19:12:51 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/03 15:51:09 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ class VirtualHost
 			
 			private:
 			
+				Location(void);
+
 				Location&	operator=(Location const& other);
 		};
 
