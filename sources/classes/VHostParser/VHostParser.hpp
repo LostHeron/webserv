@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 15:56:58 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/25 19:08:41 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 19:02:48 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,17 @@ class VHostParser
 		static void	setHostLocation(JsonObj const& location, VirtualHost::s_config& host_config);
 		static void	setHostCgi(JsonObj const& cgi, VirtualHost::s_config& host_config);
 		static void	setHostCgiExt(JsonObj const& cgi_ext, VirtualHost::s_config& host_config);
+		static void	setHostUploadPath(JsonObj const& upload_path, VirtualHost::s_config& host_config);
 
 		static void	setLocAlias(JsonObj const& alias, VirtualHost::Location::s_config& loc_config);
 		static void	setLocRedir(JsonObj const& redir, VirtualHost::Location::s_config& loc_config);
 		static void	setLocIndex(JsonObj const& index, VirtualHost::Location::s_config& loc_config);
+		static void	setLocMaxBody(JsonObj const& max_body, VirtualHost::Location::s_config& loc_config);
 		static void	setLocDirList(JsonObj const& dir_list, VirtualHost::Location::s_config& loc_config);
 		static void	setLocAllowedRequest(JsonObj const& allowed_request, VirtualHost::Location::s_config& loc_config);
 		static void	setLocCgi(JsonObj const& cgi, VirtualHost::Location::s_config& loc_config);
 		static void	setLocCgiExt(JsonObj const& cgi_ext, VirtualHost::Location::s_config& loc_config);
+		static void	setLocUploadPath(JsonObj const& upload_path, VirtualHost::Location::s_config& loc_config);
 
 		static void	setHostDefMaxBody(VirtualHost::s_config& host_config);
 		static void	setHostDefInterface(VirtualHost::s_config& host_config);
@@ -74,6 +77,7 @@ class VHostParser
 		static void	setHostDefAllowedRequest(VirtualHost::s_config& host_config);
 		static void	setHostDefCgi(VirtualHost::s_config& host_config);
 
+		static void	setLocDefMaxBody(VirtualHost::Location::s_config& host_config);
 		static void	setLocDefDirList(VirtualHost::Location::s_config& loc_config);
 		static void	setLocDefCgi(VirtualHost::Location::s_config& loc_config);
 };
