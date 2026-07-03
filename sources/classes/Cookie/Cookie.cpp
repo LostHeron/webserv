@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+/*
 #include "Cookie.hpp"
 #include <sstream>
 
@@ -209,3 +210,4 @@ std::string		Cookie::_sameSiteToStr(void) const
 			return ("");
 	}
 }
+*/

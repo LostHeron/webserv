@@ -13,6 +13,7 @@
 #ifndef		__COOKIE_HPP__
 # define	__COOKIE_HPP__
 
+/*
 # include <iostream>
 # include <cstdlib>
 # include <ctime>
@@ -93,4 +94,5 @@ class		Cookie
 
 std::ostream	&operator<<(std::ostream &os, const Cookie &cookie);
 
+*/
 #endif

@@ -127,8 +127,8 @@ Response										ARequest::buildResponse(void)
 	{
 		resp.setCGI(false);
 	}
-	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
-	resp.setCookies(this->_updateCookies(receivedCookies));
+	//std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
+	//resp.setCookies(this->_updateCookies(receivedCookies));
 
 	if (resp.isRedir())
 		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
@@ -147,6 +147,7 @@ Response										ARequest::buildResponse(void)
 
 }
 
+/*
 std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
 {
 	std::map<std::string, Cookie>	cookies;
@@ -185,7 +186,9 @@ std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
 	}
 	return (cookies);
 }
+*/
 
+/*
 std::map<std::string, Cookie>					&ARequest::_updateCookies(std::map<std::string, Cookie> &cookies)
 {
 	std::map<std::string, Session>			&sessions = this->_vhost.getSessions();
@@ -216,3 +219,4 @@ std::map<std::string, Cookie>					&ARequest::_updateCookies(std::map<std::string
 	
 	return (cookies);
 }
+*/

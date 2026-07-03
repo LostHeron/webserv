@@ -17,6 +17,7 @@
 
 # define SESSION_ID_CHAR	16
 
+/*
 class	Session
 {
 	public:
@@ -36,4 +37,5 @@ class	Session
 		std::map<std::string, Cookie>	_cookies;
 };
 
+		  */
 #endif

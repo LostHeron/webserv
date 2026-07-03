@@ -93,6 +93,7 @@ HeadersBuilder&	HeadersBuilder::buildBody(const std::string& content)
 	return (*this);
 }
 
+/*
 HeadersBuilder&	HeadersBuilder::buildCookies(const std::map<std::string, Cookie> &cookies)
 {
 	if (cookies.empty())
@@ -104,6 +105,7 @@ HeadersBuilder&	HeadersBuilder::buildCookies(const std::map<std::string, Cookie>
 		this->response.append(it->second.cookieToStr());
 	return (*this);
 }
+*/
 
 std::string	HeadersBuilder::build()
 {

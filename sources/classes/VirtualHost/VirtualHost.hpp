@@ -128,15 +128,15 @@ class VirtualHost
 
 		std::string						buildSessionId(void);
 		bool							isIdAvailable(std::string &id);
-		std::map<std::string, Session>	&getSessions(void);
-		void							addSession(Session &session);
-		void							removeSession(const std::string	&sessionId);
-		void							removeOldSessions(void);
-		void							updateSession(const std::string &id, std::map<std::string, Cookie> &cookies);
+		//std::map<std::string, Session>	&getSessions(void);
+		//void							addSession(Session &session);
+		//void							removeSession(const std::string	&sessionId);
+		//void							removeOldSessions(void);
+		//void							updateSession(const std::string &id, std::map<std::string, Cookie> &cookies);
 		
 	private:
 		
-		std::map<std::string, Session>	_sessions;
+		//std::map<std::string, Session>	_sessions;
 	
 		struct s_config	_conf;
 		

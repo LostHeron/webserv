@@ -229,6 +229,7 @@ std::string const&	VirtualHost::UriInfo::getUploadPath(void) const
 }
 
 //<<<<<<< HEAD
+/*
 std::string						VirtualHost::buildSessionId(void)
 {
 	static const std::string	alphanum = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -239,7 +240,9 @@ std::string						VirtualHost::buildSessionId(void)
 		id += alphanum[rand() % (alphanum.length() - 1)];
 	return (id);
 }
+*/
 
+/*
 bool						VirtualHost::isIdAvailable(std::string &id)
 {
 	std::map<std::string, Session>::iterator iter;
@@ -250,25 +253,33 @@ bool						VirtualHost::isIdAvailable(std::string &id)
 	}
 	return (true);
 }
+*/
 
+/*
 std::map<std::string, Session>	&VirtualHost::getSessions(void)
 {
 	return (this->_sessions);
 }
+														 */
 
+/*
 void							VirtualHost::addSession(Session &session)
 {
 	std::string sessionId = session.getSessionId();
 	if (sessionId != "")
 		this->_sessions[sessionId] = session;
 }
+*/
 
+/*
 void							VirtualHost::removeSession(const std::string &sessionId)
 {
 	if (sessionId != "")
 		this->_sessions.erase(sessionId);
 }
+*/
 
+/*
 void							VirtualHost::removeOldSessions(void)
 {
 	const time_t								now = time(NULL);
@@ -281,7 +292,9 @@ void							VirtualHost::removeOldSessions(void)
 			this->removeSession(sessionId);
 	}
 }
+*/
 
+/*
 void							VirtualHost::updateSession(const std::string &id, std::map<std::string, Cookie> &cookies)
 {
 	Session	&session = this->_sessions[id];
@@ -294,3 +307,4 @@ void							VirtualHost::updateSession(const std::string &id, std::map<std::strin
 		session.updateCookie(iter->second);
 	}
 }
+*/

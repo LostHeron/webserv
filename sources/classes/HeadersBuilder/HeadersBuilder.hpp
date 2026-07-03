@@ -35,7 +35,7 @@ class HeadersBuilder
 		HeadersBuilder&	buildCRLF();
 		HeadersBuilder&	buildBody(int errorCode);
 		HeadersBuilder&	buildBody(const std::string& content);
-		HeadersBuilder&	buildCookies(const std::map<std::string, Cookie> &cookies);
+		//HeadersBuilder&	buildCookies(const std::map<std::string, Cookie> &cookies);
 		std::string		build();
 	private:
 		HeadersBuilder(const HeadersBuilder& other);

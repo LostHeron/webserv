@@ -12,6 +12,7 @@
 
 #include "Session.hpp"
 
+/*
 // Construction/Destruction ====================================================
 Session::Session(void) {}
 
@@ -61,3 +62,4 @@ void							Session::deleteOldCookies(void)
 			this->removeCookie(iter->first);
 	}
 }
+*/
