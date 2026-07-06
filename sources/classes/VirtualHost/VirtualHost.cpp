@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/06 16:46:53 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/06 16:51:10 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include "VirtualHost.hpp"
 #include "JsonObj.hpp"
 #include "config_file.hpp"
-#include <iostream>
+
 VirtualHost::VirtualHost(VirtualHost::s_config const& conf) :
 	_conf(conf)
 {
@@ -77,10 +77,7 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 		current.erase(current.end() - 1);
 	}
 	if (loc_match_it != this->_conf.location.end())
-	{
-		std::cout << "match found ! " << loc_match_it->second.conf.redirection << std::endl;
 		VirtualHost::buildUriInfo(uri, *loc_match_it, uri_info);
-	}
 	else
 	{
 		uri_info._path += uri;
