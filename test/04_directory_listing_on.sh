@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    04_directory_listing_on.sh                         :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+         #
+#    By: cviel <cviel@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/06/23 10:31:25 by jweber            #+#    #+#              #
-#    Updated: 2026/06/26 17:58:42 by jweber           ###   ########.fr        #
+#    Updated: 2026/07/03 16:25:37 by cviel            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ CONFIG_FILE="\"host\":
 	}
 ]"
 echo $CONFIG_FILE > config_file.json
-IFS=$OLD_IFS
+
 
 mkdir -p $HOME/goinfre/tmp/a
 echo -ne "in a" > $HOME/goinfre/tmp/a/index.html
@@ -85,6 +85,7 @@ else
 fi
 
 kill -INT $WEBSERV_PID
+IFS=$OLD_IFS
 #rm -rf config_file.json
 #rm -rf $HOME/goinfre/tmp/
 #rm -rf *.log

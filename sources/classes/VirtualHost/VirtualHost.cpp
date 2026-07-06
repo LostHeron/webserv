@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/03 16:16:49 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/06 16:46:53 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include "VirtualHost.hpp"
 #include "JsonObj.hpp"
 #include "config_file.hpp"
-
+#include <iostream>
 VirtualHost::VirtualHost(VirtualHost::s_config const& conf) :
 	_conf(conf)
 {
@@ -65,28 +65,22 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 	std::map<std::string, Location>::const_iterator	loc_match_it;
 	UriInfo											uri_info(this->_conf);
 
-	if (current[current.size() - 1] != '/')
-	{
-		loc_match_it = this->_conf.location.find(current);
-		if (loc_match_it != this->_conf.location.end())
-		{
-			VirtualHost::buildUriInfo(uri, *loc_match_it, uri_info);
-			return (uri_info);
-		}
-	}
 	while (current.empty() == false)
 	{
 		loc_match_it = this->_conf.location.find(current);
 		if (loc_match_it != this->_conf.location.end())
 			break ;
-		current.erase(current.end() - 1);
+		current = current.substr(0, current.find_last_of('/') + 1);
 		loc_match_it = this->_conf.location.find(current);
 		if (loc_match_it != this->_conf.location.end())
 			break ;
-		current = current.substr(0, current.find_last_of('/'));
+		current.erase(current.end() - 1);
 	}
 	if (loc_match_it != this->_conf.location.end())
+	{
+		std::cout << "match found ! " << loc_match_it->second.conf.redirection << std::endl;
 		VirtualHost::buildUriInfo(uri, *loc_match_it, uri_info);
+	}
 	else
 	{
 		uri_info._path += uri;
@@ -121,7 +115,7 @@ void	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Lo
 		uri_info._uploadPath = loc_pair.second.conf.alias;
 }
 
-VirtualHost::Location::Location(Location::s_config const& conf):
+VirtualHost::Location::Location(Location::s_config const& conf) :
 	conf(conf)
 {}
 

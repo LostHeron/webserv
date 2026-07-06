@@ -20,10 +20,5 @@
                 "directory listing": true
             }
         ]
-    },
-    {
-        "listen":4141,
-        "name":"test",
-        "caca":"pipi"
     }
 ]
