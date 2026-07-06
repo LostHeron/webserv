@@ -93,18 +93,6 @@ HeadersBuilder&	HeadersBuilder::buildBody(const std::string& content)
 	return (*this);
 }
 
-HeadersBuilder&	HeadersBuilder::buildCookies(const std::map<std::string, Cookie> &cookies)
-{
-	if (cookies.empty())
-		return (*this);
-
-	std::map<std::string, Cookie>::const_iterator	it;
-
-	for (it = cookies.begin(); it != cookies.end(); ++it)
-		this->response.append(it->second.cookieToStr());
-	return (*this);
-}
-
 std::string	HeadersBuilder::build()
 {
 	return (this->response);

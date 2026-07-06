@@ -17,7 +17,7 @@
 // Construction/Destruction ====================================================
 ARequest::ARequest(const InputSocket &IOMessage, const VirtualHost& vhost):
 	AMessage(IOMessage.getFd()),
-	_vhost(const_cast<VirtualHost &>(vhost)),
+	_vhost(vhost),
 	_method(IOMessage.getMethod()),
 	_uri(IOMessage.getUri()),
 	_version(IOMessage.getVersion()),
@@ -112,11 +112,16 @@ Response										ARequest::buildResponse(void)
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
 	Response						resp(this->_fd, uriInfo.isCgiAllowed());
 
-	resp.setRedir(uriInfo.isRedir());
 	resp.setResourcePath(uriInfo.getRealPath());
+	resp.setRedir(uriInfo.isRedir());
+	if (resp.isRedir())
+	{
+		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
+		return (resp);
+	}
 
 	this->_splitCGIPathInfo(resp);
-	if (!resp.isCGI())
+	if (!resp.isRedir() && !resp.isCGI())
 	{
 		resp.setCGI(uriInfo.isCgiExtAllowed(this->_getFileExtension(resp.getResource().second)));
 		if (!resp.isCGI())
@@ -124,16 +129,8 @@ Response										ARequest::buildResponse(void)
 	}
 	struct stat st;
 	if (stat(resp.getResource().second.c_str(), &st) != 0)
-	{
 		resp.setCGI(false);
-	}
-	std::map<std::string, Cookie> receivedCookies = this->_headerToCookies();
-	resp.setCookies(this->_updateCookies(receivedCookies));
 
-	if (resp.isRedir())
-	{
-		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
-	}
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 	{
@@ -147,74 +144,4 @@ Response										ARequest::buildResponse(void)
 
 	return (resp);
 
-}
-
-std::map<std::string, Cookie>					ARequest::_headerToCookies(void)
-{
-	std::map<std::string, Cookie>	cookies;
-
-	if (this->_header.count("cookie") == 0)
-		return (cookies);
-
-	std::vector<std::string>::iterator	headersIt;
-
-	for (headersIt = this->_header["cookie"].begin(); headersIt != this->_header["cookie"].end(); ++headersIt)
-	{
-		std::vector<std::string>	splitCookies;
-		std::string					elem(*headersIt);
-
-		size_t	posElem = elem.find_first_of("; ");
-		if (posElem == std::string::npos)
-			splitCookies.push_back(elem);
-		while (posElem != std::string::npos)
-		{
-			posElem = elem.find_first_of("; ");
-			splitCookies.push_back(elem.substr(0, posElem));
-			elem = elem.substr(posElem + 2);
-		}
-
-		std::vector<std::string>::iterator	elemIt;
-		for (elemIt = splitCookies.begin(); elemIt != splitCookies.end(); ++elemIt)
-		{
-			size_t		posKV = elemIt->find('=');
-
-			std::string	key = elemIt->substr(0, posKV);
-			std::string	value = elemIt->substr(posKV + 1);
-
-			Cookie		cookie(Cookie::kvPair(key, value));
-			cookies[key] = cookie;
-		}
-	}
-	return (cookies);
-}
-
-std::map<std::string, Cookie>					&ARequest::_updateCookies(std::map<std::string, Cookie> &cookies)
-{
-	std::map<std::string, Session>			&sessions = this->_vhost.getSessions();
-
-	this->_vhost.removeOldSessions();
-
-	if (cookies.count(Cookie::permanentCookies[Cookie::SESSION]) != 1)
-	{
-		std::string	id;
-		do
-			id = this->_vhost.buildSessionId();
-		while (!this->_vhost.isIdAvailable(id));
-
-		cookies[Cookie::permanentCookies[Cookie::SESSION]] = Cookie(Cookie::kvPair(Cookie::permanentCookies[Cookie::SESSION], id));
-	}
-
-	const std::string id = cookies[Cookie::permanentCookies[Cookie::SESSION]].getKeyValue().second;
-	if (sessions.count(id) != 1)
-	{
-		Session currentSession(cookies);
-
-		this->_vhost.addSession(currentSession);
-	}
-	else
-	{
-		this->_vhost.updateSession(id, cookies);
-	}
-	
-	return (cookies);
 }

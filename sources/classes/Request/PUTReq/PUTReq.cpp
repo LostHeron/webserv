@@ -62,9 +62,6 @@ void							PUTReq::_unlockFile(const std::string &file)
 // Member functions ============================================================
 uint16_t	PUTReq::appendBodyToFile(const std::string &body)
 {
-	if (!PUTReq::_lockFile(this->_filePath))
-		return (HTTPStatus::C_ERR + HTTPStatus::CONFLICT);
-
 	this->_file << body;
 	if (!this->_file.good())
 	{

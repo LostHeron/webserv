@@ -61,10 +61,8 @@ class	ARequest: public AMessage
 		DIR								*_tryOpenDirectory(const char *path) const;
 		int								_tryOpenFile(const char *path) const;
 		virtual void					_execute(Response &res, const VirtualHost::UriInfo &uriInfo) = 0;
-		std::map<std::string, Cookie>	_headerToCookies(void);
-		std::map<std::string, Cookie>	&_updateCookies(std::map<std::string, Cookie> &cookies);
 
-		VirtualHost						&_vhost;
+		const VirtualHost				&_vhost;
 		const std::string				_method;
 		std::string						_uri;
 		const std::string				_version;

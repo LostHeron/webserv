@@ -74,7 +74,6 @@ void	InputSocket::process_request(size_t& pos)
 		{
 			b.buildStatusLine("HTTP/1.1", resp->getStatus())
 		 	.buildDate()
-			.buildCookies(resp->getCookies())
 		 	.buildCRLF();
 		}
 		b.buildBody(resp->getContent());
