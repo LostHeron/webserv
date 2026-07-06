@@ -57,13 +57,6 @@ void	InputSocket::process_request(size_t& pos)
 		this->req = NULL;
 		if (this->resp->isCGI() == true)
 		{
-<<<<<<< HEAD
-			b.buildStatusLine("HTTP/1.1", resp->getStatus())
-		 	.buildDate()
-		 	.buildCRLF();
-		}
-		b.buildBody(resp->getContent());
-=======
 			if (this->resp->getResource().first > 0)
 			{
 				close(this->resp->getResource().first);
@@ -71,7 +64,6 @@ void	InputSocket::process_request(size_t& pos)
 			}
 			// we can not launch directly in case of chunked 
 			// request, we need the size of the total request before
->>>>>>> 5007a96cbe5b088b7ee6e9af0f1cb17b85943363
 
 			char *end;
 			size_t body_size;
@@ -92,7 +84,6 @@ void	InputSocket::process_request(size_t& pos)
 			{
 				b.buildStatusLine("HTTP/1.1", resp->getStatus())
 			 	.buildDate()
-				.buildCookies(resp->getCookies())
 			 	.buildCRLF();
 			}
 			b.buildBody(resp->getContent());
