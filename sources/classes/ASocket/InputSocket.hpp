@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 15:04:52 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 13:59:08 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ class InputSocket: public ASocket
 		void	updateCgiEnvp(std::vector<std::string>&, const std::string& script_name, const std::string& pathInfo);
 
 		friend std::ostream& operator<<(std::ostream& os, const InputSocket& inputSocket);
+
+		void						launch_cgi(size_t nbToSend);
 		
 	protected:
 
@@ -82,7 +84,7 @@ class InputSocket: public ASocket
 		void						process_skip_sp(size_t& pos);
 		void						process_request(size_t& pos);
 
-		void						launch_cgi(Response& resp);
+		Response					*resp;
 };
 
 void	setup_response(int& status, int errorCode, Connection *connection);

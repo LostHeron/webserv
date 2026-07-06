@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 17:30:18 by cviel             #+#    #+#             */
-/*   Updated: 2026/06/09 16:36:27 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/01 18:35:35 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ class IntSchema :
 		IntSchema(std::string const& name, bool is_required, bool allow_multiple);
 		virtual ~IntSchema();
 		
-		void	setMin(int min);
-		void	setMax(int max);
+		void	setMin(int64_t min);
+		void	setMax(int64_t max);
 		
 	private:
 		
-		int	_min;
-		int	_max;
+		int64_t	_min;
+		int64_t	_max;
 		
 		IntSchema(void);
 		IntSchema(IntSchema const& other);

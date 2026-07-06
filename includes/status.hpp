@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/09 11:36:00 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 11:57:41 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/02 13:41:39 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ enum {
 };
 
 # define STOP 0
-# define CONTINUE 1
+# define CONTINUE_STATUS 1
 
 # define TTL_CONNECTION 6000
 
