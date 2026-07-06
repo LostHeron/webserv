@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HTTPStatus.hpp"
 #include "HeadersBuilder.hpp"
 #include "InputSocket.hpp"
 #include "RequestFactory.hpp"
@@ -42,47 +43,54 @@ void	InputSocket::process_request(size_t& pos)
 
 	this->resp = new Response(this->req->buildResponse());
 
-	if (this->method != "PUT") // && TODO it did not fail opening or else;
+	if (this->method == "PUT" && 
+		(resp->getStatus() == HTTPStatus::SUCCESS + HTTPStatus::CREATED ||
+		 resp->getStatus() == HTTPStatus::SUCCESS + HTTPStatus::NO_CONTENT
+		) // && TODO it did not fail opening or else;
+	)
 	{
-		delete this->req;
-		this->req = NULL;
-	}
-	
-	if (this->resp->isCGI() == true)
-	{
-		if (this->resp->getResource().first > 0)
-		{
-			close(this->resp->getResource().first);
-			this->resp->getResource().first = -1;
-		}
-		// we can not launch directly in case of chunked 
-		// request, we need the size of the total request before
-
-		char *end;
-		size_t body_size;
-		if (this->headers.count("content-length") == 1)
-			body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
-		else
-			body_size = 0;
-		if (this->connection->isChunked() == false)
-			this->launch_cgi(body_size);
+		;
 	}
 	else
-	{
-		OutputSocket* os = this->connection->getOutputSocket();
-
-		HeadersBuilder	b;
-		b.initialize();
-		if (this->version != "")
+	{	
+		delete this->req;
+		this->req = NULL;
+		if (this->resp->isCGI() == true)
 		{
-			b.buildStatusLine("HTTP/1.1", resp->getStatus())
-		 	.buildDate()
-			.buildCookies(resp->getCookies())
-		 	.buildCRLF();
-		}
-		b.buildBody(resp->getContent());
+			if (this->resp->getResource().first > 0)
+			{
+				close(this->resp->getResource().first);
+				this->resp->getResource().first = -1;
+			}
+			// we can not launch directly in case of chunked 
+			// request, we need the size of the total request before
 
-		os->setup(resp->getResource().first, b.build());
+			char *end;
+			size_t body_size;
+			if (this->headers.count("content-length") == 1)
+				body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
+			else
+				body_size = 0;
+			if (this->connection->isChunked() == false)
+				this->launch_cgi(body_size);
+		}
+		else
+		{
+			OutputSocket* os = this->connection->getOutputSocket();
+
+			HeadersBuilder	b;
+			b.initialize();
+			if (this->version != "")
+			{
+				b.buildStatusLine("HTTP/1.1", resp->getStatus())
+			 	.buildDate()
+				.buildCookies(resp->getCookies())
+			 	.buildCRLF();
+			}
+			b.buildBody(resp->getContent());
+
+			os->setup(resp->getResource().first, b.build());
+		}
 	}
 	
 	this->state++;

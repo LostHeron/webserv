@@ -128,7 +128,13 @@ void	InputSocket::process_body(size_t& pos)
 	{
 		if (this->req != NULL)
 		{
-			// means this is a put request, and 
+			/*
+			 * TODO
+			unsigned ret = dynamic_cast<PUTReq*>(this->req)->appendBodyToFile(this->inputBuffer);
+			if (ret != SUCCESS)
+				this;
+				*/
+			// means this is a put request, and
 			// here, i need a function to send data to the post ?
 		}
 	}
