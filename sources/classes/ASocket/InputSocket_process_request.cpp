@@ -42,7 +42,7 @@ void	InputSocket::process_request(size_t& pos)
 
 	this->resp = new Response(this->req->buildResponse());
 
-	if (this->method != "PUT")
+	if (this->method != "PUT") // && TODO it did not fail opening or else;
 	{
 		delete this->req;
 		this->req = NULL;
