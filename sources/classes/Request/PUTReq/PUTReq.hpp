@@ -13,6 +13,7 @@
 #ifndef		__PUTREQ_HPP__
 # define	__PUTREQ_HPP__
 
+# include <fstream>
 # include "ARequest.hpp"
 
 class	PUTReq: public ARequest
@@ -22,6 +23,8 @@ class	PUTReq: public ARequest
 		PUTReq(const PUTReq &cpy);
 		~PUTReq(void);
 
+		uint16_t						appendBodyToFile(const std::string &body);
+
 	private:
 		static std::vector<std::string>	_lockedFiles;
 		static bool						_lockFile(const std::string &file);
@@ -30,7 +33,11 @@ class	PUTReq: public ARequest
 		static bool						_isFileLocked(const std::string &file);
 
 		void							_execute(Response &resp, const VirtualHost::UriInfo &uriInfo);
-		void							_uploadFile(Response &resp, const std::string &upPath);
+		void							_openPath(Response &resp);
+
+		std::ofstream					_file;
+		std::string						_filePath;
+
 };
 
 #endif

@@ -131,7 +131,9 @@ Response										ARequest::buildResponse(void)
 	resp.setCookies(this->_updateCookies(receivedCookies));
 
 	if (resp.isRedir())
+	{
 		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
+	}
 
 	if (!uriInfo.isRequestAllowed(this->_method))
 	{
