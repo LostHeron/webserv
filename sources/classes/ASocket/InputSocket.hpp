@@ -24,6 +24,8 @@
 
 # define INPUTSOCKET_MAX_SIZE 5000
 
+class ARequest;
+
 class InputSocket: public ASocket
 {
 	public:
@@ -85,6 +87,7 @@ class InputSocket: public ASocket
 		void						process_request(size_t& pos);
 
 		Response					*resp;
+		ARequest					*req;
 };
 
 void	setup_response(int& status, int errorCode, Connection *connection);

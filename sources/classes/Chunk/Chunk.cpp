@@ -52,8 +52,12 @@ size_t		Chunk::getTotalSize()
 
 std::string	Chunk::getBuffer()
 {
-	std::string tmp = this->chunkBlocks.front();
-	this->chunkBlocks.pop();
+	std::string tmp;
+	if (this->chunkBlocks.size() > 0)
+	{
+		tmp = this->chunkBlocks.front();
+		this->chunkBlocks.pop();
+	}
 	return (tmp);
 }
 
