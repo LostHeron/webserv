@@ -108,9 +108,7 @@ void		PUTReq::_openPath(Response &resp)
 
 void		PUTReq::_execute(Response &resp, const VirtualHost::UriInfo &uriInfo)
 {
-	(void) uriInfo;
-
-	this->_filePath = TMP_PUT_PATH + this->_uri;//uriInfo.getRealPath(this->_uri);
+	this->_filePath = uriInfo.getRealPath(this->_uri);
 	if (PUTReq::_lockFile(this->_filePath))
 	{
 		this->_openPath(resp);
