@@ -1,6 +1,7 @@
 webserv_no_valgrind
 webserv
 *.out
+*.out.*
 *.obj
 *.json
 *.obj*

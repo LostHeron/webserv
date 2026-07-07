@@ -84,7 +84,7 @@ void	InputSocket::process_request(size_t& pos)
 				b.buildStatusLine("HTTP/1.1", resp->getStatus());
 				if (this->resp->isRedir())
 				{
-					b.buildHeaderKeyValue("location", this->resp->getResource().second);
+					b.buildHeaderKeyValue("Location", this->resp->getResource().second);
 				}
 			 	b.buildDate()
 			 	.buildCRLF();

@@ -201,7 +201,10 @@ void launch_child_process(InputSocket &inputSocket, Response& resp, Pipe& toCGI,
 	{
 		inputSocket.getConnection()->setIsChildren();
 
-		// TODO switch directory
+		size_t	last_slash_pos = script_name.rfind("/");
+		std::string new_dir = std::string(script_name, 0, last_slash_pos);
+		if (chdir(new_dir.c_str()) < 0)
+			throw IsChildren();
 
 		setup_child_standard_io_fds(toCGI, fromCGI);
 
