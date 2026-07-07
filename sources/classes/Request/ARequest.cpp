@@ -110,7 +110,7 @@ void									ARequest::_splitCGIPathInfo(Response &resp)
 Response										ARequest::buildResponse(void)
 {
 	const VirtualHost::UriInfo		&uriInfo = this->_vhost.getUriInfo(this->_uri);
-	Response						resp(this->_fd, uriInfo.isCgiAllowed());
+	Response						resp(this->_fd, false);
 
 	resp.setResourcePath(uriInfo.getRealPath());
 	resp.setRedir(uriInfo.isRedir());
@@ -119,6 +119,8 @@ Response										ARequest::buildResponse(void)
 		resp.setStatus(HTTPStatus::REDIR + HTTPStatus::MOVED_PERM);
 		return (resp);
 	}
+
+	resp.setCGI(uriInfo.isCgiAllowed());
 
 	this->_splitCGIPathInfo(resp);
 	if (!resp.isRedir() && !resp.isCGI())

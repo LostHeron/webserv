@@ -12,6 +12,7 @@
 
 #include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
+#include "VirtualHost.hpp"
 #include "status.hpp"
 #include "typedef.hpp"
 #include "Connection.hpp"
@@ -50,8 +51,10 @@ void	InputSocket::process_headers(size_t& start)
 			}
 			if (getBodySize(this->bodySize, this->headers) != SUCCESS)
 				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
-			if (this->bodySize > this->connection->getVHost()->getUriInfo(this->uri).getBodySize())
-				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::TOO_LARGE, this->connection));
+			const VirtualHost::UriInfo& tmpUriInfo = this->connection->getVHost()->getUriInfo(this->uri);
+			if (tmpUriInfo.isRedir() == false)
+				if (this->bodySize > tmpUriInfo.getBodySize())
+					return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::TOO_LARGE, this->connection));
 			(this->*process_functions[this->state])(start);
 			break;
 		}

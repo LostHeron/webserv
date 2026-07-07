@@ -42,7 +42,6 @@ void	InputSocket::process_request(size_t& pos)
 	this->req = facto.createElement();
 
 	this->resp = new Response(this->req->buildResponse());
-
 	if (this->method == "PUT" && 
 		(resp->getStatus() == HTTPStatus::SUCCESS + HTTPStatus::CREATED ||
 		 resp->getStatus() == HTTPStatus::SUCCESS + HTTPStatus::NO_CONTENT
@@ -82,8 +81,12 @@ void	InputSocket::process_request(size_t& pos)
 			b.initialize();
 			if (this->version != "")
 			{
-				b.buildStatusLine("HTTP/1.1", resp->getStatus())
-			 	.buildDate()
+				b.buildStatusLine("HTTP/1.1", resp->getStatus());
+				if (this->resp->isRedir())
+				{
+					b.buildHeaderKeyValue("location", this->resp->getResource().second);
+				}
+			 	b.buildDate()
 			 	.buildCRLF();
 			}
 			b.buildBody(resp->getContent());
