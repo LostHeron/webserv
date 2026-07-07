@@ -1,0 +1,10 @@
+"host":
+[
+	{
+		"listen":4343,
+		"name": "host_a",
+		"root":"/home/jweber/goinfre/tmp/a",
+		"request": ["GET", "POST"],
+		"cgi": true
+	}
+]
