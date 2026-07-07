@@ -33,10 +33,6 @@ void InputSocket::process()
 	if (this->status != SUCCESS)
 		return ;
 
-	// TODO add a boolean to check if buffer begins with
-	// *\r\n and nothing else to avoid error,
-	// this flag should be set if the previous buffered
-	// ended with carriage returns
 	if (endByBackslashR == true)
 	{
 		size_t r_position = this->inputBuffer.find_first_not_of("\r");
