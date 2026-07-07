@@ -87,6 +87,11 @@ InputSocket::~InputSocket()
 		delete (this->resp);
 		this->resp = NULL;
 	}
+	if (this->req != NULL)
+	{
+		delete (this->req);
+		this->req = NULL;
+	}
 }
 
 const std::string					&InputSocket::getMethod(void) const { return(this->method); }
@@ -137,6 +142,8 @@ void	InputSocket::process_body(size_t& pos)
 			unsigned ret = dynamic_cast<PUTReq*>(this->req)->appendBodyToFile(this->inputBuffer);
 			if (ret != SUCCESS)
 				setup_response(this->status, ret, connection);
+			nbSent += this->bodySize;
+			this->inputBuffer.clear();
 			if (nbSent == this->bodySize)
 				setup_response(this->status, resp->getStatus(), this->connection);
 			// means this is a put request, and
