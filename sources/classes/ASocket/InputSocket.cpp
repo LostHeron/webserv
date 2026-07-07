@@ -50,6 +50,7 @@ InputSocket::InputSocket(int fd, Connection* connection):
 	ASocket(connection),
 	state(0),
 	bodySize(0),
+	nbSent(0),
 	resp(NULL),
 	req(NULL)
 {
@@ -130,10 +131,14 @@ void	InputSocket::process_body(size_t& pos)
 		{
 			/*
 			 * TODO
+			 */
+			if (nbSent + this->inputBuffer.size() > this->bodySize)
+				setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, connection);
 			unsigned ret = dynamic_cast<PUTReq*>(this->req)->appendBodyToFile(this->inputBuffer);
 			if (ret != SUCCESS)
-				this;
-				*/
+				setup_response(this->status, ret, connection);
+			if (nbSent == this->bodySize)
+				setup_response(this->status, resp->getStatus(), this->connection);
 			// means this is a put request, and
 			// here, i need a function to send data to the post ?
 		}
