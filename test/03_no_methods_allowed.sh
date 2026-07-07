@@ -72,33 +72,33 @@ function tests()
 
 ########### test_1 with GET method
 
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+EXPECTED_VAR="HTTP/1.0 405 Method Not Allowed\r\n"
 
-REQUEST_VAR="GET /index.html HTTP/1.1\r\n\r\n"
+REQUEST_VAR="GET /index.html HTTP/1.0\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "1"
 
 ######  test 2 with POST method
 
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+EXPECTED_VAR="HTTP/1.0 405 Method Not Allowed\r\n"
 
-REQUEST_VAR="POST /index.html HTTP/1.1\r\n\r\n"
+REQUEST_VAR="POST /index.html HTTP/1.0\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "2"
 
 ######  test 3 with DELETE method
 
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+EXPECTED_VAR="HTTP/1.0 405 Method Not Allowed\r\n"
 
-REQUEST_VAR="POST /index.html HTTP/1.1\r\n\r\n"
+REQUEST_VAR="POST /index.html HTTP/1.0\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "3"
 
 ######  test 3 with NOT_KNOWN method
 
-EXPECTED_VAR="HTTP/1.1 405 Method Not Allowed\r\n"
+EXPECTED_VAR="HTTP/1.0 405 Method Not Allowed\r\n"
 
-REQUEST_VAR="NOTKNOWN /index.html HTTP/1.1\r\n\r\n"
+REQUEST_VAR="NOTKNOWN /index.html HTTP/1.0\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "4"
 

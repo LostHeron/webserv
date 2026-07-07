@@ -54,7 +54,7 @@ EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
-"HTTP/1.1 200 OK\r\n"\
+"HTTP/1.0 200 OK\r\n"\
 "\r\n"\
 "in a" > $EXPECTED_FILE
 
@@ -88,7 +88,7 @@ EXPECTED_FILE=expected_b.log
 RESULT_FILE=result_b.log
 
 echo -ne \
-"HTTP/1.1 413 Payload Too Large\r\n"\
+"HTTP/1.0 413 Payload Too Large\r\n"\
 "\r\n"\
 "<html>\n"\
 "<head><title>413 Payload Too Large</title></head>\n"\

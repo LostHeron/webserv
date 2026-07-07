@@ -50,11 +50,11 @@ echo -ne 'in b' > $HOME/goinfre/tmp/b/index.html
 WEBSERV_PID=$!
 
 echo -ne \
-"HTTP/1.1 200 OK\r\n"\
+"HTTP/1.0 200 OK\r\n"\
 "\r\n"\
 "in a" > expected_a.log
 
-REQ_1="GET /index.html HTTP/1.1\r\n\r\n"
+REQ_1="GET /index.html HTTP/1.0\r\n\r\n"
 # the 'stdbuf -oL' flushes the buffer into the file,
 # without it, we had some issue where sometimes log_req_a.log
 # was empty

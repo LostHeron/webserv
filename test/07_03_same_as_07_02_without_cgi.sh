@@ -109,7 +109,7 @@ function tests_first_line()
 
 ################ TEST 1 with no path info
 
-EXPECTED_VAR='HTTP/1.1 200 OK\r\n'\
+EXPECTED_VAR='HTTP/1.0 200 OK\r\n'\
 '\r\n'\
 '#!/bin/bash\n'\
 'echo "content-type:text/html"\n'\
@@ -117,15 +117,15 @@ EXPECTED_VAR='HTTP/1.1 200 OK\r\n'\
 'echo "Hello, World!"\n'\
 'echo "PATH_INFO=$PATH_INFO"\n'
 
-REQUEST_VAR="GET /coucou.sh HTTP/1.1\r\n\r\n"
+REQUEST_VAR="GET /coucou.sh HTTP/1.0\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "a"
 
 ################ TEST 2 with no path info
 
-EXPECTED_VAR="HTTP/1.1 404 Not Found\r\n"\
+EXPECTED_VAR="HTTP/1.0 404 Not Found\r\n"\
 
-REQUEST_VAR="GET /coucou.sh/index.html HTTP/1.1\r\n\r\n"
+REQUEST_VAR="GET /coucou.sh/index.html HTTP/1.0\r\n\r\n"
 
 tests_first_line $EXPECTED_VAR $REQUEST_VAR "b"
 

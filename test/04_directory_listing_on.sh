@@ -36,7 +36,7 @@ echo -ne "in a" > $HOME/goinfre/tmp/a/index.html
 WEBSERV_PID=$!
 
 echo -ne \
-"HTTP/1.1 200 OK\r\n"\
+"HTTP/1.0 200 OK\r\n"\
 "\r\n"\
 "<!DOCTYPE html><html>\n"\
 "<head><title>Index of /</title></head>\n"\
@@ -53,7 +53,7 @@ echo -ne \
 "</html>\n"> expected.log
 
 
-REQ_1="GET / HTTP/1.1\r\n\r\n"
+REQ_1="GET / HTTP/1.0\r\n\r\n"
 echo -ne $REQ_1 | stdbuf -o0 nc localhost 4343 > log_req.log
 sed --in-place '/Date/d' log_req.log # delete date line to use diff after
 sed --in-place '/Set-Cookie/d' log_req.log # delete date line to use diff after

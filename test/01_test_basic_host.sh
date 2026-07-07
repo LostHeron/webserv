@@ -33,12 +33,12 @@ echo "in b" > $HOME/goinfre/tmp/b/index_b.html
 WEBSERV_PID=$!
 
 #echo "sending following request"
-#echo -n "GET /index_a.html HTTP/1.1\r\nhost:host_a\r\n\r\n"
-echo -ne "GET /index_a.html HTTP/1.1\r\nhost:host_a\r\n\r\n" | stdbuf -oL nc localhost 4343 > log_req_a.log
+#echo -n "GET /index_a.html HTTP/1.0\r\nhost:host_a\r\n\r\n"
+echo -ne "GET /index_a.html HTTP/1.0\r\nhost:host_a\r\n\r\n" | stdbuf -oL nc localhost 4343 > log_req_a.log
 
 #echo "sending following request"
-#echo -n "GET /index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n"
-echo -ne "GET /index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n" | stdbuf -oL nc localhost 4343 > log_req_b.log
+#echo -n "GET /index_b.html HTTP/1.0\r\nhost:host_b\r\n\r\n"
+echo -ne "GET /index_b.html HTTP/1.0\r\nhost:host_b\r\n\r\n" | stdbuf -oL nc localhost 4343 > log_req_b.log
 
 LAST_LINE_A=$(tail -1 log_req_a.log)
 LAST_LINE_B=$(tail -1 log_req_b.log)

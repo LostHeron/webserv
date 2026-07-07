@@ -78,29 +78,29 @@ function tests()
 
 ############### test 1
 
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin a"
-REQUEST_VAR="GET /index_a.html HTTP/1.1\r\nhost:host_a\r\n\r\n"
+EXPECTED_VAR="HTTP/1.0 200 OK\r\n\r\nin a"
+REQUEST_VAR="GET /index_a.html HTTP/1.0\r\nhost:host_a\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "a"
 
 ################# test 2
 
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin b"
-REQUEST_VAR="GET /images/index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n" 
+EXPECTED_VAR="HTTP/1.0 200 OK\r\n\r\nin b"
+REQUEST_VAR="GET /images/index_b.html HTTP/1.0\r\nhost:host_b\r\n\r\n" 
 
 tests $EXPECTED_VAR $REQUEST_VAR "b"
 
 ############### test 1
 
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin a"
-REQUEST_VAR="POST /index_a.html HTTP/1.1\r\nhost:host_a\r\n\r\n"
+EXPECTED_VAR="HTTP/1.0 200 OK\r\n\r\nin a"
+REQUEST_VAR="POST /index_a.html HTTP/1.0\r\nhost:host_a\r\n\r\n"
 
 tests $EXPECTED_VAR $REQUEST_VAR "a"
 
 ################# test 2
 
-EXPECTED_VAR="HTTP/1.1 200 OK\r\n\r\nin b"
-REQUEST_VAR="POST /images/index_b.html HTTP/1.1\r\nhost:host_b\r\n\r\n" 
+EXPECTED_VAR="HTTP/1.0 200 OK\r\n\r\nin b"
+REQUEST_VAR="POST /images/index_b.html HTTP/1.0\r\nhost:host_b\r\n\r\n" 
 
 tests $EXPECTED_VAR $REQUEST_VAR "b"
 

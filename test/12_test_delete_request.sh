@@ -50,7 +50,7 @@ EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
-"HTTP/1.1 204 No Content\r\n" > $EXPECTED_FILE
+"HTTP/1.0 204 No Content\r\n" > $EXPECTED_FILE
 
 REQ="DELETE /index_a.html HTTP/1.0\r\n"\
 "\r\n"
@@ -109,7 +109,7 @@ EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
-"HTTP/1.1 403 Forbidden\r\n" > $EXPECTED_FILE
+"HTTP/1.0 403 Forbidden\r\n" > $EXPECTED_FILE
 
 REQ="DELETE /index_b.html HTTP/1.0\r\n"\
 "\r\n"
@@ -170,7 +170,7 @@ EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
-"HTTP/1.1 404 Not Found\r\n" > $EXPECTED_FILE
+"HTTP/1.0 404 Not Found\r\n" > $EXPECTED_FILE
 
 REQ="DELETE /index_no_existing.html HTTP/1.0\r\n"\
 "\r\n"
@@ -230,7 +230,7 @@ EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
-"HTTP/1.1 403 Forbidden\r\n" > $EXPECTED_FILE
+"HTTP/1.0 403 Forbidden\r\n" > $EXPECTED_FILE
 
 REQ="DELETE / HTTP/1.0\r\n"\
 "\r\n"

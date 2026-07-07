@@ -54,23 +54,23 @@ echo -ne "in b" > $HOME/goinfre/tmp/b/index.html
 WEBSERV_PID=$!
 
 
-REQ_1="GET /a HTTP/1.1\r\n\r\n"
+REQ_1="GET /a HTTP/1.0\r\n\r\n"
 echo -ne $REQ_1 | stdbuf -oL nc localhost 4343 > log_req_a.log
 sed --in-place '/Date/d' log_req_a.log # delete date line to use diff after
 sed --in-place '/Set-Cookie/d' log_req_a.log # delete date line to use diff after
 
 echo -ne \
-"HTTP/1.1 200 OK\r\n"\
+"HTTP/1.0 200 OK\r\n"\
 "\r\n"\
 "in a" > expected_a.log
 
-REQ_2="GET /b/index.html HTTP/1.1\r\n\r\n"
+REQ_2="GET /b/index.html HTTP/1.0\r\n\r\n"
 echo -ne $REQ_2 | stdbuf -oL nc localhost 4343 > log_req_b.log
 sed --in-place '/Date/d' log_req_b.log # delete date line to use diff after
 sed --in-place '/Set-Cookie/d' log_req_b.log # delete date line to use diff after
 
 echo -ne \
-"HTTP/1.1 200 OK\r\n"\
+"HTTP/1.0 200 OK\r\n"\
 "\r\n"\
 "in b" > expected_b.log
 
