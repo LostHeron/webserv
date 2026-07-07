@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 14:21:38 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/02 17:38:57 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 15:06:11 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,23 +31,22 @@ OutCGI::OutCGI(int fd, Connection* connection):
 	ASocket(connection),
 	state(0)
 {
-	this->fd = dup(fd); // TODO DANGER, what do we do if the DUP FAILS ?
+	this->fd = dup(fd);
 	if (this->fd < 0)
 	{
-		// TODO DANGER, what happens if dup fails ?
-		// throw an error ?
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		int error_value = errno;
 		logerror("fcntl", error_value);
-		this->status = FAILURE;
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
 	{
 		int error_value = errno;
 		logerror("fcntl", error_value);
-		this->status = FAILURE;
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 }
 
@@ -106,7 +105,7 @@ void OutCGI::process_headers(size_t &start)
 			b.initialize();
 			if (this->connection->getInputSocket()->getVersion() != "")
 			{
-				b.buildStatusLine("HTTP/1.1", status)
+				b.buildStatusLine("HTTP/1.0", status)
 					.buildDate();
 				for (string_map::const_iterator it = this->headers.begin(); it != this->headers.end(); it++)
 				{

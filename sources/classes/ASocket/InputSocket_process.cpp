@@ -6,10 +6,11 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/26 09:00:58 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/02 11:58:20 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 15:08:26 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "status.hpp"
 #include "error.hpp"
@@ -19,7 +20,7 @@
 #include <cerrno>
 
 void			updateInputBuffer(std::string& inputBuffer, int fd, int& status);
-static	void	remove_trailing_carriage_return(std::string& inputBuffer);
+static void		remove_trailing_carriage_return(std::string& inputBuffer, bool& endByBackslashR);
 
 void InputSocket::process()
 {
@@ -36,10 +37,15 @@ void InputSocket::process()
 	// *\r\n and nothing else to avoid error,
 	// this flag should be set if the previous buffered
 	// ended with carriage returns
-	remove_trailing_carriage_return(this->inputBuffer);
+	if (endByBackslashR == true)
+	{
+		size_t r_position = this->inputBuffer.find_first_not_of("\r");
+		if (r_position != std::string::npos && this->inputBuffer[r_position] != '\n')
+			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, connection));
+	}
+	remove_trailing_carriage_return(this->inputBuffer, endByBackslashR);
 	
 	size_t	position = 0;
-	// std::cout << "this->state = " << this->state << "\n";
 	(this->*process_functions[this->state])(position);
 	if (this->fail())
 		return ;
@@ -50,13 +56,19 @@ void InputSocket::process()
 	#endif
 }
 
-static void	remove_trailing_carriage_return(std::string& inputBuffer)
+static void	remove_trailing_carriage_return(std::string& inputBuffer, bool& endByBackslashR)
 {
 	size_t	position = inputBuffer.find_last_not_of("\r");
 	if (position == std::string::npos)
+	{
 		inputBuffer.clear();
+		endByBackslashR = true;
+	}
 	if (position + 1 != inputBuffer.size())
+	{
 		inputBuffer = std::string(inputBuffer, 0, position + 1);
+		endByBackslashR = true;
+	}
 }
 
 void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
@@ -74,10 +86,7 @@ void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
 		}
 		else if (nb_read == 0)
 		{
-			status = FAILURE; 
-			// rename this, it is not failure, but
-			//	is used to make server clear ressources associated 
-			//	with this InputSocket request and associated OutputSocket
+			status = TERMINATE; 
 			return ;
 		}
 		else

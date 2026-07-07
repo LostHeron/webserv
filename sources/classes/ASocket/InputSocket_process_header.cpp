@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/26 14:33:02 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/26 10:23:56 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 14:37:46 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "status.hpp"
 #include "typedef.hpp"
 #include "Connection.hpp"
+#include "Chunk.hpp"
 #include <cctype>
 #include <cctype>
 #include <map>
@@ -53,8 +54,12 @@ void	InputSocket::process_headers(size_t& start)
 				return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, this->connection));
 			const VirtualHost::UriInfo& tmpUriInfo = this->connection->getVHost()->getUriInfo(this->uri);
 			if (tmpUriInfo.isRedir() == false)
+			{
 				if (this->bodySize > tmpUriInfo.getBodySize())
 					return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::TOO_LARGE, this->connection));
+				if (this->getConnection()->isChunked() == true)
+					this->getConnection()->getChunk().setMaxBodySize(tmpUriInfo.getBodySize());
+			}
 			(this->*process_functions[this->state])(start);
 			break;
 		}

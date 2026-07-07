@@ -6,12 +6,14 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/28 14:13:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/06/05 14:30:28 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 14:53:44 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "OutputSocket.hpp"
 #include "ASocket.hpp"
+#include "HTTPStatus.hpp"
+#include "InputSocket.hpp"
 #include "Server.hpp"
 #include "status.hpp"
 #include "error.hpp"
@@ -31,22 +33,18 @@ OutputSocket::OutputSocket(int socket_fd, Connection* connection):
 	ready(false),
 	isLastBuffer(false)
 {
-	this->fd = dup(socket_fd);
-	if (this->fd < 0)
-	{
-		std::cerr << "could not duplicate socket_fd\n";
-		this->status = FAILURE;
-		// throw ??
-	}
-	else if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
+	this->fd = socket_fd;
+	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		int error_value = errno;
 		logerror("fcntl", error_value);
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	else if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
 	{
 		int error_value = errno;
 		logerror("fcntl", error_value);
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	else
 	{
@@ -98,19 +96,14 @@ void	OutputSocket::process()
 			std::cerr << "An error occured while sending data to server\n";
 		else
 		{
-			// used to transform this->buf = "salut toi le boss", 
-			// whith nb_send = 2 to this->buf = "lut toi le boss"
+			// used to transform this->buf = "we_need_to_send_this", 
+			// whith nb_send = '4' to this->buf = "eed_to_send_this"
 			this->outputBuffer = std::string(this->outputBuffer, nb_send);
 		}
 	}
 	if (this->outputBuffer.size() == 0 && this->isLastBuffer == true)
 	{
-		// TODO : this status set to FAILURE is
-		// used to clean ressources associated with the ressource,
-		// change name for better understanding of the meaning
-		// like TERMINATE instead of FAILURE or something
-		// or finish ?
-		this->status = FAILURE; 
+		this->status = TERMINATE; 
 	}
 }
 

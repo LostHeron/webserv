@@ -58,6 +58,7 @@ class InputSocket: public ASocket
 		// used to know which state the program is in
 		std::string			inputBuffer;
 		int					state;	
+		bool				endByBackslashR;
 
 		// identify which method the client tries to reach
 		std::string					method;

@@ -6,7 +6,7 @@
 /*   By: abetemps <abetemps@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/01 18:00:53 by abetemps          #+#    #+#             */
-/*   Updated: 2026/06/01 19:23:23 by abetemps         ###   ########.fr       */
+/*   Updated: 2026/07/07 15:01:13 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ class	HTTPStatus
 			INTERNAL,
 			NOT_IMPLEMENTED,
 			BAD_GATEWAY,
+			SERVICE_UNAVAILABLE,
 			TIMEOUT_GATEWAY,
 			HTTP_VERSION_NOT_SUPPORTED,
 			VARIANT_ALSO_NEGOTIATES,

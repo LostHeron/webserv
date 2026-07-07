@@ -6,12 +6,15 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/30 11:24:47 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/02 13:37:07 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 14:54:28 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "status.hpp"
 #include "InCGI.hpp"
 #include "ASocket.hpp"
+#include "HTTPStatus.hpp"
+#include "InputSocket.hpp"
 #include "Server.hpp"
 #include "error.hpp"
 #include "Connection.hpp"
@@ -29,20 +32,19 @@ InCGI::InCGI(int fd, size_t bodySize, std::string& newInputBuffer, Connection* c
 	this->fd = dup(fd); 
 	if (this->fd < 0)
 	{
-		// TODO DANGER, what happens if dup fails ?
-		// throw an error ?
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
 		int error_value = errno;
 		logerror("error_value", error_value);
-		//this->status = FAILURE;
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
 	{
 		int error_value = errno;
 		logerror("error_value", error_value);
-		//this->status = FAILURE;
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 }
 

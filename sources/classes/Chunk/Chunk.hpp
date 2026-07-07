@@ -6,17 +6,15 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/02 10:39:28 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/02 13:54:35 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 14:46:30 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHUNK_HPP
 # define CHUNK_HPP
 
-#include "status.hpp"
 #include <csignal>
 #include <cstdlib>
-#include <limits>
 #include <ostream>
 #include <queue>
 #include <string>
@@ -32,6 +30,8 @@ class Chunk
 		bool		fail();
 		bool		isFinished();
 		size_t		getTotalSize();
+		int			getStatus();
+		void		setMaxBodySize(size_t newMaxBodySize);
 		friend std::ostream&	operator<<(std::ostream& os, Chunk& chunk);
 
 	private:
@@ -40,6 +40,7 @@ class Chunk
 		bool					lastChunk;
 		bool					finished;
 		size_t					totalBlocksSize;
+		size_t					maxBodySize;
 		std::queue<std::string>	chunkBlocks;
 		void (Chunk::*process_functions[6])(std::string& buffer);
 

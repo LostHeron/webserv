@@ -6,11 +6,11 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:18:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/02 14:24:10 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 14:51:03 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Connection/Connection.hpp"
+#include "Connection.hpp"
 #include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "IsChildren.hpp"
@@ -60,7 +60,7 @@ void	start(Server& server)
 					try
 					{
 						event->process();
-						if (event->fail())
+						if (event->fail() || event->terminate())
 						{
 							if (event->getConnection() != NULL)
 								server.remove(event->getConnection());

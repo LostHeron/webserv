@@ -6,19 +6,22 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/02 12:45:51 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/02 13:55:27 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 14:47:15 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Chunk.hpp"
+#include "HTTPStatus.hpp"
 #include "status.hpp"
+#include <limits>
 
 Chunk::Chunk():
 	status(SUCCESS),
 	state(0),
 	lastChunk(false),
 	finished(false),
-	totalBlocksSize(0)
+	totalBlocksSize(0),
+	maxBodySize(0)
 {
 	process_functions[0] = &Chunk::process_size;
 	process_functions[1] = &Chunk::process_CR;
@@ -38,6 +41,11 @@ bool	Chunk::fail()
 		return (true);
 	else
 		return (false);
+}
+
+void	Chunk::setMaxBodySize(size_t newMaxBodySize)
+{
+	this->maxBodySize = newMaxBodySize;
 }
 
 bool		Chunk::isFinished()
@@ -68,7 +76,7 @@ void	Chunk::process(std::string& buffer)
 		if (this->finished == true)
 			return ;
 		(this->*process_functions[this->state])(buffer);
-		if (this->status == FAILURE)
+		if (this->status == SUCCESS)
 			return ;
 	}
 }
@@ -94,7 +102,7 @@ void	Chunk::process_size(std::string& buffer)
 			static_cast<size_t>(end - this->sizeUnformatted.data()) != this->sizeUnformatted.size()
 			)
 		{
-			this->status = FAILURE;
+			this->status = HTTPStatus::C_ERR + HTTPStatus::BAD_REQ;
 			return ;
 		}
 
@@ -110,7 +118,7 @@ void Chunk::process_CR(std::string& buffer)
 	{
 		if (buffer.at(0) != '\r')
 		{
-			this->status = FAILURE;
+			this->status = HTTPStatus::C_ERR + HTTPStatus::BAD_REQ;
 			return ;
 		}
 		else
@@ -127,7 +135,7 @@ void Chunk::process_LF(std::string& buffer)
 	{
 		if (buffer.at(0) != '\n')
 		{
-			this->status = FAILURE;
+			this->status = HTTPStatus::C_ERR + HTTPStatus::BAD_REQ;
 			return ;
 		}
 		else
@@ -156,8 +164,8 @@ void	Chunk::process_data(std::string& buffer)
 		buffer = std::string(buffer, to_append);
 		this->chunkBlocks.push(this->currentBlock);
 		this->totalBlocksSize += this->currentBlockSize;
-		//TODO if (this->totalBlockSize >= max_body_size)
-		//	then we should send a 413
+		if (this->totalBlocksSize > this->maxBodySize)
+			this->status = HTTPStatus::C_ERR + HTTPStatus::TOO_LARGE;
 		this->currentBlock.clear();
 		this->sizeUnformatted.clear();
 		this->state++;
@@ -167,6 +175,11 @@ void	Chunk::process_data(std::string& buffer)
 		this->currentBlock.append(buffer);
 		buffer.clear();
 	}
+}
+
+int			Chunk::getStatus()
+{
+	return (this->status);
 }
 
 std::ostream&	operator<<(std::ostream& os, Chunk& chunk)

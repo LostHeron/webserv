@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/29 18:07:29 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/02 14:24:07 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 15:06:02 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	InputSocket::process_request(size_t& pos)
 	if (this->method == "PUT" && 
 		(resp->getStatus() == HTTPStatus::SUCCESS + HTTPStatus::CREATED ||
 		 resp->getStatus() == HTTPStatus::SUCCESS + HTTPStatus::NO_CONTENT
-		) // && TODO it did not fail opening or else;
+		)
 	)
 	{
 		;
@@ -81,7 +81,7 @@ void	InputSocket::process_request(size_t& pos)
 			b.initialize();
 			if (this->version != "")
 			{
-				b.buildStatusLine("HTTP/1.1", resp->getStatus());
+				b.buildStatusLine("HTTP/1.0", resp->getStatus());
 				if (this->resp->isRedir())
 				{
 					b.buildHeaderKeyValue("Location", this->resp->getResource().second);

@@ -6,7 +6,7 @@
 /*   By: jweber <jweber@student.42Lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/10 16:06:32 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/02 13:58:54 by jweber           ###   ########.fr       */
+/*   Updated: 2026/07/07 15:05:06 by jweber           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,13 @@
 #include "Connection.hpp"
 #include "Environment.hpp"
 #include "Response.hpp"
-#include "ARequest.hpp"
 #include "PUTReq.hpp"
-#include <cctype>
-#include <cstddef>
 #include <fcntl.h>
 #include <sstream>
 #include <stdint.h>
 #include <cstdio>
 #include <cstdlib>
-#include <cwctype>
 #include <netinet/in.h>
-#include <ostream>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -49,23 +44,26 @@
 InputSocket::InputSocket(int fd, Connection* connection):
 	ASocket(connection),
 	state(0),
+	endByBackslashR(false),
 	bodySize(0),
 	nbSent(0),
 	resp(NULL),
 	req(NULL)
 {
-	this->fd = fd;
+	this->fd = dup(fd);
+	if (this->fd < 0)
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
 	{
 		int error_value = errno;
 		logerror("fcntl", error_value);
-		//this->status = FAILURE;
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	if (fcntl(this->fd, F_SETFD, FD_CLOEXEC) < 0)
 	{
 		int error_value = errno;
 		logerror("fcntl", error_value);
-		//this->status = FAILURE;
+		setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	InputSocket::process_functions[0] = &InputSocket::process_method;
 	InputSocket::process_functions[1] = &InputSocket::process_skip_sp;
@@ -108,7 +106,7 @@ void	setup_response(int& status, int errorCode, Connection* connection)
 	status = FINISH;
 	HeadersBuilder b;
 	b.initialize()
-	 .buildStatusLine("HTTP/1.1", errorCode)
+	 .buildStatusLine("HTTP/1.0", errorCode)
 	 .buildDate()
 	 .buildCRLF()
 	 .buildBody(resp.getContent());
@@ -125,9 +123,9 @@ void	InputSocket::process_body(size_t& pos)
 	if (this->connection->isChunked() == true)
 	{
 		this->connection->getChunk().process(this->inputBuffer);
-		if (this->connection->getChunk().fail() == true)
+		if (this->connection->getChunk().getStatus() == SUCCESS)
 		{
-			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, connection));
+			return (setup_response(this->status, this->connection->getChunk().getStatus(), connection));
 		}
 	}
 	else
@@ -135,14 +133,14 @@ void	InputSocket::process_body(size_t& pos)
 		if (this->req != NULL)
 		{
 			/*
-			 * TODO
+			 * TODO handle PUT request in case of transfer encoding ?
 			 */
 			if (nbSent + this->inputBuffer.size() > this->bodySize)
-				setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, connection);
+				this->inputBuffer = std::string(this->inputBuffer, 0, this->bodySize - nbSent);
 			unsigned ret = dynamic_cast<PUTReq*>(this->req)->appendBodyToFile(this->inputBuffer);
 			if (ret != SUCCESS)
 				setup_response(this->status, ret, connection);
-			nbSent += this->bodySize;
+			nbSent += this->inputBuffer.size();
 			this->inputBuffer.clear();
 			if (nbSent == this->bodySize)
 				setup_response(this->status, resp->getStatus(), this->connection);
