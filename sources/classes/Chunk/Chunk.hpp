@@ -15,6 +15,7 @@
 
 #include <csignal>
 #include <cstdlib>
+#include <fstream>
 #include <ostream>
 #include <queue>
 #include <string>
@@ -26,7 +27,7 @@ class Chunk
 		~Chunk();
 
 		void		process(std::string& buffer);
-		std::string	getBuffer();
+		void		getBuffer(std::string& buffer);
 		bool		fail();
 		bool		isFinished();
 		size_t		getTotalSize();
@@ -41,7 +42,8 @@ class Chunk
 		bool					finished;
 		size_t					totalBlocksSize;
 		size_t					maxBodySize;
-		std::queue<std::string>	chunkBlocks;
+		int						inputFd;
+		int						outputFd;
 		void (Chunk::*process_functions[6])(std::string& buffer);
 
 		std::string		sizeUnformatted;

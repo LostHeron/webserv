@@ -40,10 +40,16 @@ void	start(Server& server)
 	std::cout << "server is now running waiting for events\n";
 	while (run != STOP)
 	{
+		static int a;
 		int nb_events = epoll_wait(server.getEfd(), events, EVENT_SIZE, -1);
 		#ifdef DEBUG
 			sleep(1); // just to slow down server for debugging purposes
 		#endif
+		if (a < 100)
+		{
+			usleep(10000);
+		}
+		a++;
 		if (nb_events < 0)
 		{
 			logerror("epoll_wait", errno);
