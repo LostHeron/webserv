@@ -70,8 +70,8 @@ void	InputSocket::process_request(size_t& pos)
 				body_size = std::strtol(this->headers["content-length"].at(0).c_str(), &end, 10);
 			else
 				body_size = 0;
-			if (this->connection->isChunked() == false)
-				this->launch_cgi(body_size);
+			//if (this->connection->isChunked() == false) 
+			this->launch_cgi(body_size);
 		}
 		else
 		{

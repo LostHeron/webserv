@@ -122,11 +122,14 @@ void	InputSocket::process_body(size_t& pos)
 	}
 	if (this->connection->isChunked() == true)
 	{
+		/*
+		// no more processing here, it will be done in InCGI
 		this->connection->getChunk().process(this->inputBuffer);
 		if (this->connection->getChunk().getStatus() != SUCCESS)
 		{
 			return (setup_response(this->status, this->connection->getChunk().getStatus(), connection));
 		}
+		*/
 	}
 	else
 	{
@@ -181,7 +184,7 @@ void	InputSocket::launch_cgi(size_t nbToSend)
 	else
 	{
 		this->getConnection()->setCgiPid(pid);
-		if (nbToSend != 0)
+		if (nbToSend != 0 || this->connection->isChunked() == true)
 		{
 			InCGI *incgi = new InCGI(toCGI.getWriteEnd(), nbToSend, this->inputBuffer, this->connection);
 			this->connection->add(incgi, EPOLLOUT);
@@ -260,12 +263,22 @@ void	InputSocket::updateCgiEnvp(std::vector<std::string>& vec_envp, const std::s
 
 	if (this->connection->isChunked() == true)
 	{
+		/*
+		// was used to retrieve the body size
+		// in case of content lenght,
+		// but do not pass tester, cause it uses
+		// too much memory for large request
+		// so now in case of transfer encoding
+		// we'll just pass block after block to the cgi
+		// even if this seems contrary to the excpeted
+		// behaviour defined in the RFC
 		str = "CONTENT_LENGTH=";
 		std::stringstream ss;
 		ss << this->connection->getChunk().getTotalSize();
 		std::string tmp;
 		ss >> tmp;
 		str += tmp;
+		*/
 	}
 	else if (this->headers.count("content-length"))
 	{

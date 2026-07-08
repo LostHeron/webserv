@@ -61,10 +61,20 @@ void	InCGI::process()
 	*/
 	if (this->connection->isChunked() == true)
 	{
+		this->connection->getChunk().process(this->inputBuffer);
+		if (this->connection->getChunk().getStatus() != SUCCESS)
+			return (setup_response(this->status, this->connection->getChunk().getStatus(), connection));
+		// something like that
+			/*
+		if (this->connection->getChunk().isReady()
+			this->inputBufferChunk = this->connection->getChunk().getBuffer();
+		*/
 		if (this->inputBufferChunk == "")
 		{
 			this->inputBufferChunk = this->connection->getChunk().getBuffer();
 		}
+		// here now we need to process the parsing of inputBuffer, to know how many data to send
+		// and if a block has been retrieved, we extract it
 		if (this->inputBufferChunk != "")
 			sendDataCGI(this->inputBufferChunk, this->fd, this->nbSent, this->nbToSend, this->status);
 	}

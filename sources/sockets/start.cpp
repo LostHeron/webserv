@@ -36,6 +36,7 @@ static void	timeout_connections(Server& server);
 // it is set to 0 when using ^C to allow the program to quit
 void	start(Server& server)
 {
+	static int	a;
 	struct epoll_event events[EVENT_SIZE];
 	std::cout << "server is now running waiting for events\n";
 	while (run != STOP)
@@ -44,6 +45,12 @@ void	start(Server& server)
 		#ifdef DEBUG
 			sleep(1); // just to slow down server for debugging purposes
 		#endif
+		if (a < 100)
+		{
+			std::cout << "a = " << a << "\n";
+			usleep(10000);
+		}
+		a++;
 		if (nb_events < 0)
 		{
 			logerror("epoll_wait", errno);
@@ -100,6 +107,10 @@ void	start(Server& server)
 					*/
 				}
 				timeout_connections(server);
+				/*
+				// no more needs to wait for Content-length information before
+				// launching cgi since their tester, do not take CONTENT-LENGTH
+				// into account
 				std::vector<Connection *>& connections = server.getConnections();
 				for (size_t i = 0; i < connections.size(); i++)
 				{
@@ -112,6 +123,7 @@ void	start(Server& server)
 						}
 					}
 				}
+				*/
 			}
 			catch (IsChildren& e)
 			{
