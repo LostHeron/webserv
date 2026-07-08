@@ -76,7 +76,7 @@ void	Chunk::process(std::string& buffer)
 		if (this->finished == true)
 			return ;
 		(this->*process_functions[this->state])(buffer);
-		if (this->status == SUCCESS)
+		if (this->status != SUCCESS)
 			return ;
 	}
 }
@@ -116,14 +116,15 @@ void Chunk::process_CR(std::string& buffer)
 {
 	if (buffer.size() > 0)
 	{
-		if (buffer.at(0) != '\r')
+		if (buffer.at(0) != '\r' && buffer.at(0) != '\n')
 		{
 			this->status = HTTPStatus::C_ERR + HTTPStatus::BAD_REQ;
 			return ;
 		}
 		else
 		{
-			buffer = std::string (buffer, 1);
+			if (buffer.at(0) == '\r')
+				buffer = std::string (buffer, 1);
 			this->state++;
 		}
 	}

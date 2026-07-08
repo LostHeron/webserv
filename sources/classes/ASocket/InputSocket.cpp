@@ -123,7 +123,7 @@ void	InputSocket::process_body(size_t& pos)
 	if (this->connection->isChunked() == true)
 	{
 		this->connection->getChunk().process(this->inputBuffer);
-		if (this->connection->getChunk().getStatus() == SUCCESS)
+		if (this->connection->getChunk().getStatus() != SUCCESS)
 		{
 			return (setup_response(this->status, this->connection->getChunk().getStatus(), connection));
 		}
