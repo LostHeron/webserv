@@ -111,7 +111,6 @@ void	Chunk::process_size(std::string& buffer)
 			this->status = HTTPStatus::C_ERR + HTTPStatus::BAD_REQ;
 			return ;
 		}
-		std::cout << "TotalSize = " << totalBlocksSize << "\n";
 
 		this->currentBlock.clear();
 		this->currentBlock.reserve(this->currentBlockSize);
