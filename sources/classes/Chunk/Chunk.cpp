@@ -12,7 +12,6 @@
 
 #include "Chunk.hpp"
 #include "HTTPStatus.hpp"
-#include "InputSocket.hpp"
 #include "status.hpp"
 #include <cstdio>
 #include <fcntl.h>
@@ -105,7 +104,13 @@ void	Chunk::process_size(std::string& buffer)
 	size_t	position = buffer.find("\n");
 	if (position == std::string::npos)
 	{
-		this->sizeUnformatted.append(buffer);
+		position = buffer.find("\r");
+	}
+
+	if (position == std::string::npos)
+	{
+			this->sizeUnformatted.append(buffer);
+			buffer.clear();
 	}
 	else
 	{
@@ -124,9 +129,7 @@ void	Chunk::process_size(std::string& buffer)
 			this->status = HTTPStatus::C_ERR + HTTPStatus::BAD_REQ;
 			return ;
 		}
-		std::cout << "sizeUnformatted = '" << sizeUnformatted << "'\n";
-		std::cout << "currentBlockSize = " << currentBlockSize << "\n";
-		std::cout << "TotalBlockSize = " << totalBlocksSize << "\n\n";
+		//std::cout << "TotalSize = " << totalBlocksSize << "\n";
 
 		this->currentBlock.clear();
 		this->currentBlock.reserve(this->currentBlockSize);
