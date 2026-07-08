@@ -38,6 +38,7 @@ void InputSocket::process()
 		size_t r_position = this->inputBuffer.find_first_not_of("\r");
 		if (r_position != std::string::npos && this->inputBuffer[r_position] != '\n')
 			return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::BAD_REQ, connection));
+		this->endByBackslashR = false;
 	}
 	remove_trailing_carriage_return(this->inputBuffer, endByBackslashR);
 	
