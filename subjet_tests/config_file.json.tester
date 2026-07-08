@@ -1,0 +1,30 @@
+"host":
+[
+	{
+	    "listen":4343,
+		"index":"youpi.bad_extension",
+	    "name": "test",
+		"request":["GET"],
+		"extension":[".bla"],
+	    "root":"/home/jweber/webserv/subjet_tests/YoupiBanane",
+		"max body": 100000000000,
+		"location":
+		[
+			{
+				"name":"/post_body",
+				"alias":"/home/jweber/webserv/subjet_tests/YoupiBanane",
+				"extension":[".bla"],
+				"request":["POST"],
+				"max body": 100,
+				"directory listing": true
+			},
+			{
+				"name":"/directory",
+				"alias":"/home/jweber/webserv/subjet_tests/YoupiBanane",
+				"extension":[".bla"],
+				"index":"youpi.bad_extension",
+				"request":["GET", "POST"]
+			}
+		]
+	}
+]
