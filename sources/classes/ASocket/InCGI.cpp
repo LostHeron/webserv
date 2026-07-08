@@ -63,9 +63,7 @@ void	InCGI::process()
 	{
 		if (this->inputBufferChunk == "")
 		{
-			this->connection->getChunk().getBuffer(this->inputBufferChunk);
-			if (this->connection->getChunk().getStatus() != SUCCESS)
-				setup_response(this->status, this->connection->getChunk().getStatus(), connection);
+			this->inputBufferChunk = this->connection->getChunk().getBuffer();
 		}
 		if (this->inputBufferChunk != "")
 			sendDataCGI(this->inputBufferChunk, this->fd, this->nbSent, this->nbToSend, this->status);

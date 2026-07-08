@@ -13,8 +13,6 @@
 #include "Chunk.hpp"
 #include "HTTPStatus.hpp"
 #include "status.hpp"
-#include <cstdio>
-#include <fcntl.h>
 #include <limits>
 
 Chunk::Chunk():
@@ -23,9 +21,7 @@ Chunk::Chunk():
 	lastChunk(false),
 	finished(false),
 	totalBlocksSize(0),
-	maxBodySize(0),
-	inputFd(-1),
-	outputFd(-1)
+	maxBodySize(0)
 {
 	process_functions[0] = &Chunk::process_size;
 	process_functions[1] = &Chunk::process_CR;
@@ -33,26 +29,10 @@ Chunk::Chunk():
 	process_functions[3] = &Chunk::process_data;
 	process_functions[4] = &Chunk::process_CR;
 	process_functions[5] = &Chunk::process_LF;
-	this->inputFd = open("test.txt", O_WRONLY | O_CREAT, 0666);
-	if (this->inputFd < 0)
-		this->status = HTTPStatus::C_ERR;
-	this->outputFd = open("test.txt", O_RDONLY);
-	if (this->inputFd < 0)
-		this->status = HTTPStatus::C_ERR;
 }
 
 Chunk::~Chunk()
 {
-	if (this->inputFd >= 0)
-	{
-		close(this->inputFd);
-		this->inputFd = -1;
-	}
-	if (this->outputFd >= 0)
-	{
-		close(this->outputFd);
-		this->outputFd = -1;
-	}
 }
 
 bool	Chunk::fail()
@@ -78,13 +58,15 @@ size_t		Chunk::getTotalSize()
 	return (this->totalBlocksSize);
 }
 
-void	Chunk::getBuffer(std::string& str)
+std::string	Chunk::getBuffer()
 {
-	char buf[BUFSIZ];
-	ssize_t nb_read = read(this->outputFd, buf, BUFSIZ);
-	if (nb_read < 0)
-		this->status = HTTPStatus::S_ERR;
-	str = std::string(buf, nb_read);
+	std::string tmp;
+	if (this->chunkBlocks.size() > 0)
+	{
+		tmp = this->chunkBlocks.front();
+		this->chunkBlocks.pop();
+	}
+	return (tmp);
 }
 
 void	Chunk::process(std::string& buffer)
@@ -129,7 +111,7 @@ void	Chunk::process_size(std::string& buffer)
 			this->status = HTTPStatus::C_ERR + HTTPStatus::BAD_REQ;
 			return ;
 		}
-		//std::cout << "TotalSize = " << totalBlocksSize << "\n";
+		std::cout << "TotalSize = " << totalBlocksSize << "\n";
 
 		this->currentBlock.clear();
 		this->currentBlock.reserve(this->currentBlockSize);
@@ -188,10 +170,7 @@ void	Chunk::process_data(std::string& buffer)
 		size_t	to_append = this->currentBlockSize - this->currentBlock.size();
 		this->currentBlock.append(buffer, 0, to_append);
 		buffer = std::string(buffer, to_append);
-		ssize_t nb_write = write(this->inputFd, this->currentBlock.data(), this->currentBlock.size());
-		if (nb_write < 0)
-			this->status = HTTPStatus::S_ERR;
-		//this->chunkBlocks.push(this->currentBlock);
+		this->chunkBlocks.push(this->currentBlock);
 		this->totalBlocksSize += this->currentBlockSize;
 		if (this->totalBlocksSize > this->maxBodySize)
 			this->status = HTTPStatus::C_ERR + HTTPStatus::TOO_LARGE;
