@@ -64,6 +64,5 @@ void	CreateFd(int socket_fd, uint16_t local_port, const struct sockaddr_in& addr
 	catch (std::exception& e)
 	{
 		std::cerr << e.what() << "\n";
-		server.setFailure(FAILURE);
 	}
 }

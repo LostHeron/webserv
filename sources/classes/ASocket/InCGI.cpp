@@ -32,7 +32,8 @@ InCGI::InCGI(int fd, size_t bodySize, std::string& newInputBuffer, Connection* c
 	this->fd = dup(fd); 
 	if (this->fd < 0)
 	{
-		setup_response(this->status, HTTPStatus::S_ERR, connection);
+		throw std::exception();
+		//setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{
