@@ -50,9 +50,10 @@ echo -ne 'in b' > $HOME/goinfre/tmp/b/index.html
 WEBSERV_PID=$!
 
 echo -ne \
-"HTTP/1.0 200 OK\r\n"\
-"\r\n"\
-"in a" > expected_a.log
+"HTTP/1.0 301 Moved Permanently\r\n"\
+"Location: http://localhost:4343/index.html\r\n"\
+"\r\n" > expected_a.log
+
 
 REQ_1="GET /index.html HTTP/1.0\r\n\r\n"
 # the 'stdbuf -oL' flushes the buffer into the file,

@@ -57,4 +57,7 @@ echo "########################## TEST 11 ##################################"
 bash ./11_too_large_body.sh
 
 echo "########################## TEST 12 ##################################"
-bash ./12_test_delete_request.sh
+bash ./12_01_test_delete_request.sh
+
+echo "########################## TEST 12 bis ##################################"
+bash ./12_02_test_delete_empty_directory.sh

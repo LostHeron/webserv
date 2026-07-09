@@ -109,7 +109,7 @@ EXPECTED_FILE=expected_a.log
 RESULT_FILE=result_a.log
 
 echo -ne \
-"HTTP/1.0 403 Forbidden\r\n" > $EXPECTED_FILE
+"HTTP/1.0 204 No Content\r\n" > $EXPECTED_FILE
 
 REQ="DELETE /index_b.html HTTP/1.0\r\n"\
 "\r\n"
@@ -126,10 +126,9 @@ RESULT_TREE=result_tree_a.log
 
 echo -ne \
 "└── a\n"\
-"    ├── index_a.html\n"\
-"    └── index_b.html\n"\
+"    └── index_a.html\n"\
 "\n"\
-"1 directory, 2 files\n" > $EXPECTED_TREE
+"1 directory, 1 file\n" > $EXPECTED_TREE
 
 tree $HOME/goinfre/tmp > $RESULT_TREE
 tail -n +2 $RESULT_TREE > tmp.log # delete first line
@@ -275,6 +274,8 @@ if [ $DIFF_ERR -ne 0 ] || [ $DIFF_ERR_TREE -ne 0 ]; then
 	MSG+="\n"
 	ERROR+=1
 fi
+
+
 
 
 ################# RESULT + clear
