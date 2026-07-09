@@ -24,7 +24,9 @@
 
 void	InputSocket::process_request(size_t& pos)
 {
+	#ifdef DEBUG
 	std::cout << *this << "\n";
+	#endif
 	std::string requested_server_name;
 	if (this->headers.count("host"))
 	{

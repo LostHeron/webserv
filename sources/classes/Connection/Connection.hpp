@@ -38,6 +38,8 @@ class Connection
 		void			setChunked();
 		Chunk&			getChunk();
 
+		bool			isCGI();
+
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();
 

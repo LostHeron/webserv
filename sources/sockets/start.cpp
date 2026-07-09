@@ -140,7 +140,14 @@ static void	timeout_connections(Server& server)
 		{
 			std::cerr << "CONNECTION GETTING TIMEDOUT!!!\n";
 			int	a;
-			setup_response(a, HTTPStatus::C_ERR + HTTPStatus::TIMEOUT, connections[i]);
+			if (connections[i]->isCGI() == true)
+			{
+				setup_response(a, HTTPStatus::S_ERR + HTTPStatus::BAD_GATEWAY, connections[i]);
+			}
+			else
+			{
+				setup_response(a, HTTPStatus::C_ERR + HTTPStatus::TIMEOUT, connections[i]);
+			}
 		}
 	}
 }

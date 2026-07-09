@@ -126,6 +126,14 @@ Chunk&			Connection::getChunk()
 	return (this->chunk);
 }
 
+bool			Connection::isCGI()
+{
+	if (this->getCgiPid() >= 0)
+		return (true);
+	else
+		return (false);
+}
+
 
 void			Connection::setIsChildren()
 {
