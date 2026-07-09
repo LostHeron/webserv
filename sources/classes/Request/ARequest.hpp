@@ -63,10 +63,10 @@ class	ARequest: public AMessage
 		virtual void					_execute(Response &res, const VirtualHost::UriInfo &uriInfo) = 0;
 
 		const VirtualHost				&_vhost;
-		const std::string				_method;
+		const std::string				&_method;
 		std::string						_uri;
-		const std::string				_version;
-	 	string_map						_header;
+		const std::string				&_version;
+	 	const string_map				&_header;
 
 	private:
 		void							_splitCGIPathInfo(Response &resp);
