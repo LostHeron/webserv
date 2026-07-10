@@ -47,6 +47,9 @@ class Connection
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();
 
+		uint32_t		getAddrh();
+		void			printAddrh();
+
 		InCGI*			getInCGI();
 		void			setInCGI(InCGI*);
 
@@ -88,6 +91,7 @@ class Connection
 
 		const VirtualHost	*vHost;
 
+		uint32_t			addrh;
 		uint8_t				peerAddr[4];
 		uint16_t			peerPort;
 		uint16_t			localPort;

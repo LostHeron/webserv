@@ -18,6 +18,7 @@
 #include <cerrno>
 #include <csignal>
 #include <ctime>
+#include <netinet/in.h>
 #include <netinet/ip.h>
 #include <sys/epoll.h>
 
@@ -35,7 +36,7 @@ Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& 
 	outCGI(NULL),
 	server(server)
 {
-	uint32_t addrh = (newPeerAddr.sin_addr.s_addr);
+	addrh = ntohl(newPeerAddr.sin_addr.s_addr);
 	for (int i = 0; i < 4; i++)
 	{
 		this->peerAddr[i] = ( reinterpret_cast<uint8_t *>(&addrh) )[i];
@@ -148,6 +149,21 @@ size_t			Connection::getMemoryUsage()
 void			Connection::setIsChildren()
 {
 	this->server.setIsChildren();
+}
+
+uint32_t		Connection::getAddrh()
+{
+	return (this->addrh);
+}
+
+void		Connection::printAddrh()
+{
+	std::cout 
+		<< (int)peerAddr[0] << "."
+		<< (int)peerAddr[1] << "."
+		<< (int)peerAddr[2] << "."
+		<< (int)peerAddr[3] << "\n"
+	;
 }
 
 bool			Connection::getIsChildren()
