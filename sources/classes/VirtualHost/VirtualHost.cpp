@@ -6,7 +6,7 @@
 /*   By: cviel <cviel@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/01 18:24:40 by jweber            #+#    #+#             */
-/*   Updated: 2026/07/06 16:51:10 by cviel            ###   ########.fr       */
+/*   Updated: 2026/07/10 14:43:30 by cviel            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ VirtualHost::UriInfo	VirtualHost::getUriInfo(std::string const& uri) const
 		uri_info._path += uri;
 		if (uri_info._uploadPath.empty() == true)
 			uri_info._uploadPath = this->_conf.root;
+		uri_info._uploadPath += uri;
 	}
 	return (uri_info);
 }
@@ -110,6 +111,7 @@ void	VirtualHost::buildUriInfo(std::string const& uri, std::pair<std::string, Lo
 	uri_info._cgiExt = loc_pair.second.conf.cgiExt;
 	if (loc_pair.second.conf.uploadPath.empty() == true)
 		uri_info._uploadPath = loc_pair.second.conf.alias;
+	uri_info._uploadPath += uri.substr(loc_pair.first.size());
 }
 
 VirtualHost::Location::Location(Location::s_config const& conf) :
