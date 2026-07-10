@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Paper Trail Blog</title>
+    <link rel="stylesheet" href="/profile/profilePage.css">
+</head>
+<body>
+    <main class="profile-shell">
+        <section class="profile-header card">
+            <div>
+                <p class="eyebrow">Profile settings</p>
+                <h1>Profile Page</h1>
+                <p class="lead">Save a simple profile with cookies.</p>
+            </div>
+        </section>
+
+        <section class="card form-card">
+            <form class="profile-form" id="profile-form">
+                <div class="field-grid">
+                    <label>
+                        <span>Name</span>
+                        <input type="text" name="name" autocomplete="given-name" placeholder="Your name" required>
+                    </label>
+                    <label>
+                        <span>Surname</span>
+                        <input type="text" name="surname" autocomplete="family-name" placeholder="Your surname" required>
+                    </label>
+                    <label>
+                        <span>Email</span>
+                        <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                    </label>
+                </div>
+
+                <label class="upload-field">
+                    <span>Upload profile picture</span>
+                    <input type="file" name="profile-picture" accept="image/*" required>
+                </label>
+
+                <div class="actions">
+                    <button type="submit" class="button primary">Save profile</button>
+                    <a class="button secondary" href="/">Back</a>
+                </div>
+            </form>
+        </section>
+    </main>
+    <script src="/profile/profilePage.js" defer></script>
+</body>
+</html>

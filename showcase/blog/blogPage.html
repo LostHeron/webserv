@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Paper Trail Blog</title>
+    <link rel="stylesheet" href="/blog/blogPage.css">
+</head>
+<body>
+    <header class="blog-header">
+        <div>
+            <p class="eyebrow">Paper Trail Blog</p>
+            <h1>Blog Page</h1>
+        </div>
+        <nav class="blog-nav">
+            <a href="/">Home</a>
+            <a href="/profile">Profile</a>
+        </nav>
+    </header>
+
+    <main class="blog-shell">
+        <p class="intro-text">Create, read, update, delete, and like shared posts.</p>
+
+        <section class="card composer">
+            <form id="post-form" method="post" action="/database/posts.py" class="composer-form">
+                <input type="hidden" id="post-id" name="id" value="">
+                <input type="hidden" id="post-author" name="author" value="">
+                <input type="hidden" id="post-avatar" name="avatar" value="">
+                <input type="hidden" id="post-avatar-version" name="avatarVersion" value="">
+                <input type="hidden" id="post-action" name="action" value="create">
+                <label>
+                    <span>Title</span>
+                    <input type="text" id="post-title" name="title" placeholder="Post title" required>
+                </label>
+                <label>
+                    <span>Body</span>
+                    <textarea id="post-body" name="body" rows="4" placeholder="Write your post here" required></textarea>
+                </label>
+                <div class="composer-actions">
+                    <button class="button primary" type="submit" id="post-submit">Publish post</button>
+                    <button class="button secondary" type="button" id="post-cancel" hidden>Cancel edit</button>
+                </div>
+            </form>
+        </section>
+
+        <section>
+            <div class="section-head">
+                    <p class="section-label">Existing posts</p>
+                <p class="section-hint">Loaded from the server</p>
+            </div>
+            <div id="posts-list" class="posts"></div>
+            <p id="empty-state" class="empty-state" hidden>No posts yet. Write the first one above.</p>
+        </section>
+    </main>
+    <script src="/blog/blogPage.js" defer></script>
+</body>
+</html>
