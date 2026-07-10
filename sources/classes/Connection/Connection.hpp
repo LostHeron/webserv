@@ -23,6 +23,7 @@
 #include "OutCGI.hpp"
 #include "OutputSocket.hpp"
 #include "VirtualHost.hpp"
+#include <cstddef>
 #include <queue>
 
 class Connection
@@ -39,6 +40,9 @@ class Connection
 		Chunk&			getChunk();
 
 		bool			isCGI();
+
+		void			addMemoryUsage(size_t size);
+		size_t			getMemoryUsage();
 
 		InputSocket*	getInputSocket();
 		OutputSocket*	getOutputSocket();

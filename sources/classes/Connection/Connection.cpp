@@ -134,6 +134,16 @@ bool			Connection::isCGI()
 		return (false);
 }
 
+void			Connection::addMemoryUsage(size_t size)
+{
+	this->memoryUsage += size;
+}
+
+size_t			Connection::getMemoryUsage()
+{
+	return (this->memoryUsage);
+}
+
 
 void			Connection::setIsChildren()
 {

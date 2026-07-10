@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "Connection.hpp"
 #include "HTTPStatus.hpp"
 #include "InputSocket.hpp"
 #include "status.hpp"
@@ -19,7 +20,7 @@
 #include <netinet/ip.h>
 #include <cerrno>
 
-void			updateInputBuffer(std::string& inputBuffer, int fd, int& status);
+void			updateInputBuffer(std::string& inputBuffer, int fd, int& status, Connection& connection);
 static void		remove_trailing_carriage_return(std::string& inputBuffer, bool& endByBackslashR);
 
 void InputSocket::process()
@@ -29,7 +30,7 @@ void InputSocket::process()
 	#endif
 	if (this->status != SUCCESS)
 		return ;
-	updateInputBuffer(this->inputBuffer, this->fd, this->status);
+	updateInputBuffer(this->inputBuffer, this->fd, this->status, *this->connection);
 	if (this->status != SUCCESS)
 		return ;
 
@@ -68,7 +69,7 @@ static void	remove_trailing_carriage_return(std::string& inputBuffer, bool& endB
 	}
 }
 
-void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
+void	updateInputBuffer(std::string& inputBuffer, int fd, int& status, Connection& connection)
 {
 	if (inputBuffer == "")
 	{
@@ -88,6 +89,7 @@ void	updateInputBuffer(std::string& inputBuffer, int fd, int& status)
 		}
 		else
 		{
+			connection.addMemoryUsage(nb_read);
 			inputBuffer = std::string(buf, nb_read);
 		}
 	}
