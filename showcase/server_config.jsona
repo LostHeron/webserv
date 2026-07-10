@@ -1,0 +1,50 @@
+"host":
+[
+	{
+		"name": "webhost",
+		"listen": [4242],
+		"root": "/home/abetemps/projects/webserv/showcase",
+		"directory listing": false,
+		"cgi": false,
+		
+		"location":
+		[
+			{
+				"name": "/",
+				"request": ["GET"],
+				"alias": "/home/abetemps/projects/webserv/showcase/home/",
+				"index": "homePage.html"
+			},
+			{
+				"request": ["GET", "POST", "PUT", "DELETE"],
+				"name": "/blog",
+				"alias": "/home/abetemps/projects/webserv/showcase/blog/",
+				"index": "blogPage.html"
+			},
+			
+			{
+				"request": ["GET", "POST", "PUT", "DELETE"],
+				"name": "/profile",
+				"alias": "/home/abetemps/projects/webserv/showcase/profile/",
+				"index": "profilePage.html"
+			},
+			
+			{
+				"request": ["GET", "PUT", "DELETE"],
+				"name": "/assets"
+			},
+
+			{
+				"name": "/database/posts.py",
+				"request": ["GET", "POST", "DELETE"],
+				"cgi": true
+			},
+
+			{
+				"name": "/database",
+				"request": ["GET", "POST", "DELETE"],
+				"cgi": true
+			}
+		]
+	}
+]
