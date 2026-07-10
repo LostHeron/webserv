@@ -25,6 +25,7 @@
 #include "Environment.hpp"
 #include "Response.hpp"
 #include "PUTReq.hpp"
+#include <exception>
 #include <fcntl.h>
 #include <sstream>
 #include <stdint.h>
@@ -52,7 +53,10 @@ InputSocket::InputSocket(int fd, Connection* connection):
 {
 	this->fd = dup(fd);
 	if (this->fd < 0)
-		setup_response(this->status, HTTPStatus::S_ERR, connection);
+	{
+		throw std::exception();
+		//setup_response(this->status, HTTPStatus::S_ERR, connection);
+	}
 	if (fcntl(this->fd, F_SETFL, O_CLOEXEC) < 0)
 	{
 		int error_value = errno;

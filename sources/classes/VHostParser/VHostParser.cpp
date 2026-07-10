@@ -242,9 +242,9 @@ uint32_t	VHostParser::buildInterface(std::string const& ip_str)
 		uint32_t	ip_part;
 		
 		ip_stream >> ip_part;
+		ip_bits <<= 8;
 		if (i < 3)
 		{
-			ip_bits <<= 8;
 			ip_stream.ignore();
 		}
 		ip_bits += ip_part;

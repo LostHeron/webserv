@@ -55,6 +55,8 @@ void	InputSocket::process_headers(size_t& start)
 			const VirtualHost::UriInfo& tmpUriInfo = this->connection->getVHost()->getUriInfo(this->uri);
 			if (tmpUriInfo.isRedir() == false)
 			{
+				if (this->connection->getVHost()->InterfaceAllowed(connection->getAddrh()) == false)
+					return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN, connection));
 				if (this->bodySize > tmpUriInfo.getBodySize())
 					return (setup_response(this->status, HTTPStatus::C_ERR + HTTPStatus::TOO_LARGE, this->connection));
 				if (this->getConnection()->isChunked() == true)

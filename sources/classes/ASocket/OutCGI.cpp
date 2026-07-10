@@ -21,6 +21,7 @@
 #include <complex>
 #include <cstdio>
 #include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -34,7 +35,8 @@ OutCGI::OutCGI(int fd, Connection* connection):
 	this->fd = dup(fd);
 	if (this->fd < 0)
 	{
-		setup_response(this->status, HTTPStatus::S_ERR, connection);
+		throw std::exception();
+		//setup_response(this->status, HTTPStatus::S_ERR, connection);
 	}
 	if (fcntl(this->fd, F_SETFL, O_NONBLOCK) < 0)
 	{

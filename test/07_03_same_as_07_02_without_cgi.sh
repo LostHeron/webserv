@@ -123,7 +123,7 @@ tests $EXPECTED_VAR $REQUEST_VAR "a"
 
 ################ TEST 2 with no path info
 
-EXPECTED_VAR="HTTP/1.0 404 Not Found\r\n"\
+EXPECTED_VAR="HTTP/1.0 403 Forbidden\r\n"\
 
 REQUEST_VAR="GET /coucou.sh/index.html HTTP/1.0\r\n\r\n"
 

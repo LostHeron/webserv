@@ -23,6 +23,7 @@
 #include <stdint.h>
 #include <iostream>
 #include <string>
+#include <sys/epoll.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>

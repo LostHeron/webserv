@@ -29,6 +29,7 @@
 #include <vector>
 
 static void	timeout_connections(Server& server);
+static void	removeHeavyConnection(Server& server, std::vector<Connection *>& connections);
 
 #define EVENT_SIZE 50
 
@@ -80,6 +81,7 @@ void	start(Server& server)
 						std::cerr << e.what() << "\n";
 						if (event->getConnection() != NULL)
 							server.remove(event->getConnection());
+						removeHeavyConnection(server, server.getConnections());
 						break;
 					}
 					catch (...)
@@ -87,21 +89,9 @@ void	start(Server& server)
 						std::cerr << "an error occured\n";
 						if (event->getConnection() != NULL)
 							server.remove(event->getConnection());
+						removeHeavyConnection(server, server.getConnections());
 						break;
 					}
-					
-					// here someking of code like :
-					/* try
-					 * {
-					 *		event->process
-					 * }
-					 * catch (std::exception& e)
-					 * {
-					 *		server.free_space() // (some function that would \
-					 *		search for the more consumming process, terminate the  \
-					 *		connection and removed all ressources associated with the process) \
-					 * }
-					*/
 				}
 				timeout_connections(server);
 				std::vector<Connection *>& connections = server.getConnections();
@@ -129,6 +119,24 @@ void	start(Server& server)
 	}
 }
 
+static	void	removeHeavyConnection(Server& server, std::vector<Connection *>& connections)
+{
+	if (connections.size() >0)
+	{
+		size_t	maxMemoryUsage = connections[0]->getMemoryUsage();
+		size_t	indexToDelete = 0;
+		for (size_t i = 1; i < connections.size(); i++)
+		{
+			if (connections[i]->getMemoryUsage() > maxMemoryUsage)
+			{
+				maxMemoryUsage = connections[i]->getMemoryUsage();
+				indexToDelete = i;
+			}
+		}
+		server.remove(connections[indexToDelete]);
+	}
+}
+
 
 static void	timeout_connections(Server& server)
 {
@@ -140,7 +148,14 @@ static void	timeout_connections(Server& server)
 		{
 			std::cerr << "CONNECTION GETTING TIMEDOUT!!!\n";
 			int	a;
-			setup_response(a, HTTPStatus::C_ERR + HTTPStatus::TIMEOUT, connections[i]);
+			if (connections[i]->isCGI() == true)
+			{
+				setup_response(a, HTTPStatus::S_ERR + HTTPStatus::BAD_GATEWAY, connections[i]);
+			}
+			else
+			{
+				setup_response(a, HTTPStatus::C_ERR + HTTPStatus::TIMEOUT, connections[i]);
+			}
 		}
 	}
 }
