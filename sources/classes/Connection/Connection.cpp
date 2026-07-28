@@ -60,13 +60,20 @@ Connection::~Connection()
 	if (this->getIsChildren() == false && this->cgiPid > 0)
 	{
 		#ifdef DEBUG
-		std::cout << "KILLING underlying process\n";
+		std::cout << "KILLING Underlying process from remove\n";
 		#endif
+
+		int ret = kill(this->cgiPid, SIGTERM);
+		(void) ret;
+
+		#ifdef DEBUG
 		if (kill(this->cgiPid, SIGTERM) < 0)
 		{
 			int	error_value = errno;
 			logerror("kill", error_value);
 		}
+		#endif
+		
 		this->cgiPid = -1;
 	}
 	if (this->inCGI != NULL)
@@ -100,11 +107,19 @@ void	Connection::remove(ASocket* abstractSocket)
 		#ifdef DEBUG
 		std::cout << "KILLING Underlying process from remove\n";
 		#endif
+
+		int ret = kill(this->cgiPid, SIGTERM);
+		(void) ret;
+
+		#ifdef DEBUG
 		if (kill(this->cgiPid, SIGTERM) < 0)
 		{
 			int	error_value = errno;
 			logerror("kill", error_value);
 		}
+		#endif
+		
+		this->cgiPid = -1;
 	}
 	if (this->server.getIsChildren() == false)
 	{

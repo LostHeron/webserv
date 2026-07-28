@@ -18,10 +18,13 @@
 static void	change_run_status(int sig);
 static int setup_sigint();
 static int setup_sigpipe();
+static int setup_sigchld();
 
 int	setup_signals()
 {
 	if (setup_sigpipe() != SUCCESS)
+		return (FAILURE);
+	if (setup_sigchld() != SUCCESS)
 		return (FAILURE);
 	if (setup_sigint() != SUCCESS)
 		return (FAILURE);
@@ -67,3 +70,18 @@ static void	change_run_status(int sig)
 	run = STOP;
 }
 
+
+static int setup_sigchld()
+{
+	struct sigaction	s;
+	int					ret;
+
+	std::memset(&s, 0, sizeof(s));
+	s.sa_handler = SIG_IGN;
+	ret = sigaction(SIGCHLD, &s, NULL);
+	if (ret < 0)
+	{
+		return (FAILURE);
+	}
+	return (SUCCESS);
+}
