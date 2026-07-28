@@ -142,7 +142,10 @@ Response										ARequest::buildResponse(void)
 	else if (!resp.isCGI())
 		this->_execute(resp, uriInfo);
 	else if (resp.isCGI() && st.st_mode & S_IFDIR)
+	{
 		resp.setStatus(HTTPStatus::C_ERR + HTTPStatus::FORBIDDEN);
+		resp.setCGI(false);
+	}
 
 	if (resp.getStatus() >= HTTPStatus::C_ERR)
 		resp.error(this->_vhost);
