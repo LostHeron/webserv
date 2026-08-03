@@ -69,6 +69,8 @@ class Connection
 		const VHostList& getHostList() const;
 
 		time_t			getStartTime() const;
+		time_t			getLastRecievedTime() const;
+		void			updateLastReceivedTime();
 
 		const VirtualHost	*getVHost();
 		void				setVHost();
@@ -85,6 +87,7 @@ class Connection
 
 		// used to timeout request
 		time_t				startTime;
+		time_t				lastReceivedTime;
 
 		bool					chunked;
 		Chunk					chunk;

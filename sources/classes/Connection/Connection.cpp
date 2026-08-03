@@ -25,6 +25,7 @@
 Connection::Connection(int fd, uint16_t newLocalPort, const struct sockaddr_in& newPeerAddr, Server& server):
 	memoryUsage(0),
 	startTime(time(NULL)),
+	lastReceivedTime(startTime),
 	chunked(false),
 	vHost(NULL),
 	peerPort(ntohs(newPeerAddr.sin_port)),
@@ -205,6 +206,11 @@ uint16_t		Connection::getLocalPort() {return (this->localPort);}
 const VHostList& Connection::getHostList() const {return (this->server.getHostList());}
 
 time_t			Connection::getStartTime() const {return (this->startTime);}
+time_t			Connection::getLastRecievedTime() const {return (this->lastReceivedTime);}
+void			Connection::updateLastReceivedTime()
+{
+	this->lastReceivedTime = time(NULL);
+}
 
 const VirtualHost		*Connection::getVHost()
 {

@@ -144,7 +144,8 @@ static void	timeout_connections(Server& server)
 	std::vector<Connection*>& connections = server.getConnections();
 	for (size_t i = 0; i < connections.size(); i++)
 	{
-		if (current_time - connections[i]->getStartTime() > TTL_CONNECTION)
+		if (current_time - connections[i]->getStartTime() > TTL_CONNECTION_FULL ||
+			current_time - connections[i]->getLastRecievedTime() > TTL_CONNECTION_LAST_RECEIVED)
 		{
 			std::cerr << "CONNECTION GETTING TIMEDOUT!!!\n";
 			int	a;

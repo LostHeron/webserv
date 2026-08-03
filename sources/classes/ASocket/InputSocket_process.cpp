@@ -25,6 +25,7 @@ static void		remove_trailing_carriage_return(std::string& inputBuffer, bool& end
 
 void InputSocket::process()
 {
+	this->connection->updateLastReceivedTime();
 	#ifdef DEBUG
 	std::cout << "in InputSocket process()\n";
 	#endif
