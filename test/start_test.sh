@@ -1,4 +1,5 @@
 #!/bin/bash
+#set -Eeuo pipefail
 
 CDIR=$(pwd)
 LAST_DIR=$(echo ${CDIR##*/})

@@ -57,7 +57,7 @@ function tests()
 
 	echo -ne $EXPECTED > $EXPECTED_FILE
 
-	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
+	stdbuf -o0 echo -ne $REQUEST | stdbuf -i0 -o0 nc localhost 4343 > $RESULT_FILE
 	sed --in-place '/Date/d' $RESULT_FILE
 	sed --in-place '/Set-Cookie/d' $RESULT_FILE # delete date line to use diff after
 
@@ -87,7 +87,7 @@ function tests_first_line()
 
 	echo -ne $EXPECTED > $EXPECTED_FILE
 
-	echo -ne $REQUEST | stdbuf -o0 nc localhost 4343 > $RESULT_FILE
+	stdbuf -o0 echo -ne $REQUEST | stdbuf -i0 -o0 nc localhost 4343 > $RESULT_FILE
 	head -1 $RESULT_FILE > tmp.log
 	cat tmp.log > $RESULT_FILE
 
